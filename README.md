@@ -15,6 +15,14 @@ ThermalAtlas is a native macOS menu-bar app for Apple-silicon Macs. It shows CPU
 - Provides four native themes, including adaptive Liquid Glass.
 - Has no third-party dependencies, network communication, analytics, or accounts.
 
+## Themes
+
+| Classic | Liquid Glass |
+| --- | --- |
+| <img src="Resources/Screenshots/classic.png" width="330" alt="ThermalAtlas Classic theme"> | <img src="Resources/Screenshots/liquid-glass.png" width="330" alt="ThermalAtlas Liquid Glass theme"> |
+| Aurora | Ember |
+| <img src="Resources/Screenshots/aurora.png" width="330" alt="ThermalAtlas Aurora theme"> | <img src="Resources/Screenshots/ember.png" width="330" alt="ThermalAtlas Ember theme"> |
+
 ## Requirements
 
 - macOS 14 or later on Apple silicon
