@@ -11,6 +11,11 @@ caches are excluded through `.gitignore` and are not published.
 No credentials, tokens, local file-system paths, telemetry endpoints, network
 clients, or bundled private data are intentionally present in the public source.
 
+Beta and Final packaging validates the public source for credential-like content
+and local paths. It also rejects invalid release-version input, strips
+machine-local Swift symbols and rpaths from the copied release binary, then
+verifies its signature and SHA-256 checksums before publication.
+
 The app's hardware access is restricted to:
 
 - Read-only IOKit calls for Apple-silicon SMC temperature keys.

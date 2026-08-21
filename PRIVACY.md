@@ -4,6 +4,8 @@
 
 ThermalAtlas is a local-only temperature display. It does not collect, transmit, or sell personal data.
 
+This report applies to published Beta and Final packages. Dev builds remain local and do not create a release privacy report.
+
 ## Data the app reads
 
 - Local Apple-silicon SMC temperature values through read-only IOKit calls.

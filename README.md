@@ -34,7 +34,7 @@ All builds are ad-hoc signed locally. Building does not publish a release.
 
 ## Privacy and security
 
-See [Privacy report](PRIVACY.md), [Datenschutzbericht](PRIVACY.de.md), and the [security review](SECURITY.md).
+See [Privacy report](PRIVACY.md), [Datenschutzbericht](PRIVACY.de.md), [security review](SECURITY.md), and the [changelog](CHANGELOG.md).
 
 ## Development
 

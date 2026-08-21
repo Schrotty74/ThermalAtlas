@@ -13,7 +13,9 @@ case "$channel" in
   beta)
     app_name="ThermalAtlas Beta"
     bundle_identifier="io.github.schrotty74.thermalatlas.beta"
-    configuration="debug"
+    # Beta artifacts are public packages. A release build avoids embedding
+    # machine-local debug paths while retaining an isolated beta cache.
+    configuration="release"
     ;;
   final)
     app_name="ThermalAtlas"
@@ -40,6 +42,10 @@ cp "$project_root/Resources/Dev-Info.plist" "$contents_dir/Info.plist"
 /usr/bin/plutil -replace CFBundleDisplayName -string "$app_name" "$contents_dir/Info.plist"
 /usr/bin/plutil -replace CFBundleName -string "$app_name" "$contents_dir/Info.plist"
 /usr/bin/plutil -replace CFBundleIdentifier -string "$bundle_identifier" "$contents_dir/Info.plist"
+if [[ -n "${THERMALATLAS_VERSION:-}" ]]; then
+  /usr/bin/plutil -replace CFBundleShortVersionString -string "$THERMALATLAS_VERSION" "$contents_dir/Info.plist"
+  /usr/bin/plutil -replace CFBundleVersion -string "${THERMALATLAS_BUILD_NUMBER:-1}" "$contents_dir/Info.plist"
+fi
 /usr/bin/xcrun actool "$asset_catalog" \
   --compile "$contents_dir/Resources" \
   --platform macosx \

@@ -60,12 +60,15 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - Dev, Beta und Final haben getrennte Bundle-Identifier, App-Namen, Ausgabeverzeichnisse und Swift-Build-Caches unter `.build/dev`, `.build/beta` und `.build/final`.
 - Die Bundle-Identifier sind `io.github.schrotty74.thermalatlas.dev`, `io.github.schrotty74.thermalatlas.beta` und `io.github.schrotty74.thermalatlas`.
 - Das Dev-App-Icon liegt als `Resources/Assets.xcassets/AppIcon.appiconset` vor und wird mit Apples `actool` in den Bundle-Asset-Katalog kompiliert. Die originale Entwurfsvorlage liegt unter `Resources/IconSource/`. Der Dev-Build erzeugt zusätzlich `Contents/PkgInfo`, aktualisiert danach den Bundle-Zeitstempel und registriert genau dieses lokale Dev-Bundle bei LaunchServices, damit Finder Icon-Änderungen übernimmt.
-- Dev, Beta und Final werden als getrennte lokale Artefakte erzeugt. Veröffentlichung, Tags und Releases bleiben separate, ausdrücklich beauftragte Schritte.
+- Dev bleibt ausschließlich lokal. Nur Beta und Final dürfen als Release-Artefakte für GitHub paketiert werden.
+- `Scripts/build-release-package.sh` erzeugt nach ausdrücklicher Freigabe ZIP und DMG für Beta oder Final; das DMG enthält den macOS-üblichen `Applications`-Alias.
+- Für öffentliche Beta- und Finalpakete nutzt das Skript einen Release-Build, validiert die Release-Version, entfernt ausschließlich lokale Swift-Symbole und lokale Toolchain-RPaths aus der Paketkopie, signiert sie erneut und prüft sie auf lokale Pfade.
+- Öffentliche Release-Notizen liegen auf Englisch in `CHANGELOG.md` und spiegeln sich in `CHANGELOG.de.md`.
 - Das öffentliche Repository ist `Schrotty74/ThermalAtlas`; veröffentlichte Inhalte dürfen keine lokalen Pfade, privaten Daten oder Build-Artefakte enthalten.
 
 ## Datenschutz
 
-- Keine Netzwerkkommunikation, Telemetrie, Accounts oder Drittanbieter-SDKs.
+- Keine Netzwerkkommunikation, Telemetrie, Accounts oder Drittanbieter-SDKs. Datenschutzberichte werden nur für Beta- und Final-Releases gepflegt, nicht für Dev-Builds.
 - Es werden ausschließlich lokale, lesende Sensor- und Laufwerksabfragen ausgeführt.
 - Private SMC-Zugriffe sind auf lesende Operationen beschränkt.
 

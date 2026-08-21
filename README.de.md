@@ -34,4 +34,4 @@ Alle Builds werden lokal ad-hoc signiert. Ein Build veröffentlicht nichts.
 
 ## Datenschutz und Sicherheit
 
-Siehe [Datenschutzbericht](PRIVACY.de.md), [Privacy report](PRIVACY.md) und die [Sicherheitsprüfung](SECURITY.md).
+Siehe [Datenschutzbericht](PRIVACY.de.md), [Privacy report](PRIVACY.md), die [Sicherheitsprüfung](SECURITY.md) und das [Änderungsprotokoll](CHANGELOG.de.md).

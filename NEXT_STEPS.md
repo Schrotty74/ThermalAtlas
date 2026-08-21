@@ -8,6 +8,7 @@
 
 - CPU-Sensorzuordnung auf dem Ziel-Mac weiter gegen die in Stats sichtbaren Quellsensoren prüfen und nur mit belegbarer Zuordnung anpassen.
 - Alle vier Themes manuell in Hell- und Dunkelmodus sowie mit aktivierter Bewegungs- und Transparenzreduktion prüfen.
+- Vor jedem künftigen Beta- oder Final-Upload die öffentliche Privacy- und Sicherheitsprüfung erneut ausführen und die zweisprachigen Changelogs auf den tatsächlichen Stand bringen.
 
 ## Priorität 3
 
