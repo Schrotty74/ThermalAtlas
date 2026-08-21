@@ -11,7 +11,7 @@
 
 **English** · [Deutsch](README.de.md)
 
-📘 **[User Manual](MANUAL.md)** – interface, buttons, sensors, themes, installation and privacy explained in detail.
+📘 **[User Manual (PDF)](Documentation/ThermalAtlas-User-Manual-EN.pdf)** – interface, buttons, sensors, themes, installation and privacy explained in detail.
 
 ## Overview
 
@@ -87,7 +87,7 @@ ThermalAtlas is licensed under the [GNU General Public License v3.0](LICENSE).
 
 ## Links
 
-- [User Manual](MANUAL.md)
+- [User Manual (PDF)](Documentation/ThermalAtlas-User-Manual-EN.pdf)
 - [Releases and downloads](https://github.com/Schrotty74/ThermalAtlas/releases)
 - [Privacy report](PRIVACY.md)
 - [Security review](SECURITY.md)
