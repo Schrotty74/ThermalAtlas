@@ -61,6 +61,7 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - Die Bundle-Identifier sind `io.github.schrotty74.thermalatlas.dev`, `io.github.schrotty74.thermalatlas.beta` und `io.github.schrotty74.thermalatlas`.
 - Das Dev-App-Icon liegt als `Resources/Assets.xcassets/AppIcon.appiconset` vor und wird mit Apples `actool` in den Bundle-Asset-Katalog kompiliert. Die originale Entwurfsvorlage liegt unter `Resources/IconSource/`. Der Dev-Build erzeugt zusätzlich `Contents/PkgInfo`, aktualisiert danach den Bundle-Zeitstempel und registriert genau dieses lokale Dev-Bundle bei LaunchServices, damit Finder Icon-Änderungen übernimmt.
 - Dev, Beta und Final werden als getrennte lokale Artefakte erzeugt. Veröffentlichung, Tags und Releases bleiben separate, ausdrücklich beauftragte Schritte.
+- Öffentliche Vorabpakete sind ad-hoc signiert und ohne Apple-Developer-Program-Notarisierung. Die README erklärt deshalb die notwendige Gatekeeper-Bestätigung beim ersten Start aus dem offiziellen GitHub-Release.
 - Das öffentliche Repository ist `Schrotty74/ThermalAtlas`; veröffentlichte Inhalte dürfen keine lokalen Pfade, privaten Daten oder Build-Artefakte enthalten.
 
 ## Datenschutz

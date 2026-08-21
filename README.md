@@ -38,6 +38,14 @@ Download the available macOS prerelease packages from [GitHub Releases](https://
 
 After opening the app, use the thermometer in the macOS menu bar to view the current temperatures and choose a visual theme. The app displays `Not available` when a sensor, SSD, or external enclosure does not provide a real temperature.
 
+### Gatekeeper confirmation
+
+Public prerelease builds are ad-hoc signed and are not notarized with an Apple Developer Program signing identity. macOS Gatekeeper can therefore ask you to confirm the first launch. Only approve the app after downloading it from the official [ThermalAtlas GitHub Release](https://github.com/Schrotty74/ThermalAtlas/releases).
+
+1. In Finder, Control-click (or right-click) `ThermalAtlas.app` and choose **Open**.
+2. Confirm **Open** in the macOS dialog.
+3. If macOS still blocks the app, open **System Settings → Privacy & Security**, then choose **Open Anyway** for ThermalAtlas and confirm the next dialog.
+
 ## Build channels
 
 Each channel has its own bundle identifier, `UserDefaults` domain, app bundle, and Swift build cache.
