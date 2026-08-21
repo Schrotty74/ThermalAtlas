@@ -64,6 +64,7 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - Öffentliche Vorabpakete sind ad-hoc signiert und ohne Apple-Developer-Program-Notarisierung. Die README erklärt deshalb die notwendige Gatekeeper-Bestätigung beim ersten Start aus dem offiziellen GitHub-Release.
 - `README.md` und `README.de.md` sind gleichwertige öffentliche Dokumentationen: Sie zeigen beide die vier Theme-Screenshots sowie gleichwertige Installations-, Gatekeeper-, Datenschutz-, Status-, Lizenz- und Linkinformationen. Der Changelog bleibt ausschließlich Englisch.
 - Jede SEO- oder Discoverability-Änderung an `README.md` wird im selben Auftrag als inhaltlich gleichwertige, natürlich formulierte deutsche Entsprechung in `README.de.md` umgesetzt: H1, Überblick, Funktionen, Screenshots und Alt-Texte, Voraussetzungen, Download/Installation, Gatekeeper, Datenschutz/Datenverarbeitung, Status, Lizenz, Links und Entwicklung bleiben strukturell gleich.
+- `PORTFOLIO_UPDATE.md` dokumentiert die Regeln für die öffentliche Darstellung von ThermalAtlas im Schrotty74-Profil und -Portfolio.
 - Das öffentliche Repository ist `Schrotty74/ThermalAtlas`; veröffentlichte Inhalte dürfen keine lokalen Pfade, privaten Daten oder Build-Artefakte enthalten.
 
 ## Datenschutz
