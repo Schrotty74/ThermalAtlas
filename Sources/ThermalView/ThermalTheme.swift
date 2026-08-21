@@ -130,7 +130,6 @@ struct ThermalMilkGlassBackdrop: NSViewRepresentable {
 
 final class ThermalMilkGlassBackdropView: NSVisualEffectView {
     private let glowLayer = CAGradientLayer()
-    private var isAnimated = false
     private var allowsTransparency = true
     private var colorScheme: ColorScheme = .dark
 
@@ -162,24 +161,6 @@ final class ThermalMilkGlassBackdropView: NSVisualEffectView {
         self.allowsTransparency = allowsTransparency
         self.colorScheme = colorScheme
         applyAppearance()
-        setAnimated(isAnimated && allowsTransparency)
-    }
-
-    private func setAnimated(_ animated: Bool) {
-        guard isAnimated != animated else { return }
-        isAnimated = animated
-        glowLayer.removeAnimation(forKey: "milkGlassGlow")
-        glowLayer.opacity = animated ? 0.74 : 0.46
-        guard animated else { return }
-
-        let pulse = CABasicAnimation(keyPath: "opacity")
-        pulse.fromValue = 0.48
-        pulse.toValue = 0.74
-        pulse.duration = 3.2
-        pulse.autoreverses = true
-        pulse.repeatCount = .infinity
-        pulse.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        glowLayer.add(pulse, forKey: "milkGlassGlow")
     }
 
     private func configure() {
@@ -204,6 +185,6 @@ final class ThermalMilkGlassBackdropView: NSVisualEffectView {
             NSColor.systemBlue.withAlphaComponent(darkAppearance ? 0.18 : 0.10).cgColor,
             NSColor.systemPurple.withAlphaComponent(darkAppearance ? 0.14 : 0.08).cgColor
         ]
-        glowLayer.opacity = allowsTransparency ? (isAnimated ? 0.74 : 0.46) : 0.18
+        glowLayer.opacity = allowsTransparency ? 0.46 : 0.18
     }
 }
