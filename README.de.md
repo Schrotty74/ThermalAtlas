@@ -13,7 +13,7 @@
 
 ## Überblick
 
-ThermalAtlas ist eine native, lokale macOS-Menüleisten-App zur Temperaturanzeige für Apple-Silicon-Macs. Sie zeigt CPU-, GPU-, interne SSD- und erkannte externe SSD-Temperaturen kompakt an, wenn macOS echte Sensor- oder SMART-Werte bereitstellt.
+ThermalAtlas ist eine schlanke, datenschutzorientierte macOS-Menüleisten-App für Apple Silicon, die echte Sensorwerte für CPU, GPU, interne SSD und externe SSDs anzeigt – ohne Telemetrie, Konten oder Hardwaresteuerung. Sie bietet eine kompakte Übersicht dieser Temperaturen, sobald macOS echte Sensor- oder SMART-Werte bereitstellt.
 
 Die App richtet sich an Menschen, die die thermische Auslastung ihres Macs ohne Hardwaresteuerung prüfen möchten: Sie aktualisiert sich alle zwei Sekunden, zeigt nicht verfügbare Messwerte klar statt sie zu schätzen und verändert niemals Lüfter, Energieoptionen oder Systemeinstellungen. ThermalAtlas funktioniert offline und enthält keine Konten, Telemetrie oder Netzwerkkommunikation.
 
