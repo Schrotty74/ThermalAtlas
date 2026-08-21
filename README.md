@@ -1,5 +1,12 @@
 # ThermalAtlas – Privacy-First macOS Menu Bar Temperature Monitor for Apple Silicon
 
+[![Swift 6](https://img.shields.io/badge/Swift-6.0-F05138?logo=swift&logoColor=white)](Package.swift)
+[![macOS 14+](https://img.shields.io/badge/macOS-14%2B-000000?logo=apple&logoColor=white)](#requirements)
+[![License GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-3DA639?logo=gnu&logoColor=white)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/Schrotty74/ThermalAtlas?display_name=tag&include_prereleases&sort=semver&label=release)](https://github.com/Schrotty74/ThermalAtlas/releases)
+[![Downloads](https://img.shields.io/github/downloads/Schrotty74/ThermalAtlas/total?label=downloads)](https://github.com/Schrotty74/ThermalAtlas/releases)
+[![Privacy: local only](https://img.shields.io/badge/Privacy-Local%20only-2EA043?logo=shield&logoColor=white)](PRIVACY.md)
+
 <p align="center"><img src="Resources/IconSource/ThermalAtlas-LiquidGlass.png" width="180" alt="ThermalAtlas Liquid Glass thermometer icon for the macOS menu bar app"></p>
 
 **English** · [Deutsch](README.de.md)
