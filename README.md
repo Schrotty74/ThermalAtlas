@@ -75,6 +75,10 @@ See [Privacy report](PRIVACY.md), [Datenschutzbericht](PRIVACY.de.md), and the [
 
 ThermalAtlas is in active development. Downloadable prerelease builds are published through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases); Dev builds remain local.
 
+## Repo activity
+
+![Alt](https://repobeats.axiom.co/api/embed/d6af5f522976c979d056c181fc9c59f85da59e78.svg "Repobeats analytics image")
+
 ## License
 
 ThermalAtlas is licensed under the [GNU General Public License v3.0](LICENSE).
