@@ -1,4 +1,4 @@
-# ThermalAtlas – Privacy-First macOS Menu Bar Temperature Monitor for Apple Silicon
+# ThermalAtlas – Privacy-Friendly macOS Menu Bar Temperature Monitor for Apple Silicon
 
 [![Swift 6](https://img.shields.io/badge/Swift-6.0-F05138?logo=swift&logoColor=white)](Package.swift)
 [![macOS 14+](https://img.shields.io/badge/macOS-14%2B-000000?logo=apple&logoColor=white)](#requirements)
@@ -13,7 +13,7 @@
 
 ## Overview
 
-ThermalAtlas is a lightweight, privacy-first macOS menu bar temperature monitor for Apple silicon that shows real CPU, GPU, internal SSD, and external SSD sensor values without telemetry, accounts, or hardware control. It gives you a compact view of those temperatures whenever macOS exposes real sensor or SMART values.
+ThermalAtlas is a lightweight, privacy-friendly macOS menu bar temperature monitor for Apple silicon that shows real CPU, GPU, internal SSD, and external SSD sensor values without telemetry, accounts, or hardware control. It gives you a compact view of those temperatures whenever macOS exposes real sensor or SMART values.
 
 The app is designed for people who want to check Mac thermal conditions without a hardware-control tool: it refreshes every two seconds, clearly shows unavailable measurements instead of estimating them, and never changes fan, power, or system settings. ThermalAtlas works offline and has no accounts, analytics, or network communication.
 
