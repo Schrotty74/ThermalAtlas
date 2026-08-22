@@ -7,10 +7,22 @@ import Observation
 @Observable
 final class SensorService {
     private(set) var snapshot = ThermalSnapshot.unavailable
+    private(set) var refreshInterval: TimeInterval
     private var refreshTask: Task<Void, Never>?
     private var lastVerifiedGPU: (temperature: Double, measuredAt: Date)?
 
-    init() {
+    init(refreshInterval: TimeInterval = RefreshIntervalOption.defaultOption.rawValue) {
+        self.refreshInterval = RefreshIntervalOption.normalized(refreshInterval).rawValue
+        start()
+    }
+
+    func setRefreshInterval(_ interval: TimeInterval) {
+        let normalizedInterval = RefreshIntervalOption.normalized(interval).rawValue
+        guard refreshInterval != normalizedInterval else { return }
+
+        refreshInterval = normalizedInterval
+        refreshTask?.cancel()
+        refreshTask = nil
         start()
     }
 
@@ -19,7 +31,8 @@ final class SensorService {
         refreshTask = Task { [weak self] in
             await self?.refresh()
             while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(2))
+                let interval = self?.refreshInterval ?? RefreshIntervalOption.defaultOption.rawValue
+                try? await Task.sleep(for: .seconds(interval))
                 guard !Task.isCancelled else { break }
                 await self?.refresh()
             }
@@ -70,11 +83,14 @@ private enum SensorProbe {
     static func readSnapshot() -> ThermalSnapshot {
         let disks = DiskUtility.physicalDisks()
         let internalDisk = disks.first(where: { $0.isInternal && $0.solidState })
-        let externalDisk = disks.first(where: { !$0.isInternal && $0.solidState })
+        let externalDisks = disks.filter { !$0.isInternal && $0.solidState && !$0.isVirtual }
+        let externalReadings = externalDisks.isEmpty
+            ? [diskReading(.externalSSD, disk: nil)]
+            : externalDisks.map { diskReading(.externalSSD, disk: $0) }
         return ThermalSnapshot(readings: [
             processorReading(.cpu), processorReading(.gpu),
-            diskReading(.internalSSD, disk: internalDisk), diskReading(.externalSSD, disk: externalDisk)
-        ], updatedAt: .now)
+            diskReading(.internalSSD, disk: internalDisk)
+        ] + externalReadings, updatedAt: .now)
     }
 
     private static func processorReading(_ kind: SensorKind) -> TemperatureReading {
@@ -97,17 +113,26 @@ private enum SensorProbe {
         )
     }
 
-    private static func diskReading(_ kind: SensorKind, disk: DiskInfo?) -> TemperatureReading {
+    private static func diskReading(
+        _ kind: SensorKind,
+        disk: DiskInfo?
+    ) -> TemperatureReading {
         guard let disk else {
             return TemperatureReading(kind: kind, temperatureCelsius: nil, detail: nil,
                                      unavailableReason: "Kein passendes Laufwerk erkannt")
         }
         guard let kelvin = disk.smartTemperatureKelvin, (200...450).contains(kelvin) else {
-            return TemperatureReading(kind: kind, temperatureCelsius: nil, detail: disk.displayName,
+            return TemperatureReading(kind: kind, sourceIdentifier: disk.identifier, title: disk.displayName,
+                                     temperatureCelsius: nil, detail: nil,
+                                     smartStatus: disk.smartStatusText,
+                                     smartHealthPercentage: disk.smartHealthPercentage,
                                      unavailableReason: "SMART-Temperatur wird nicht bereitgestellt")
         }
-        return TemperatureReading(kind: kind, temperatureCelsius: kelvin - 273.15,
-                                 detail: disk.displayName, unavailableReason: nil)
+        return TemperatureReading(kind: kind, sourceIdentifier: disk.identifier, title: disk.displayName,
+                                 temperatureCelsius: kelvin - 273.15,
+                                 detail: nil, smartStatus: disk.smartStatusText,
+                                 smartHealthPercentage: disk.smartHealthPercentage,
+                                 unavailableReason: nil)
     }
 }
 
@@ -118,25 +143,91 @@ private struct DiskInfo {
     let mediaName: String
     let volumeName: String?
     let smartTemperatureKelvin: Double?
+    let smartStatus: String?
+    let smartHealthPercentage: Int?
+    let isVirtual: Bool
 
     var displayName: String { volumeName?.isEmpty == false ? volumeName! : mediaName }
+
+    var smartStatusText: String {
+        guard let smartStatus, !smartStatus.isEmpty else { return "SMART: Nicht verfügbar" }
+        switch smartStatus.lowercased() {
+        case "verified": return "SMART: Verifiziert"
+        case "failing": return "SMART: Fehler"
+        case "not supported": return "SMART: Nicht unterstützt"
+        default: return "SMART: \(smartStatus)"
+        }
+    }
 }
 
 private enum DiskUtility {
     static func physicalDisks() -> [DiskInfo] {
         guard let list = propertyList(arguments: ["list", "-plist"]),
               let identifiers = list["AllDisks"] as? [String] else { return [] }
+
+        let infos = identifiers.reduce(into: [String: [String: Any]]()) { result, identifier in
+            if let info = propertyList(arguments: ["info", "-plist", identifier]) {
+                result[identifier] = info
+            }
+        }
+
         return identifiers.compactMap { identifier in
-            guard let info = propertyList(arguments: ["info", "-plist", identifier]),
+            guard let info = infos[identifier],
                   (info["WholeDisk"] as? Bool) == true,
                   let internalDrive = info["Internal"] as? Bool,
                   let solidState = info["SolidState"] as? Bool else { return nil }
             let smart = info["SMARTDeviceSpecificKeysMayVaryNotGuaranteed"] as? [String: Any]
             let kelvin = (smart?["TEMPERATURE"] as? NSNumber)?.doubleValue
+            let percentageUsed = (smart?["PERCENTAGE_USED"] as? NSNumber)?.doubleValue
             return DiskInfo(identifier: identifier, isInternal: internalDrive, solidState: solidState,
                             mediaName: (info["MediaName"] as? String) ?? identifier,
-                            volumeName: info["VolumeName"] as? String, smartTemperatureKelvin: kelvin)
+                            volumeName: internalDrive
+                                ? nonEmptyString(info["VolumeName"])
+                                : volumeName(for: identifier, ownInfo: info, allInfos: infos),
+                            smartTemperatureKelvin: kelvin,
+                            smartStatus: info["SMARTStatus"] as? String,
+                            smartHealthPercentage: SSDHealth.remainingPercentage(fromPercentageUsed: percentageUsed),
+                            isVirtual: (info["VirtualOrPhysical"] as? String) == "Virtual")
         }.sorted { $0.identifier.localizedStandardCompare($1.identifier) == .orderedAscending }
+    }
+
+    /// A whole APFS disk has no volume name itself. Resolve its physical-store
+    /// partition through the APFS container to the mounted user-visible volume.
+    private static func volumeName(
+        for physicalDiskIdentifier: String,
+        ownInfo: [String: Any],
+        allInfos: [String: [String: Any]]
+    ) -> String? {
+        if let ownName = nonEmptyString(ownInfo["VolumeName"]) { return ownName }
+
+        let partitions = Set(allInfos.compactMap { identifier, info in
+            (info["ParentWholeDisk"] as? String) == physicalDiskIdentifier ? identifier : nil
+        })
+        let containers = Set(allInfos.compactMap { identifier, info -> String? in
+            guard let stores = info["APFSPhysicalStores"] as? [[String: Any]],
+                  stores.contains(where: { store in
+                      guard let physicalStore = store["APFSPhysicalStore"] as? String else { return false }
+                      return partitions.contains(physicalStore)
+                  }) else { return nil }
+            return identifier
+        })
+
+        let apfsVolumeNames = allInfos.compactMap { _, info -> String? in
+            guard let container = info["APFSContainerReference"] as? String,
+                  containers.contains(container) else { return nil }
+            return nonEmptyString(info["VolumeName"])
+        }
+        if let apfsVolumeName = apfsVolumeNames.first { return apfsVolumeName }
+
+        return allInfos.values.lazy.compactMap { info in
+            guard (info["ParentWholeDisk"] as? String) == physicalDiskIdentifier else { return nil }
+            return nonEmptyString(info["VolumeName"])
+        }.first
+    }
+
+    private static func nonEmptyString(_ value: Any?) -> String? {
+        guard let value = value as? String, !value.isEmpty else { return nil }
+        return value
     }
 
     private static func propertyList(arguments: [String]) -> [String: Any]? {

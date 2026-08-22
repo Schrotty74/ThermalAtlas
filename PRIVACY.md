@@ -8,11 +8,11 @@ ThermalAtlas is a local-only temperature display. It does not collect, transmit,
 
 - Local Apple-silicon SMC temperature values through read-only IOKit calls.
 - Local drive metadata and SMART temperature data through `diskutil info -plist`.
-- The locally selected visual theme.
+- The locally selected visual theme and Scan Refresh interval.
 
 ## Storage
 
-Only the chosen theme is stored in local `UserDefaults`. Dev, Beta, and Final have separate bundle identifiers, settings, and caches. Temperature readings are not persisted.
+Only the chosen theme and Scan Refresh interval are stored in local `UserDefaults`. Dev, Beta, and Final have separate bundle identifiers, settings, and caches. Temperature readings are not persisted.
 
 ## Network and system changes
 

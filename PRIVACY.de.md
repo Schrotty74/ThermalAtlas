@@ -8,11 +8,11 @@ ThermalAtlas ist eine ausschließlich lokale Temperaturanzeige. Die App erhebt, 
 
 - Lokale Apple-Silicon-SMC-Temperaturwerte über rein lesende IOKit-Aufrufe.
 - Lokale Laufwerksmetadaten und SMART-Temperaturen über `diskutil info -plist`.
-- Das lokal gewählte Theme.
+- Das lokal gewählte Theme und Scan-Refresh-Intervall.
 
 ## Speicherung
 
-Nur das gewählte Theme wird in lokalen `UserDefaults` gespeichert. Dev, Beta und Final besitzen getrennte Bundle-Kennungen, Einstellungen und Caches. Temperaturwerte werden nicht dauerhaft gespeichert.
+Nur das gewählte Theme und Scan-Refresh-Intervall werden in lokalen `UserDefaults` gespeichert. Dev, Beta und Final besitzen getrennte Bundle-Kennungen, Einstellungen und Caches. Temperaturwerte werden nicht dauerhaft gespeichert.
 
 ## Netzwerk und Systemänderungen
 

@@ -2,15 +2,15 @@
 
 ## Ziel und Zweck
 
-ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie zeigt ausschließlich Temperaturen für CPU, GPU, interne SSD und erkannte externe SSDs an. Die App liest Daten nur aus und nimmt keine Änderungen an Lüftern, Energieoptionen oder anderen Systemeinstellungen vor.
+ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie zeigt ausschließlich Temperaturen für CPU, GPU, interne SSD und jede erkannte physische externe SSD an. Die App liest Daten nur aus und nimmt keine Änderungen an Lüftern, Energieoptionen oder anderen Systemeinstellungen vor.
 
 ## Architektur und technische Entscheidungen
 
 - Swift Package mit SwiftUI, Mindestplattform macOS 14; keine Drittanbieter-Abhängigkeiten.
-- `SensorService` koordiniert die Aktualisierung im Zwei-Sekunden-Takt und liefert ein UI-unabhängiges Datenmodell.
+- `SensorService` koordiniert die Aktualisierung mit einem lokal wählbaren Scan-Refresh-Intervall von 1 bis 4 Sekunden in ganzen Sekunden und liefert ein UI-unabhängiges Datenmodell.
 - `AppleSiliconSMCTemperatureBackend` kapselt private, lesende Apple-Silicon-SMC-Zugriffe defensiv. Fehlerhafte oder geänderte Schlüssel führen zu einem sicheren Fallback statt zu einem Absturz.
 - CPU- und GPU-Gesamtwerte werden aus passenden verfügbaren Rohsensoren als arithmetischer Mittelwert gebildet. Die ausgewählten Sensorfamilien und die Zuordnung sind im Backend dokumentiert.
-- Interne und externe Laufwerke werden über `diskutil info -plist` erkannt. SMART-Temperaturen werden nur bei tatsächlich gelieferten Daten von Kelvin in Celsius umgerechnet.
+- Interne und externe Laufwerke werden über `diskutil info -plist` erkannt. Jede externe physische SSD erhält eine eigene Karte; virtuelle Disk-Images werden ignoriert. Bei APFS-Laufwerken wird der physische Store über den Container zum eingebundenen Volume-Namen aufgelöst. SMART-Temperaturen werden nur bei tatsächlich gelieferten Daten von Kelvin in Celsius umgerechnet; der von macOS gelieferte SMART-Status und die verbleibende Gesundheit aus NVMe-`PERCENTAGE_USED` werden als eigene Zeile auf SSD-Karten dargestellt. Ohne dieses Feld gibt es keinen geschätzten Prozentwert.
 - Kurzzeitige GPU-SMC-Ausfälle werden begrenzt mit einem zuletzt echten Messwert überbrückt; anschließend erscheint korrekt `Nicht verfügbar`.
 
 ## Relevante Dateistruktur und Einstiegspunkte
@@ -30,14 +30,14 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 ## Umgesetzte Funktionen
 
 - Menüleistensymbol mit Thermometer und optional höchster verfügbarer Temperatur.
-- Vier Temperaturkarten: CPU, GPU, interne SSD sowie externe SSD mit tatsächlichem Laufwerksnamen, wenn erkannt.
-- Aktualisierung alle zwei Sekunden.
+- Temperaturkarten für CPU, GPU, interne SSD sowie jede erkannte physische externe SSD mit ihrem tatsächlichen Laufwerks- beziehungsweise eingebundenen Volume-Namen als Kartenüberschrift; mehrere externe SSDs werden getrennt dargestellt.
+- SSD-Karten zeigen zusätzlich den von macOS gemeldeten SMART-Status sowie – falls verfügbar – die aus `PERCENTAGE_USED` abgeleitete verbleibende Gesundheit als eigene Zeile; fehlende Statusangaben werden als `SMART: Nicht verfügbar` ausgewiesen.
+- Menü `Scan Refresh` mit Aktualisierungsintervall von 1 bis 4 Sekunden in ganzen Sekunden; standardmäßig zwei Sekunden.
 - Robuste Anzeige `Nicht verfügbar`, ohne Schätzwerte, wenn ein Sensor oder SMART-Daten nicht verfügbar sind.
 - CPU- und GPU-Aggregation mit erklärender Herkunft in der Detailzeile.
 - Farbliche Trennung der Sensor-Karten sowie temperaturabhängige Statusfarben.
 - Vier Themes: Klassisch, Liquid Glass, Aurora und Ember. Liquid Glass nutzt einen gemeinsamen systemeigenen Material-Hintergrund, adaptive Reflexe für Hell- und Dunkelmodus sowie einen opaken Fallback bei aktivierter macOS-Einstellung „Transparenz reduzieren“.
-- Der Theme-Menüpunkt öffnet die vier Themes direkt; das aktuelle Theme ist darin mit einem Häkchen markiert.
-- Schaltflächen zum Öffnen der macOS-Aktivitätsanzeige und zum Beenden der App.
+- Ein gemeinsames Footer-Menü bündelt `Themes`, `Scan Refresh`, das Öffnen der macOS-Aktivitätsanzeige und das Beenden der App. Das aktuelle Theme und Intervall sind jeweils mit einem Häkchen markiert.
 
 ## Wichtige Designentscheidungen
 
@@ -51,7 +51,7 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - Laufwerksinformationen werden aus der Property-List-Ausgabe von `diskutil info -plist` gelesen.
 - SMART-Temperaturen werden nur dann dargestellt, wenn der Wert vorhanden und plausibel ist; die Quelle liefert Kelvin, die Darstellung Celsius.
 - Es werden keine Temperaturverläufe oder Messdaten persistent gespeichert.
-- Die Theme-Auswahl wird lokal in `UserDefaults` unter `thermalatlas.theme` gespeichert. Da `UserDefaults` pro Bundle-Identifier getrennt ist, teilen Dev, Beta und Final keine App-Einstellungen oder Caches.
+- Theme-Auswahl und Aktualisierungsintervall werden lokal in `UserDefaults` unter `thermalatlas.theme` beziehungsweise `thermalatlas.refreshInterval` gespeichert. Da `UserDefaults` pro Bundle-Identifier getrennt ist, teilen Dev, Beta und Final keine App-Einstellungen oder Caches.
 - Zielplattform sind aktuelle Apple-Silicon-Macs, besonders Mac Studio mit M4 Max. Private SMC-Schlüssel sind nicht stabil garantiert und müssen zur Laufzeit geprüft werden.
 
 ## Build und Release
@@ -79,4 +79,4 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - Die GPU kann trotz Wiederverbindung des SMC-Clients sporadisch `Nicht verfügbar` melden, wenn alle abgefragten GPU-Zonen vorübergehend keine gültige Antwort liefern.
 - Die CPU-Messung hängt von den auf diesem Mac lesbaren SMC-Schlüsseln ab; nicht lesbare Schlüssel werden nicht ersetzt oder geschätzt.
 - Externe SSDs und ihre Gehäuse stellen häufig keine SMART-Temperatur bereit. In diesem Fall ist `Nicht verfügbar` das erwartete Ergebnis.
-- Der letzte lokale Lauf von `swift test -c debug` hatte vier erfolgreiche Tests; der Dev-Build und seine Code-Signatur wurden lokal erfolgreich geprüft. Eine vollständige visuelle Prüfung aller Themes wurde noch nicht dokumentiert.
+- Der letzte lokale Lauf von `swift test -c debug` hatte acht erfolgreiche Tests; der Dev-Build und seine Code-Signatur wurden lokal erfolgreich geprüft. Eine vollständige visuelle Prüfung aller Themes wurde noch nicht dokumentiert.

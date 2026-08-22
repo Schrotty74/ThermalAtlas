@@ -22,4 +22,45 @@ final class TemperatureAggregationTests: XCTestCase {
         XCTAssertTrue(ThermalTheme.milkGlass.usesFullWindowGlass)
         XCTAssertFalse(ThermalTheme.classic.usesFullWindowGlass)
     }
+
+    func testRefreshIntervalOptionsCoverOneSecondStepsFromOneToFourSeconds() {
+        XCTAssertEqual(
+            RefreshIntervalOption.allCases.map(\.rawValue),
+            [1.0, 2.0, 3.0, 4.0]
+        )
+        XCTAssertEqual(RefreshIntervalOption.defaultOption, .twoSeconds)
+    }
+
+    func testRefreshIntervalNormalizesToNearestSupportedStep() {
+        XCTAssertEqual(RefreshIntervalOption.normalized(0.1), .oneSecond)
+        XCTAssertEqual(RefreshIntervalOption.normalized(2.4), .twoSeconds)
+        XCTAssertEqual(RefreshIntervalOption.normalized(4.8), .fourSeconds)
+    }
+
+    func testSSDHealthUsesOnlyReportedNVMePercentageUsed() {
+        XCTAssertEqual(SSDHealth.remainingPercentage(fromPercentageUsed: 1), 99)
+        XCTAssertEqual(SSDHealth.remainingPercentage(fromPercentageUsed: 2), 98)
+        XCTAssertEqual(SSDHealth.remainingPercentage(fromPercentageUsed: 120), 0)
+        XCTAssertNil(SSDHealth.remainingPercentage(fromPercentageUsed: nil))
+        XCTAssertNil(SSDHealth.remainingPercentage(fromPercentageUsed: -1))
+    }
+
+    func testExternalSSDsWithDifferentSourcesHaveDistinctStableIDs() {
+        let first = TemperatureReading(
+            kind: .externalSSD,
+            sourceIdentifier: "disk4",
+            temperatureCelsius: 33,
+            detail: "First SSD",
+            unavailableReason: nil
+        )
+        let second = TemperatureReading(
+            kind: .externalSSD,
+            sourceIdentifier: "disk6",
+            temperatureCelsius: 41,
+            detail: "Second SSD",
+            unavailableReason: nil
+        )
+
+        XCTAssertNotEqual(first.id, second.id)
+    }
 }

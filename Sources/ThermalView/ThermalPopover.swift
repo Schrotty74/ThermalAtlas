@@ -16,6 +16,7 @@ struct MenuBarLabel: View {
 struct ThermalPopover: View {
     let service: SensorService
     @Binding var selectedTheme: ThermalTheme
+    @Binding var refreshInterval: Double
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.colorScheme) private var colorScheme
@@ -41,41 +42,54 @@ struct ThermalPopover: View {
                 }
                 HStack(spacing: 6) {
                     Image(systemName: "arrow.clockwise")
-                    Text("Aktualisiert \(service.snapshot.updatedAt, format: .dateTime.hour().minute().second())")
+                    Text("Akt. \(service.snapshot.updatedAt, format: .dateTime.hour().minute().second())")
+                        .lineLimit(1)
+                        .accessibilityLabel("Zuletzt aktualisiert \(service.snapshot.updatedAt, format: .dateTime.hour().minute().second())")
                     Spacer()
                     Menu {
-                        ForEach(ThermalTheme.allCases) { theme in
-                            Button {
-                                selectedTheme = theme
-                            } label: {
-                                Label(
-                                    theme.name,
-                                    systemImage: theme == selectedTheme ? "checkmark" : theme.symbol
-                                )
+                        Menu("Themes") {
+                            ForEach(ThermalTheme.allCases) { theme in
+                                Button {
+                                    selectedTheme = theme
+                                } label: {
+                                    Label(
+                                        theme.name,
+                                        systemImage: theme == selectedTheme ? "checkmark" : theme.symbol
+                                    )
+                                }
+                                .menuActionDismissBehavior(.enabled)
                             }
-                            .menuActionDismissBehavior(.enabled)
+                        }
+                        Menu("Scan Refresh") {
+                            ForEach(RefreshIntervalOption.allCases) { option in
+                                Button {
+                                    refreshInterval = option.rawValue
+                                } label: {
+                                    Label(
+                                        option.displayName,
+                                        systemImage: option.rawValue == selectedRefreshInterval.rawValue ? "checkmark" : "timer"
+                                    )
+                                }
+                                .menuActionDismissBehavior(.enabled)
+                            }
+                        }
+                        Divider()
+                        Button(action: openActivityMonitor) {
+                            Label("Aktivitätsanzeige öffnen", systemImage: "waveform.path.ecg")
+                        }
+                        Divider()
+                        Button(role: .destructive) {
+                            NSApplication.shared.terminate(nil)
+                        } label: {
+                            Label("ThermalAtlas beenden", systemImage: "power")
                         }
                     } label: {
-                        Label("Theme", systemImage: "paintpalette")
+                        Image(systemName: "ellipsis.circle")
                     }
                     .menuStyle(.borderlessButton)
-                    .help("Darstellung auswählen")
-                    Button {
-                        openActivityMonitor()
-                    } label: {
-                        Image(systemName: "waveform.path.ecg")
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .help("Aktivitätsanzeige öffnen")
-                    Button {
-                        NSApplication.shared.terminate(nil)
-                    } label: {
-                        Image(systemName: "power")
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .help("ThermalAtlas beenden")
+                    .menuIndicator(.hidden)
+                    .accessibilityLabel("ThermalAtlas-Menü")
+                    .help("Themes, Scan Refresh und App-Aktionen")
                 }
                 .font(.caption).foregroundStyle(palette.secondary)
             }
@@ -90,6 +104,17 @@ struct ThermalPopover: View {
                 .stroke(selectedTheme.usesFullWindowGlass ? Color.white.opacity(0.34) : palette.gpu.opacity(0.16), lineWidth: 1)
         }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.35), value: selectedTheme)
+        .onAppear {
+            refreshInterval = selectedRefreshInterval.rawValue
+            service.setRefreshInterval(refreshInterval)
+        }
+        .onChange(of: refreshInterval) { _, newValue in
+            let normalizedInterval = RefreshIntervalOption.normalized(newValue).rawValue
+            if refreshInterval != normalizedInterval {
+                refreshInterval = normalizedInterval
+            }
+            service.setRefreshInterval(normalizedInterval)
+        }
     }
 
     @ViewBuilder
@@ -119,6 +144,10 @@ struct ThermalPopover: View {
         let url = URL(fileURLWithPath: "/System/Applications/Utilities/Activity Monitor.app")
         NSWorkspace.shared.openApplication(at: url, configuration: .init()) { _, _ in }
     }
+
+    private var selectedRefreshInterval: RefreshIntervalOption {
+        RefreshIntervalOption.normalized(refreshInterval)
+    }
 }
 
 private struct SensorCard: View {
@@ -139,16 +168,30 @@ private struct SensorCard: View {
                 .foregroundStyle(componentColor)
                 .background(componentColor.opacity(0.14), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
             VStack(alignment: .leading, spacing: 3) {
-                Text(reading.kind.title).font(.body.weight(.medium)).foregroundStyle(palette.title)
-                HStack(spacing: 4) {
-                    if reading.isLastVerifiedValue {
-                        Image(systemName: "clock.arrow.circlepath")
+                Text(reading.title ?? reading.kind.title).font(.body.weight(.medium)).foregroundStyle(palette.title)
+                if let subtitle {
+                    HStack(spacing: 4) {
+                        if reading.isLastVerifiedValue {
+                            Image(systemName: "clock.arrow.circlepath")
+                        }
+                        Text(subtitle)
                     }
-                    Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(reading.isLastVerifiedValue ? .orange : palette.secondary)
+                    .lineLimit(1)
                 }
-                .font(.caption)
-                .foregroundStyle(reading.isLastVerifiedValue ? .orange : palette.secondary)
-                .lineLimit(1)
+                if let smartStatus = reading.smartStatus {
+                    Text(smartStatus)
+                        .font(.caption2.weight(.medium))
+                        .foregroundStyle(smartStatusColor(for: smartStatus))
+                        .lineLimit(1)
+                    if let smartHealthPercentage = reading.smartHealthPercentage {
+                        Text("Gesundheit: \(smartHealthPercentage) %")
+                            .font(.caption2.weight(.medium))
+                            .foregroundStyle(palette.secondary)
+                            .lineLimit(1)
+                    }
+                }
             }
             Spacer(minLength: 12)
             VStack(alignment: .trailing, spacing: 4) {
@@ -223,7 +266,13 @@ private struct SensorCard: View {
         )
     }
 
-    private var subtitle: String { reading.detail ?? reading.unavailableReason ?? "Sensor bereit" }
+    private var subtitle: String? { reading.detail ?? reading.unavailableReason }
+
+    private func smartStatusColor(for status: String) -> Color {
+        if status == "SMART: Verifiziert" { return .green }
+        if status == "SMART: Fehler" { return .red }
+        return palette.secondary
+    }
     private var temperatureText: String {
         guard let temperature = reading.temperatureCelsius else { return "Nicht verfügbar" }
         return "\(temperature.formatted(.number.precision(.fractionLength(1))))°"
