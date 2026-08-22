@@ -36,9 +36,9 @@ Die App richtet sich an Menschen, die die thermische Auslastung ihres Macs ohne 
 
 | Klassisch | Liquid Glass |
 | --- | --- |
-| <img src="Resources/Screenshots/classic.png?v=4ecc323" width="330" alt="Klassisches ThermalAtlas-macOS-Theme mit Temperaturkarten für CPU, GPU, interne SSD und externe SSD"> | <img src="Resources/Screenshots/liquid-glass.png?v=4ecc323" width="330" alt="ThermalAtlas-Liquid-Glass-macOS-Theme mit Temperaturkarten für CPU, GPU, interne SSD und externe SSD"> |
+| <img src="Resources/Screenshots/classic.png?v=20260822-english-ui" width="330" alt="Klassisches ThermalAtlas-macOS-Theme mit Temperaturkarten für CPU, GPU, interne SSD und externe SSD"> | <img src="Resources/Screenshots/liquid-glass.png?v=20260822-english-ui" width="330" alt="ThermalAtlas-Liquid-Glass-macOS-Theme mit Temperaturkarten für CPU, GPU, interne SSD und externe SSD"> |
 | Aurora | Ember |
-| <img src="Resources/Screenshots/aurora.png?v=4ecc323" width="330" alt="ThermalAtlas-Aurora-macOS-Theme mit Temperaturkarten für CPU, GPU, interne SSD und externe SSD"> | <img src="Resources/Screenshots/ember.png?v=4ecc323" width="330" alt="ThermalAtlas-Ember-macOS-Theme mit Temperaturkarten für CPU, GPU, interne SSD und externe SSD"> |
+| <img src="Resources/Screenshots/aurora.png?v=20260822-english-ui" width="330" alt="ThermalAtlas-Aurora-macOS-Theme mit Temperaturkarten für CPU, GPU, interne SSD und externe SSD"> | <img src="Resources/Screenshots/ember.png?v=20260822-english-ui" width="330" alt="ThermalAtlas-Ember-macOS-Theme mit Temperaturkarten für CPU, GPU, interne SSD und externe SSD"> |
 
 ## Voraussetzungen
 

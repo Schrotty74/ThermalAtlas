@@ -36,9 +36,9 @@ The app is designed for people who want to check Mac thermal conditions without 
 
 | Classic | Liquid Glass |
 | --- | --- |
-| <img src="Resources/Screenshots/classic.png?v=4ecc323" width="330" alt="ThermalAtlas Classic macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> | <img src="Resources/Screenshots/liquid-glass.png?v=4ecc323" width="330" alt="ThermalAtlas Liquid Glass macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> |
+| <img src="Resources/Screenshots/classic.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Classic macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> | <img src="Resources/Screenshots/liquid-glass.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Liquid Glass macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> |
 | Aurora | Ember |
-| <img src="Resources/Screenshots/aurora.png?v=4ecc323" width="330" alt="ThermalAtlas Aurora macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> | <img src="Resources/Screenshots/ember.png?v=4ecc323" width="330" alt="ThermalAtlas Ember macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> |
+| <img src="Resources/Screenshots/aurora.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Aurora macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> | <img src="Resources/Screenshots/ember.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Ember macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> |
 
 ## Requirements
 
