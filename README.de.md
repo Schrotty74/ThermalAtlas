@@ -42,13 +42,7 @@ Die App richtet sich an Menschen, die die thermische Auslastung ihres Macs ohne 
 | Aurora | Ember |
 | <img src="Resources/Screenshots/aurora.png?v=20260822-english-ui" width="330" alt="ThermalAtlas-Aurora-macOS-Theme mit Temperaturkarten für CPU, GPU, interne SSD und externe SSD"> | <img src="Resources/Screenshots/ember.png?v=20260822-english-ui" width="330" alt="ThermalAtlas-Ember-macOS-Theme mit Temperaturkarten für CPU, GPU, interne SSD und externe SSD"> |
 
-## Gemeinsames Menü und Anzeigeoptionen
 
-Der Dreipunkt-Button im Footer öffnet ein gemeinsames Menü und hält die Temperaturansicht bewusst ruhig. Es enthält vier Darstellungen, **Scan Refresh** (1, 2, 3 oder 4 Sekunden; Standard: 2 Sekunden) und **Language**: Englisch ist Standard, Deutsch kann als lokale Anzeigesprache gewählt werden. Das Häkchen markiert die aktive Auswahl.
-
-<p align="center"><img src="Resources/ManualScreenshots/shared-menu.png" width="360" alt="ThermalAtlas-Hauptmenü mit Themes, Scan Refresh, Language, GitHub, Homepage, Manuals, Aktivitätsanzeige und Beenden"></p>
-
-Das Menü verlinkt außerdem zu GitHub, der Projekt-Homepage und beiden Handbüchern. **Aktivitätsanzeige öffnen** startet die gleichnamige macOS-App erst nach deiner Auswahl; **ThermalAtlas beenden** beendet die App und die regelmäßige rein lesende Aktualisierung.
 
 ## Voraussetzungen
 
