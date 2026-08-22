@@ -12,7 +12,7 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - `AppLanguage` kapselt sichtbare EN/DE-Texte und typisierte Verfügbarkeits- beziehungsweise SMART-Statuswerte. Die App startet auf Englisch; Deutsch ist eine lokale, persistierte Wahl.
 - CPU- und GPU-Gesamtwerte werden aus passenden verfügbaren Rohsensoren als arithmetischer Mittelwert gebildet. Die ausgewählten Sensorfamilien und die Zuordnung sind im Backend dokumentiert.
 - Interne und externe Laufwerke werden über `diskutil info -plist` erkannt. Jede externe physische SSD erhält eine eigene Karte; virtuelle Disk-Images werden ignoriert. Bei APFS-Laufwerken wird der physische Store über den Container zum eingebundenen Volume-Namen aufgelöst. SMART-Temperaturen werden nur bei tatsächlich gelieferten Daten von Kelvin in Celsius umgerechnet; der von macOS gelieferte SMART-Status und die verbleibende Gesundheit aus NVMe-`PERCENTAGE_USED` werden als eigene Zeile auf SSD-Karten dargestellt. Ohne dieses Feld gibt es keinen geschätzten Prozentwert.
-- Kurzzeitige GPU-SMC-Ausfälle werden begrenzt mit einem zuletzt echten Messwert überbrückt; anschließend erscheint korrekt `Nicht verfügbar`.
+- Kurzzeitige GPU-SMC-Ausfälle werden höchstens 15 Sekunden mit einem zuletzt echten, sichtbar als solcher markierten Messwert überbrückt; anschließend erscheint korrekt `Nicht verfügbar`.
 
 ## Relevante Dateistruktur und Einstiegspunkte
 
@@ -27,6 +27,8 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - `Sources/ThermalView/ThermalTheme.swift` – Themes und visueller Stil.
 - `Tests/ThermalViewTests/TemperatureAggregationTests.swift` – Tests der Aggregationslogik.
 - `build_dev_app.sh` – lokaler Dev-Build als App-Bundle.
+- `build_beta_app.sh` und `build_final_app.sh` – lokale Builds für die getrennten Beta- und Final-Bundles.
+- `Scripts/build-release-package.sh` und `Scripts/privacy-check.sh` – versionierte Beta-Release-Paketierung beziehungsweise Quellenprüfung; sie liegen derzeit nur auf dem Branch `beta`.
 - `Resources/Dev-Info.plist` – Dev-Bundle-Metadaten.
 
 ## Umgesetzte Funktionen
@@ -65,7 +67,7 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - Das Dev-App-Icon liegt als `Resources/Assets.xcassets/AppIcon.appiconset` vor und wird mit Apples `actool` in den Bundle-Asset-Katalog kompiliert. Die originale Entwurfsvorlage liegt unter `Resources/IconSource/`. Der Dev-Build erzeugt zusätzlich `Contents/PkgInfo`, aktualisiert danach den Bundle-Zeitstempel und registriert genau dieses lokale Dev-Bundle bei LaunchServices, damit Finder Icon-Änderungen übernimmt.
 - Dev, Beta und Final werden als getrennte lokale Artefakte erzeugt. Veröffentlichung, Tags und Releases bleiben separate, ausdrücklich beauftragte Schritte.
 - Der Git-Branch `beta` ist ausschließlich der veröffentlichte Beta-Quellstand; `main` ist ausschließlich der finale Quellstand. Dev wird niemals nach Git gepusht. Ein Beta-Auftrag darf `main` nicht fortschreiben, ein Final-Auftrag darf `beta` nicht fortschreiben.
-- `Scripts/build-release-package.sh` erzeugt ausschließlich auf ausdrücklichen Auftrag einen signierten Beta- oder Final-Ordner mit DMG, ZIP und SHA-256-Prüfsummen; `Scripts/privacy-check.sh` prüft den zu veröffentlichenden Quellstand auf Zugangsdaten, private Kennungen und lokale Pfade. Ein Beta-Release wird mit seinem Commit auf `beta` getaggt und als GitHub-Pre-release veröffentlicht; sein Changelog und seine Release Notes sind Englisch.
+- Auf `beta` erzeugt `Scripts/build-release-package.sh` ausschließlich auf ausdrücklichen Auftrag einen signierten Release-Ordner mit DMG, ZIP und SHA-256-Prüfsummen; `Scripts/privacy-check.sh` prüft den zu veröffentlichenden Quellstand auf Zugangsdaten, private Kennungen und lokale Pfade. Vor dem ersten Final-Release müssen diese Skripte auf `main` bereitstehen und dort verifiziert werden. Ein Beta-Release wird mit seinem Commit auf `beta` getaggt und als GitHub-Pre-release veröffentlicht; sein Changelog und seine Release Notes sind Englisch.
 - ThermalAtlas Beta 0.2.0 wurde als GitHub-Pre-Release vom Branch `beta` mit Tag `v0.2.0` veröffentlicht. Das Release enthält eine ad-hoc-signierte DMG mit Applications-Link, eine ZIP-Datei und SHA-256-Prüfsummen für beide Downloads. Die Prüfsummen sowie die Signatur der App im bereitgestellten DMG wurden vor der Veröffentlichung lokal geprüft.
 - Dev-Aufträge beschränken sich normalerweise auf lokale Entwicklung, Tests und Dev-Builds. Datenschutz-/Sicherheitsprüfungen für öffentliche Artefakte sowie Änderungen oder Neu-Erzeugungen von README, Handbüchern und Handbuch-PDFs sind sonst Teil eines ausdrücklich beauftragten Beta- oder Final-Builds mit anschließendem Git-Push. Eine ausdrücklich separat beauftragte lokale Handbuchpflege bleibt davon unberührt.
 - Öffentliche Vorabpakete sind ad-hoc signiert und ohne Apple-Developer-Program-Notarisierung. Die README erklärt deshalb die notwendige Gatekeeper-Bestätigung beim ersten Start aus dem offiziellen GitHub-Release.
