@@ -52,7 +52,11 @@ Das Menü verlinkt außerdem zu GitHub, der Projekt-Homepage und beiden Handbüc
 
 ## Voraussetzungen
 
-- macOS 14 oder neuer auf Apple Silicon
+- macOS 14 oder neuer
+- Apple-Silicon-Mac
+
+### Selbst aus dem Quellcode bauen
+
 - Xcode Command Line Tools mit Swift und `actool`
 
 ## Download, Installation und Nutzung
