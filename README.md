@@ -17,7 +17,7 @@
 
 ThermalAtlas is a lightweight, privacy-friendly, local-first macOS menu bar temperature monitor for Apple silicon. It shows real CPU, GPU, internal SSD, and every detected physical external SSD sensor value whenever macOS exposes it, without telemetry, accounts, or hardware control.
 
-The app is designed for people who want to check Mac thermal conditions without a hardware-control tool: it defaults to a two-second refresh interval, clearly shows unavailable measurements instead of estimating them, and never changes fan, power, or system settings. ThermalAtlas works offline and has no accounts, analytics, or network communication.
+The app is designed for people who want to check Mac thermal conditions without a hardware-control tool: it defaults to a two-second refresh interval, clearly shows unavailable measurements instead of estimating them, and never changes fan, power, or system settings. Its interface defaults to English and includes an optional German display language. ThermalAtlas works offline and has no accounts, analytics, or network communication.
 
 ## Features
 
@@ -30,6 +30,8 @@ The app is designed for people who want to check Mac thermal conditions without 
 - Shows remaining SSD health when macOS exposes NVMe `PERCENTAGE_USED`; it does not estimate a percentage when that field is unavailable.
 - Uses a defensive, read-only Apple-silicon SMC adapter for CPU and GPU.
 - Provides four native themes, including adaptive Liquid Glass.
+- Groups Themes, Scan Refresh, Language, public links, manuals, Activity Monitor, and Quit in one compact shared menu.
+- Starts in English and lets you switch the visible app interface to German locally.
 - Has no third-party dependencies, network communication, analytics, or accounts.
 
 ## Screenshots and themes
@@ -40,6 +42,14 @@ The app is designed for people who want to check Mac thermal conditions without 
 | Aurora | Ember |
 | <img src="Resources/Screenshots/aurora.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Aurora macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> | <img src="Resources/Screenshots/ember.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Ember macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> |
 
+## Shared menu and display options
+
+The footer ellipsis opens one shared menu, keeping the temperature view focused. It contains four appearance choices, **Scan Refresh** (1, 2, 3, or 4 seconds; default: 2 seconds), and **Language** with English as the default and German as an optional local display language. The checkmark identifies the active choice.
+
+<p align="center"><img src="Resources/ManualScreenshots/shared-menu.png" width="360" alt="ThermalAtlas shared menu with Themes, Scan Refresh, Language, GitHub, Homepage, Manuals, Activity Monitor, and Quit"></p>
+
+The menu also links to GitHub, the project homepage, and both manuals. **Open Activity Monitor** launches the macOS app only after you choose it; **Quit ThermalAtlas** ends the app and its periodic read-only refresh.
+
 ## Requirements
 
 - macOS 14 or later on Apple silicon
@@ -49,7 +59,7 @@ The app is designed for people who want to check Mac thermal conditions without 
 
 Download the available macOS prerelease packages from [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases). Open the DMG and drag ThermalAtlas to the `Applications` alias to install it.
 
-After opening the app, use the thermometer in the macOS menu bar to view the current temperatures and choose a visual theme. The app displays `Not available` when a sensor, SSD, or external enclosure does not provide a real temperature.
+After opening the app, use the thermometer in the macOS menu bar to view the current temperatures. Open the footer ellipsis for visual themes, Scan Refresh, the optional German interface, manuals, links, Activity Monitor, and Quit. The app displays `Not available` when a sensor, SSD, or external enclosure does not provide a real temperature.
 
 ### Gatekeeper confirmation
 
@@ -73,7 +83,7 @@ All builds are ad-hoc signed locally. Building does not publish a release.
 
 ## Privacy, data handling, and security
 
-ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, and SMART temperature data only when macOS provides them. It stores only the selected visual theme and Scan Refresh interval in local `UserDefaults`; temperature readings are not persisted. The app has no network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies.
+ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, and SMART temperature data only when macOS provides them. It stores only the selected visual theme, Scan Refresh interval, and display language in local `UserDefaults`; temperature readings are not persisted. The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. Its optional GitHub, Homepage, and manual menu actions open the selected public page in your default browser only after you select them.
 
 See [Privacy report](PRIVACY.md), [Datenschutzbericht](PRIVACY.de.md), and the [security review](SECURITY.md).
 
@@ -93,6 +103,7 @@ ThermalAtlas is licensed under the [GNU General Public License v3.0](LICENSE).
 
 - [User Manual (PDF)](Documentation/ThermalAtlas-User-Manual-EN.pdf)
 - [Releases and downloads](https://github.com/Schrotty74/ThermalAtlas/releases)
+- [Changelog](CHANGELOG.md)
 - [Privacy report](PRIVACY.md)
 - [Security review](SECURITY.md)
 - [Source code](https://github.com/Schrotty74/ThermalAtlas)

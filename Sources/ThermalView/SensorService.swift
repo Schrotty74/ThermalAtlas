@@ -49,7 +49,7 @@ final class SensorService {
     /// private SMC transport rejects an otherwise normal refresh. This is not a
     /// synthetic value: the UI explicitly labels it as the last real reading,
     /// and it expires after 15 seconds. A continuously unavailable sensor still
-    /// becomes `Nicht verfügbar`.
+    /// becomes unavailable again.
     private func applyingTransientGPUFallback(
         to readings: [TemperatureReading],
         now: Date
@@ -71,7 +71,7 @@ final class SensorService {
             return TemperatureReading(
                 kind: .gpu,
                 temperatureCelsius: lastVerifiedGPU.temperature,
-                detail: "Letzter echter GPU-Wert vor \(seconds) s · Sensor antwortet kurz nicht",
+                detail: "Last verified GPU reading is \(seconds) seconds old",
                 unavailableReason: nil,
                 isLastVerifiedValue: true
             )
@@ -100,7 +100,7 @@ private enum SensorProbe {
                 kind: kind,
                 temperatureCelsius: result.celsius,
                 detail: result.detail,
-                unavailableReason: result.celsius == nil ? result.unavailableReason : nil
+                unavailableReason: result.celsius == nil ? .gpuSensorUnavailable : nil
             )
         }
 
@@ -109,7 +109,7 @@ private enum SensorProbe {
             kind: kind,
             temperatureCelsius: result.celsius,
             detail: result.detail,
-            unavailableReason: result.celsius == nil ? result.unavailableReason : nil
+            unavailableReason: result.celsius == nil ? .cpuSensorUnavailable : nil
         )
     }
 
@@ -119,18 +119,18 @@ private enum SensorProbe {
     ) -> TemperatureReading {
         guard let disk else {
             return TemperatureReading(kind: kind, temperatureCelsius: nil, detail: nil,
-                                     unavailableReason: "Kein passendes Laufwerk erkannt")
+                                     unavailableReason: .noMatchingDrive)
         }
         guard let kelvin = disk.smartTemperatureKelvin, (200...450).contains(kelvin) else {
             return TemperatureReading(kind: kind, sourceIdentifier: disk.identifier, title: disk.displayName,
                                      temperatureCelsius: nil, detail: nil,
-                                     smartStatus: disk.smartStatusText,
+                                     smartStatus: disk.smartStatusValue,
                                      smartHealthPercentage: disk.smartHealthPercentage,
-                                     unavailableReason: "SMART-Temperatur wird nicht bereitgestellt")
+                                     unavailableReason: .smartTemperatureUnavailable)
         }
         return TemperatureReading(kind: kind, sourceIdentifier: disk.identifier, title: disk.displayName,
                                  temperatureCelsius: kelvin - 273.15,
-                                 detail: nil, smartStatus: disk.smartStatusText,
+                                 detail: nil, smartStatus: disk.smartStatusValue,
                                  smartHealthPercentage: disk.smartHealthPercentage,
                                  unavailableReason: nil)
     }
@@ -149,13 +149,13 @@ private struct DiskInfo {
 
     var displayName: String { volumeName?.isEmpty == false ? volumeName! : mediaName }
 
-    var smartStatusText: String {
-        guard let smartStatus, !smartStatus.isEmpty else { return "SMART: Nicht verfügbar" }
+    var smartStatusValue: SMARTStatus {
+        guard let smartStatus, !smartStatus.isEmpty else { return .unavailable }
         switch smartStatus.lowercased() {
-        case "verified": return "SMART: Verifiziert"
-        case "failing": return "SMART: Fehler"
-        case "not supported": return "SMART: Nicht unterstützt"
-        default: return "SMART: \(smartStatus)"
+        case "verified": return .verified
+        case "failing": return .failing
+        case "not supported": return .unsupported
+        default: return .reported(smartStatus)
         }
     }
 }

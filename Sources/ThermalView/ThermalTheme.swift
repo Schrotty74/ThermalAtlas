@@ -9,12 +9,13 @@ enum ThermalTheme: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var name: String {
-        switch self {
-        case .classic: "Klassisch"
-        case .milkGlass: "Liquid Glass"
-        case .aurora: "Aurora"
-        case .ember: "Ember"
+    func displayName(for language: AppLanguage) -> String {
+        switch (self, language) {
+        case (.classic, .english): "Classic"
+        case (.classic, .german): "Klassisch"
+        case (.milkGlass, _): "Liquid Glass"
+        case (.aurora, _): "Aurora"
+        case (.ember, _): "Ember"
         }
     }
 

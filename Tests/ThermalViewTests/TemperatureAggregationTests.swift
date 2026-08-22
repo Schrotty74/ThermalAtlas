@@ -63,4 +63,17 @@ final class TemperatureAggregationTests: XCTestCase {
 
         XCTAssertNotEqual(first.id, second.id)
     }
+
+    func testEnglishIsTheDefaultAppLanguage() {
+        XCTAssertEqual(AppLanguage.defaultLanguage, .english)
+        XCTAssertEqual(AppLanguage.english.appSubtitle, "Temperatures on this Mac")
+        XCTAssertEqual(AppLanguage.english.notAvailable, "Not available")
+    }
+
+    func testGermanLanguageProvidesLocalizedSensorAndMenuText() {
+        XCTAssertEqual(AppLanguage.german.appSubtitle, "Temperaturen dieses Macs")
+        XCTAssertEqual(AppLanguage.german.activityMonitorTitle, "Aktivitätsanzeige öffnen")
+        XCTAssertEqual(SensorAvailabilityReason.smartTemperatureUnavailable.localized(for: .german), "SMART-Temperatur wird nicht bereitgestellt")
+        XCTAssertEqual(SMARTStatus.verified.localized(for: .german), "SMART: Verifiziert")
+    }
 }

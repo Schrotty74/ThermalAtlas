@@ -10,8 +10,13 @@ enum RefreshIntervalOption: Double, CaseIterable, Identifiable, Sendable {
 
     var id: Double { rawValue }
 
-    var displayName: String {
-        rawValue == 1 ? "1 Sekunde" : "\(Int(rawValue)) Sekunden"
+    func displayName(for language: AppLanguage) -> String {
+        switch language {
+        case .english:
+            rawValue == 1 ? "1 Second" : "\(Int(rawValue)) Seconds"
+        case .german:
+            rawValue == 1 ? "1 Sekunde" : "\(Int(rawValue)) Sekunden"
+        }
     }
 
     static func normalized(_ rawValue: Double) -> RefreshIntervalOption {
@@ -34,12 +39,14 @@ enum SensorKind: String, CaseIterable, Identifiable, Sendable {
 
     var id: String { rawValue }
 
-    var title: String {
-        switch self {
-        case .cpu: "CPU"
-        case .gpu: "GPU"
-        case .internalSSD: "Interne SSD"
-        case .externalSSD: "Externe SSD"
+    func title(for language: AppLanguage) -> String {
+        switch (self, language) {
+        case (.cpu, _): "CPU"
+        case (.gpu, _): "GPU"
+        case (.internalSSD, .english): "Internal SSD"
+        case (.internalSSD, .german): "Interne SSD"
+        case (.externalSSD, .english): "External SSD"
+        case (.externalSSD, .german): "Externe SSD"
         }
     }
 
@@ -59,9 +66,9 @@ struct TemperatureReading: Identifiable, Sendable {
     let title: String?
     let temperatureCelsius: Double?
     let detail: String?
-    let smartStatus: String?
+    let smartStatus: SMARTStatus?
     let smartHealthPercentage: Int?
-    let unavailableReason: String?
+    let unavailableReason: SensorAvailabilityReason?
     let isLastVerifiedValue: Bool
 
     init(
@@ -70,9 +77,9 @@ struct TemperatureReading: Identifiable, Sendable {
         title: String? = nil,
         temperatureCelsius: Double?,
         detail: String?,
-        smartStatus: String? = nil,
+        smartStatus: SMARTStatus? = nil,
         smartHealthPercentage: Int? = nil,
-        unavailableReason: String?,
+        unavailableReason: SensorAvailabilityReason?,
         isLastVerifiedValue: Bool = false
     ) {
         self.kind = kind
@@ -94,7 +101,7 @@ struct ThermalSnapshot: Sendable {
     let updatedAt: Date
 
     static let unavailable = ThermalSnapshot(
-        readings: SensorKind.allCases.map { TemperatureReading(kind: $0, temperatureCelsius: nil, detail: nil, unavailableReason: "Wird geprüft") },
+        readings: SensorKind.allCases.map { TemperatureReading(kind: $0, temperatureCelsius: nil, detail: nil, unavailableReason: .checking) },
         updatedAt: .now
     )
 

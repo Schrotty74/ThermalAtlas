@@ -3,13 +3,14 @@ import SwiftUI
 
 struct MenuBarLabel: View {
     let highestTemperature: Double?
+    let language: AppLanguage
 
     var body: some View {
         HStack(spacing: 3) {
             Image(systemName: "thermometer.medium")
             if let highestTemperature { Text("\(Int(highestTemperature.rounded()))°").monospacedDigit() }
         }
-        .accessibilityLabel(highestTemperature.map { "Höchste Temperatur \(Int($0.rounded())) Grad Celsius" } ?? "ThermalAtlas")
+        .accessibilityLabel(language.highestTemperatureAccessibilityLabel(highestTemperature.map { Int($0.rounded()) }))
     }
 }
 
@@ -17,6 +18,7 @@ struct ThermalPopover: View {
     let service: SensorService
     @Binding var selectedTheme: ThermalTheme
     @Binding var refreshInterval: Double
+    @Binding var selectedLanguage: AppLanguage
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.colorScheme) private var colorScheme
@@ -29,7 +31,7 @@ struct ThermalPopover: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 3) {
                         Text("ThermalAtlas").font(.title3.weight(.semibold))
-                        Text("Temperaturen dieses Macs").font(.subheadline).foregroundStyle(palette.secondary)
+                        Text(selectedLanguage.appSubtitle).font(.subheadline).foregroundStyle(palette.secondary)
                     }
                     Spacer()
                     Image(systemName: "thermometer.medium")
@@ -38,58 +40,88 @@ struct ThermalPopover: View {
                         .symbolRenderingMode(.hierarchical)
                 }
                 VStack(spacing: 11) {
-                    ForEach(service.snapshot.readings) { SensorCard(reading: $0, selectedTheme: selectedTheme) }
+                    ForEach(service.snapshot.readings) {
+                        SensorCard(reading: $0, selectedTheme: selectedTheme, language: selectedLanguage)
+                    }
                 }
                 HStack(spacing: 6) {
                     Image(systemName: "arrow.clockwise")
-                    Text("Akt. \(service.snapshot.updatedAt, format: .dateTime.hour().minute().second())")
+                    Text("\(selectedLanguage.updatedPrefix) \(formattedUpdateTime)")
                         .lineLimit(1)
-                        .accessibilityLabel("Zuletzt aktualisiert \(service.snapshot.updatedAt, format: .dateTime.hour().minute().second())")
+                        .accessibilityLabel(selectedLanguage == .english ? "Last updated \(formattedUpdateTime)" : "Zuletzt aktualisiert \(formattedUpdateTime)")
                     Spacer()
                     Menu {
-                        Menu("Themes") {
+                        Menu(selectedLanguage.themesMenuTitle) {
                             ForEach(ThermalTheme.allCases) { theme in
                                 Button {
                                     selectedTheme = theme
                                 } label: {
                                     Label(
-                                        theme.name,
+                                        theme.displayName(for: selectedLanguage),
                                         systemImage: theme == selectedTheme ? "checkmark" : theme.symbol
                                     )
                                 }
                                 .menuActionDismissBehavior(.enabled)
                             }
                         }
-                        Menu("Scan Refresh") {
+                        Menu(selectedLanguage.refreshMenuTitle) {
                             ForEach(RefreshIntervalOption.allCases) { option in
                                 Button {
                                     refreshInterval = option.rawValue
                                 } label: {
                                     Label(
-                                        option.displayName,
+                                        option.displayName(for: selectedLanguage),
                                         systemImage: option.rawValue == selectedRefreshInterval.rawValue ? "checkmark" : "timer"
                                     )
                                 }
                                 .menuActionDismissBehavior(.enabled)
                             }
                         }
+                        Menu(selectedLanguage.languageMenuTitle) {
+                            ForEach(AppLanguage.allCases) { language in
+                                Button {
+                                    selectedLanguage = language
+                                } label: {
+                                    Label(
+                                        language.displayName,
+                                        systemImage: language == selectedLanguage ? "checkmark" : "character.bubble"
+                                    )
+                                }
+                                .menuActionDismissBehavior(.enabled)
+                            }
+                        }
+                        Divider()
+                        Button(action: openGitHub) {
+                            Label("GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
+                        }
+                        Button(action: openHomepage) {
+                            Label("Homepage", systemImage: "globe")
+                        }
+                        Menu(selectedLanguage.manualsMenuTitle) {
+                            Button(action: openEnglishManual) {
+                                Label(selectedLanguage.englishManualTitle, systemImage: "book")
+                            }
+                            Button(action: openGermanManual) {
+                                Label(selectedLanguage.germanManualTitle, systemImage: "book")
+                            }
+                        }
                         Divider()
                         Button(action: openActivityMonitor) {
-                            Label("Aktivitätsanzeige öffnen", systemImage: "waveform.path.ecg")
+                            Label(selectedLanguage.activityMonitorTitle, systemImage: "waveform.path.ecg")
                         }
                         Divider()
                         Button(role: .destructive) {
                             NSApplication.shared.terminate(nil)
                         } label: {
-                            Label("ThermalAtlas beenden", systemImage: "power")
+                            Label(selectedLanguage.quitTitle, systemImage: "power")
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
                     .menuStyle(.borderlessButton)
                     .menuIndicator(.hidden)
-                    .accessibilityLabel("ThermalAtlas-Menü")
-                    .help("Themes, Scan Refresh und App-Aktionen")
+                    .accessibilityLabel(selectedLanguage.footerMenuAccessibilityLabel)
+                    .help(selectedLanguage.footerMenuHelp)
                 }
                 .font(.caption).foregroundStyle(palette.secondary)
             }
@@ -145,14 +177,42 @@ struct ThermalPopover: View {
         NSWorkspace.shared.openApplication(at: url, configuration: .init()) { _, _ in }
     }
 
+    private func openGitHub() {
+        openPublicURL("https://github.com/Schrotty74/ThermalAtlas")
+    }
+
+    private func openHomepage() {
+        openPublicURL("https://schrotty74.github.io/Portfolio/")
+    }
+
+    private func openEnglishManual() {
+        openPublicURL("https://github.com/Schrotty74/ThermalAtlas/blob/main/MANUAL.md")
+    }
+
+    private func openGermanManual() {
+        openPublicURL("https://github.com/Schrotty74/ThermalAtlas/blob/main/MANUAL.de.md")
+    }
+
+    private func openPublicURL(_ address: String) {
+        guard let url = URL(string: address) else { return }
+        NSWorkspace.shared.open(url)
+    }
+
     private var selectedRefreshInterval: RefreshIntervalOption {
         RefreshIntervalOption.normalized(refreshInterval)
+    }
+
+    private var formattedUpdateTime: String {
+        service.snapshot.updatedAt.formatted(
+            .dateTime.hour().minute().second().locale(selectedLanguage.locale)
+        )
     }
 }
 
 private struct SensorCard: View {
     let reading: TemperatureReading
     let selectedTheme: ThermalTheme
+    let language: AppLanguage
     @State private var hasAppeared = false
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.colorScheme) private var colorScheme
@@ -168,7 +228,7 @@ private struct SensorCard: View {
                 .foregroundStyle(componentColor)
                 .background(componentColor.opacity(0.14), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
             VStack(alignment: .leading, spacing: 3) {
-                Text(reading.title ?? reading.kind.title).font(.body.weight(.medium)).foregroundStyle(palette.title)
+                Text(reading.title ?? reading.kind.title(for: language)).font(.body.weight(.medium)).foregroundStyle(palette.title)
                 if let subtitle {
                     HStack(spacing: 4) {
                         if reading.isLastVerifiedValue {
@@ -176,19 +236,19 @@ private struct SensorCard: View {
                         }
                         Text(subtitle)
                     }
-                    .font(.caption)
-                    .foregroundStyle(reading.isLastVerifiedValue ? .orange : palette.secondary)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(reading.isLastVerifiedValue ? .orange : palette.title.opacity(0.76))
                     .lineLimit(1)
                 }
                 if let smartStatus = reading.smartStatus {
-                    Text(smartStatus)
-                        .font(.caption2.weight(.medium))
+                    Text(smartStatus.localized(for: language))
+                        .font(.caption.weight(.semibold))
                         .foregroundStyle(smartStatusColor(for: smartStatus))
                         .lineLimit(1)
                     if let smartHealthPercentage = reading.smartHealthPercentage {
-                        Text("Gesundheit: \(smartHealthPercentage) %")
-                            .font(.caption2.weight(.medium))
-                            .foregroundStyle(palette.secondary)
+                        Text("\(language.healthPrefix): \(smartHealthPercentage) %")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(palette.title.opacity(0.90))
                             .lineLimit(1)
                     }
                 }
@@ -266,15 +326,23 @@ private struct SensorCard: View {
         )
     }
 
-    private var subtitle: String? { reading.detail ?? reading.unavailableReason }
+    private var subtitle: String? {
+        if reading.isLastVerifiedValue { return language.lastRealGPUValue }
+        guard reading.temperatureCelsius != nil else { return reading.unavailableReason?.localized(for: language) }
+        switch reading.kind {
+        case .cpu: return language.averageCPUSensors
+        case .gpu: return language.averageGPUSensors
+        case .internalSSD, .externalSSD: return reading.detail
+        }
+    }
 
-    private func smartStatusColor(for status: String) -> Color {
-        if status == "SMART: Verifiziert" { return .green }
-        if status == "SMART: Fehler" { return .red }
+    private func smartStatusColor(for status: SMARTStatus) -> Color {
+        if status == .verified { return .green }
+        if status == .failing { return .red }
         return palette.secondary
     }
     private var temperatureText: String {
-        guard let temperature = reading.temperatureCelsius else { return "Nicht verfügbar" }
+        guard let temperature = reading.temperatureCelsius else { return language.notAvailable }
         return "\(temperature.formatted(.number.precision(.fractionLength(1))))°"
     }
     private var statusColor: Color {
