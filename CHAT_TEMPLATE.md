@@ -2,13 +2,15 @@
 
 Arbeite im geöffneten Projekt `ThermalView` weiter.
 
-Lies vor jeder Arbeit vollständig:
+Bei einem bestehenden Projekt in einem neuen Chat lies zuerst vollständig:
 
 1. `AGENTS.md`
 2. `PROJECT_CONTEXT.md`
 3. `NEXT_STEPS.md`
 
-Lies danach nur die für meinen Auftrag relevanten Quell-, Build- und Konfigurationsdateien. Ermittle den aktuellen Stand im Projekt und verlasse dich nicht auf frühere Chats, wenn der Stand lokal überprüfbar ist.
+Ermittle anhand von `PROJECT_CONTEXT.md` Projektname, Projekt-Root beziehungsweise Repository und Projektziel.
+
+Lies danach nur die für meinen Auftrag relevanten Quell-, Build- und Konfigurationsdateien. Ermittle den aktuellen Stand im Projekt und verlasse dich nicht auf frühere Chats, wenn der Stand aus dem Repository oder den Projektdokumenten überprüfbar ist. Erfinde keine Projektzustände, Testergebnisse oder offenen Punkte.
 
 Mein Auftrag:
 
