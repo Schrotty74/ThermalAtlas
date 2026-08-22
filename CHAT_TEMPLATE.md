@@ -17,6 +17,7 @@ Mein Auftrag:
 Rahmen:
 
 - Dev bleibt lokal und getrennt von Beta und Final.
+- Beta wird ausschließlich auf den Git-Branch `beta` gepusht; Final ausschließlich auf `main`. Dev wird niemals gepusht.
 - Für Dev keine Datenschutz-/Sicherheitsprüfung öffentlicher Artefakte sowie keine README-, Handbuch- oder PDF-Pflege. Das erfolgt ausschließlich in einem ausdrücklich beauftragten Beta- oder Final-Build mit anschließendem Git-Push.
 - Keine Commits, Tags, Releases, Pushes oder Veröffentlichungen ohne meine ausdrückliche Anweisung.
 - Keine anderen Apps starten oder öffnen, sofern ich es nicht ausdrücklich erlaubt habe.
