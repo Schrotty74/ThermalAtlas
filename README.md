@@ -46,8 +46,12 @@ The app is designed for people who want to check Mac thermal conditions without 
 
 ## Requirements
 
-- macOS 14 or later on Apple silicon
-- Xcode command-line tools, including Swift and `actool`
+- macOS 14 or later
+- Apple silicon Mac
+
+### Building from source
+
+- Xcode Command Line Tools, including Swift and `actool`
 
 ## Download, installation, and usage
 
