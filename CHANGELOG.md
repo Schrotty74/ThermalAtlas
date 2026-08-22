@@ -2,7 +2,7 @@
 
 All notable user-visible changes are documented here in English. Development builds remain local; public prereleases are announced through GitHub Releases.
 
-## 0.1.1-beta.1
+## 0.2.0
 
 ### Added
 
