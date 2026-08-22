@@ -42,13 +42,7 @@ The app is designed for people who want to check Mac thermal conditions without 
 | Aurora | Ember |
 | <img src="Resources/Screenshots/aurora.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Aurora macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> | <img src="Resources/Screenshots/ember.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Ember macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> |
 
-## Shared menu and display options
 
-The footer ellipsis opens one shared menu, keeping the temperature view focused. It contains four appearance choices, **Scan Refresh** (1, 2, 3, or 4 seconds; default: 2 seconds), and **Language** with English as the default and German as an optional local display language. The checkmark identifies the active choice.
-
-<p align="center"><img src="Resources/ManualScreenshots/shared-menu.png" width="360" alt="ThermalAtlas shared menu with Themes, Scan Refresh, Language, GitHub, Homepage, Manuals, Activity Monitor, and Quit"></p>
-
-The menu also links to GitHub, the project homepage, and both manuals. **Open Activity Monitor** launches the macOS app only after you choose it; **Quit ThermalAtlas** ends the app and its periodic read-only refresh.
 
 ## Requirements
 
