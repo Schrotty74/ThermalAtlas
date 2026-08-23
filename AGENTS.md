@@ -10,7 +10,7 @@
 - Keine Projektzustände, Testergebnisse oder offenen Punkte erfinden.
 - Anschließend nur die für den Auftrag relevanten Projektdateien und zusätzlichen Dokumente lesen. Den aktuellen Repository-Stand höher gewichten als frühere Chats.
 - Weitere projektspezifische Regeln und Dokumente beachten.
-- Projektweite Arbeitsregeln und Kontextvorgaben werden bei ihrer Änderung in derselben Aufgabe sowohl auf `beta` als auch auf `main` committed und gepusht. Das gilt insbesondere für `PROJECT_CONTEXT.md` und `NEXT_STEPS.md`, wenn sie bei einer relevanten Änderung aktualisiert wurden. Diese Regel gilt nicht für Beta- oder Final-Quellstände und Release-Artefakte; dafür bleiben die jeweiligen Branch-Grenzen verbindlich.
+- Projektweite Arbeitsregeln und Kontextvorgaben werden bei relevanten Änderungen im selben Auftrag aktualisiert. Commits und Pushes dieser Änderungen erfolgen jedoch ausschließlich auf ausdrücklichen Auftrag. Ohne ausdrücklichen Auftrag bleiben Änderungen lokal und werden nicht automatisch auf `beta` oder `main` übertragen. Für Beta- oder Final-Quellstände und Release-Artefakte gelten weiterhin die jeweiligen Branch-Grenzen.
 
 ## Projektkontext pflegen
 
