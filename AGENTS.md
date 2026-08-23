@@ -9,6 +9,7 @@
 - Keine Projektzustände, Testergebnisse oder offenen Punkte erfinden.
 - Anschließend nur die für den Auftrag relevanten Projektdateien und zusätzlichen Dokumente lesen. Den aktuellen Repository-Stand höher gewichten als frühere Chats.
 - Weitere projektspezifische Regeln und Dokumente beachten.
+- Keine Regeln zur Vorbereitung oder Fortsetzung eines neuen Chats aufnehmen. Solche Anweisungen gehören ausschließlich in `CHAT_TEMPLATE.md` beziehungsweise in einen separaten Prompt zur Vorbereitung eines neuen Chats.
 - Projektweite Arbeitsregeln und Kontextvorgaben werden bei relevanten Änderungen im selben Auftrag aktualisiert. Commits und Pushes dieser Änderungen erfolgen jedoch ausschließlich auf ausdrücklichen Auftrag. Ohne ausdrücklichen Auftrag bleiben Änderungen lokal und werden nicht automatisch auf `beta` oder `main` übertragen. Für Beta- oder Final-Quellstände und Release-Artefakte gelten weiterhin die jeweiligen Branch-Grenzen.
 
 ## Projektkontext pflegen
