@@ -1,11 +1,5 @@
 # ThermalAtlas – Projektkontext
 
-## Projektidentität
-
-- Projektname: ThermalAtlas.
-- Projekt-Root: Root des Git-Checkouts `ThermalView`; der öffentliche Quellstand darf keine benutzerspezifischen lokalen Pfade enthalten.
-- Öffentliches Repository: `https://github.com/Schrotty74/ThermalAtlas`.
-
 ## Ziel und Zweck
 
 ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie zeigt ausschließlich Temperaturen für CPU, GPU, interne SSD und jede erkannte physische externe SSD an. Die App liest Daten nur aus und nimmt keine Änderungen an Lüftern, Energieoptionen oder anderen Systemeinstellungen vor.
