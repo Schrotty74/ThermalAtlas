@@ -25,13 +25,22 @@ struct AppleSiliconSMCTemperatureBackend {
         result(
             keys: Self.m4MaxGPUKeys,
             label: "GPU-Zonen",
-            unavailablePrefix: "Keine lesbaren GPU-Temperatursensoren"
+            unavailablePrefix: "Keine lesbaren GPU-Temperatursensoren",
+            retryEmptyBatchAfterReconnect: true
         )
     }
 
-    private func result(keys: [String], label: String, unavailablePrefix: String) -> Result {
+    private func result(
+        keys: [String],
+        label: String,
+        unavailablePrefix: String,
+        retryEmptyBatchAfterReconnect: Bool = false
+    ) -> Result {
         for attempt in 0..<3 {
-            let sample = SMCConnection.shared.sample(keys: keys)
+            let sample = SMCConnection.shared.sample(
+                keys: keys,
+                retryEmptyBatchAfterReconnect: retryEmptyBatchAfterReconnect
+            )
             if let average = TemperatureAggregation.arithmeticMean(sample.values) {
                 return Result(
                     celsius: average,
@@ -169,15 +178,18 @@ private final class SMCConnection: @unchecked Sendable {
     private var reader: SMCReader? = SMCReader()
     private(set) var lastFailureDescription: String?
 
-    func sample(keys: [String]) -> SMCBatch {
+    func sample(keys: [String], retryEmptyBatchAfterReconnect: Bool) -> SMCBatch {
         lock.lock()
         defer { lock.unlock() }
 
         let first = read(keys: keys)
-        guard first.values.isEmpty, first.hasTransportFailure else { return first }
+        guard first.values.isEmpty,
+              (first.hasTransportFailure || retryEmptyBatchAfterReconnect) else { return first }
 
-        // A private SMC client can become invalid while the app remains alive.
-        // Recreate it only after an actual transport failure, then retry once.
+        // A private GPU SMC client can stop returning its whole sensor family
+        // without surfacing an IOKit transport error. Reopen it after that
+        // specific empty batch and retry once; CPU retains its existing
+        // transport-error-only recovery path.
         reader = nil
         reader = SMCReader()
         return read(keys: keys)

@@ -29,8 +29,16 @@ Die App richtet sich an Menschen, die die thermische Auslastung ihres Macs ohne 
 - Zeigt den von macOS gemeldeten SSD-SMART-Status neben dem Laufwerksnamen.
 - Zeigt die verbleibende SSD-Gesundheit, wenn macOS NVMe-`PERCENTAGE_USED` bereitstellt; ohne dieses Feld wird kein Prozentwert geschätzt.
 - Defensiver, rein lesender Apple-Silicon-SMC-Adapter für CPU und GPU.
+- Lässt wählen, welche CPU-, GPU-, internen SSD- und externen SSD-Gruppen im Popover und in der Menüleiste erscheinen.
+- Bietet **Alle Werte** in der Menüleiste oder die platzsparende Anzeige **Nur Symbol**; die gewählten Sensorgruppen bleiben dabei erhalten.
+- Bietet Standard- und Kompaktgröße für das Popover; Kompakt ist rund 40 % schmaler und hält die Verlaufssteuerung gut lesbar.
+- Zeigt beim Öffnen einer Karte einen lokalen Temperaturverlauf für 1, 6 oder 24 Stunden. Gespeichert werden ausschließlich lokale Minutenmittelwerte für höchstens 24 Stunden.
+- Bietet getrennte Temperaturwarnungen je Gruppe nach einer anhaltenden Schwellenüberschreitung, mit eigenen CPU/GPU- und SSD-Schwellen.
+- Zeigt Quelle, letzten gültigen Wert und Aktualisierungszeit in den Sensor-Details, ohne den Temperaturverlauf zu ersetzen.
+- Exportiert die aktuellen Werte als kopierbaren Text oder den lokalen Verlauf plus aktuellen Snapshot als CSV – nur nach Auswahl eines Speicherorts.
+- Trennt CPU-Last, Stromquelle/Akku und Energiesparmodus als rein lesenden **Systemkontext** klar von Temperatursensoren.
 - Vier native Themes, darunter adaptives Liquid Glass.
-- Bündelt Themes, Scan Refresh, Sprache, öffentliche Links, Handbücher, Aktivitätsanzeige und Beenden in einem kompakten gemeinsamen Menü.
+- Bündelt Themes, Scan Refresh, Fenstergröße, Sichtbare Temperaturen, Menüleistenanzeige, Temperaturwarnungen, Sprache, Export, öffentliche Links, Handbücher, Aktivitätsanzeige und Beenden in einem kompakten gemeinsamen Menü.
 - Startet auf Englisch und erlaubt die lokale Umstellung der sichtbaren App-Oberfläche auf Deutsch.
 - Keine Drittanbieter-Abhängigkeiten, Netzwerkkommunikation, Telemetrie oder Konten.
 
@@ -38,17 +46,17 @@ Die App richtet sich an Menschen, die die thermische Auslastung ihres Macs ohne 
 
 | Klassisch | Liquid Glass |
 | --- | --- |
-| <img src="Resources/Screenshots/classic.png?v=20260822-english-ui" width="330" alt="Klassisches ThermalAtlas-macOS-Theme mit Temperaturkarten für CPU, GPU, interne SSD und externe SSD"> | <img src="Resources/Screenshots/liquid-glass.png?v=20260822-english-ui" width="330" alt="ThermalAtlas-Liquid-Glass-macOS-Theme mit Temperaturkarten für CPU, GPU, interne SSD und externe SSD"> |
+| <img src="Resources/Screenshots/classic.png?v=20260823-monitoring" width="330" alt="Klassisches ThermalAtlas-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> | <img src="Resources/Screenshots/liquid-glass.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Liquid-Glass-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> |
 | Aurora | Ember |
-| <img src="Resources/Screenshots/aurora.png?v=20260822-english-ui" width="330" alt="ThermalAtlas-Aurora-macOS-Theme mit Temperaturkarten für CPU, GPU, interne SSD und externe SSD"> | <img src="Resources/Screenshots/ember.png?v=20260822-english-ui" width="330" alt="ThermalAtlas-Ember-macOS-Theme mit Temperaturkarten für CPU, GPU, interne SSD und externe SSD"> |
+| <img src="Resources/Screenshots/aurora.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Aurora-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> | <img src="Resources/Screenshots/ember.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Ember-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> |
 
 ## Gemeinsames Menü und Anzeigeoptionen
 
-Der Dreipunkt-Button im Footer öffnet ein gemeinsames Menü und hält die Temperaturansicht bewusst ruhig. Es enthält vier Darstellungen, **Scan Refresh** (1, 2, 3 oder 4 Sekunden; Standard: 2 Sekunden) und **Language**: Englisch ist Standard, Deutsch kann als lokale Anzeigesprache gewählt werden. Das Häkchen markiert die aktive Auswahl.
+Der Dreipunkt-Button im Footer öffnet ein gemeinsames Menü und hält die Temperaturansicht bewusst ruhig. Es enthält vier Darstellungen, **Scan Refresh** (1, 2, 3 oder 4 Sekunden; Standard: 2 Sekunden), **Fenstergröße** (Standard oder Kompakt), **Sichtbare Temperaturen**, **Menüleistenanzeige** (Alle Werte oder Nur Symbol), **Temperaturwarnungen**, **Sprache** und **Export**. Das Häkchen markiert die aktive Auswahl.
 
-<p align="center"><img src="Resources/ManualScreenshots/shared-menu.png" width="360" alt="ThermalAtlas-Hauptmenü mit Themes, Scan Refresh, Language, GitHub, Homepage, Manuals, Aktivitätsanzeige und Beenden"></p>
+<p align="center"><img src="Resources/ManualScreenshots/shared-menu.png" width="360" alt="ThermalAtlas-Hauptmenü mit Themes, Scan Refresh, Fenstergröße, Sichtbaren Temperaturen, Menüleistenanzeige, Temperaturwarnungen, Sprache, Export, Links, Handbüchern, Aktivitätsanzeige und Beenden"></p>
 
-Das Menü verlinkt außerdem zu GitHub, der Projekt-Homepage und beiden Handbüchern. **Aktivitätsanzeige öffnen** startet die gleichnamige macOS-App erst nach deiner Auswahl; **ThermalAtlas beenden** beendet die App und die regelmäßige rein lesende Aktualisierung.
+Über **Sichtbare Temperaturen** legst du fest, welche Sensorgruppen gleichzeitig im Popover und in der Menüleiste erscheinen. **Export** kopiert den aktuellen Snapshot oder speichert den lokalen Temperaturverlauf plus Snapshot als CSV. Das Menü verlinkt außerdem zu GitHub, der Projekt-Homepage und beiden Handbüchern. **Aktivitätsanzeige öffnen** startet die gleichnamige macOS-App erst nach deiner Auswahl; **ThermalAtlas beenden** beendet die App und die regelmäßige rein lesende Aktualisierung.
 
 ## Voraussetzungen
 
@@ -59,7 +67,7 @@ Das Menü verlinkt außerdem zu GitHub, der Projekt-Homepage und beiden Handbüc
 
 Lade verfügbare macOS-Vorabpakete über die [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) herunter. Öffne das DMG und ziehe ThermalAtlas zur Installation auf den `Applications`-Alias.
 
-Nach dem Öffnen der App zeigt das Thermometer in der macOS-Menüleiste die aktuellen Temperaturen an. Über den Dreipunkt-Button im Footer stehen Themes, Scan Refresh, die optionale deutsche Oberfläche, Handbücher, Links, Aktivitätsanzeige und Beenden bereit. Wenn ein Sensor, eine SSD oder ein externes Gehäuse keinen echten Temperaturwert bereitstellt, zeigt die App `Nicht verfügbar`.
+Nach dem Öffnen der App zeigt das Thermometer in der macOS-Menüleiste die aktuellen Temperaturen an. Über den Dreipunkt-Button im Footer stehen Themes, Scan Refresh, Anzeigeoptionen, Warnungen, Export, die optionale deutsche Oberfläche, Handbücher, Links, Aktivitätsanzeige und Beenden bereit. Ein Klick auf eine Karte öffnet ihren lokalen Temperaturverlauf; das Info-Symbol zeigt die Sensor-Details. Wenn ein Sensor, eine SSD oder ein externes Gehäuse keinen echten Temperaturwert bereitstellt, zeigt die App `Nicht verfügbar`.
 
 ### Gatekeeper-Bestätigung
 
@@ -83,7 +91,7 @@ Alle Builds werden lokal ad-hoc signiert. Ein Build veröffentlicht nichts.
 
 ## Datenschutz, Datenverarbeitung und Sicherheit
 
-ThermalAtlas liest lokale Apple-Silicon-SMC-Temperaturen, lokale Laufwerksmetadaten und SMART-Temperaturen nur dann, wenn macOS sie bereitstellt. Lokal gespeichert werden ausschließlich das gewählte Theme, das Scan-Refresh-Intervall und die Anzeigesprache in `UserDefaults`; Temperaturwerte werden nicht dauerhaft gespeichert. Die App enthält keine Hintergrundnetzwerkfunktionen, Telemetrie, Analyse-Dienste, Konten, Cloud-Synchronisation, Werbe-SDKs oder Drittanbieter-Abhängigkeiten. Die optionalen Menüeinträge GitHub, Homepage und Handbücher öffnen die gewählte öffentliche Seite nur nach einem Klick im Standardbrowser.
+ThermalAtlas liest lokale Apple-Silicon-SMC-Temperaturen, lokale Laufwerksmetadaten, SMART-Temperaturen, CPU-Last, Stromquelle/Akku und Energiesparmodus nur dann, wenn macOS sie bereitstellt. Lokal gespeichert werden Anzeigeneinstellungen, Warnschwellen und lokale Temperatur-Minutenmittelwerte für höchstens 24 Stunden in `UserDefaults`; Systemkontextwerte werden angezeigt, aber nicht gespeichert. Die App enthält keine Hintergrundnetzwerkfunktionen, Telemetrie, Analyse-Dienste, Konten, Cloud-Synchronisation, Werbe-SDKs oder Drittanbieter-Abhängigkeiten. Ein Text- oder CSV-Export entsteht nur nach einer ausdrücklichen Auswahl und an einem lokal gewählten Speicherort. Die optionalen Menüeinträge GitHub, Homepage und Handbücher öffnen die gewählte öffentliche Seite nur nach einem Klick im Standardbrowser.
 
 Siehe [Datenschutzbericht](PRIVACY.de.md), [Privacy report](PRIVACY.md) und die [Sicherheitsprüfung](SECURITY.md).
 

@@ -7,8 +7,10 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 ## Architektur und technische Entscheidungen
 
 - Swift Package mit SwiftUI, Mindestplattform macOS 14; keine Drittanbieter-Abhängigkeiten.
-- `SensorService` koordiniert die Aktualisierung mit einem lokal wählbaren Scan-Refresh-Intervall von 1 bis 4 Sekunden in ganzen Sekunden und liefert ein UI-unabhängiges Datenmodell.
-- `AppleSiliconSMCTemperatureBackend` kapselt private, lesende Apple-Silicon-SMC-Zugriffe defensiv. Fehlerhafte oder geänderte Schlüssel führen zu einem sicheren Fallback statt zu einem Absturz.
+- `SensorService` koordiniert die Aktualisierung mit einem lokal wählbaren Scan-Refresh-Intervall von 1 bis 4 Sekunden in ganzen Sekunden und liefert ein UI-unabhängiges Datenmodell. Es führt außerdem die rein lokale Verlaufserfassung, die Schwellenprüfung und den rein lesenden Systemkontext aus.
+- `SystemContext` liest die CPU-Gesamtauslastung als Differenz zweier öffentlicher Mach-CPU-Tick-Samples sowie Stromquelle/Akku und Energiesparmodus über öffentliche macOS-Schnittstellen. Diese Kontextwerte werden nicht als Temperatursensoren behandelt und ändern keine Systemeinstellungen.
+- Temperaturkarten, sichtbarer Aktualisierungszeitpunkt und Menüleistenbeschriftung beobachten den Sensorstand isoliert. Der äußere `MenuBarExtra` selbst bleibt vom Scan-Refresh unabhängig, damit ein geöffnetes Footer-Untermenü nicht durch den laufenden Scan-Refresh geschlossen wird.
+- `AppleSiliconSMCTemperatureBackend` kapselt private, lesende Apple-Silicon-SMC-Zugriffe defensiv. Fehlerhafte oder geänderte Schlüssel führen zu einem sicheren Fallback statt zu einem Absturz. Liefert ein kompletter GPU-Sensorbatch keine Werte, wird der ausschließlich lesende SMC-Client einmal neu geöffnet und derselbe GPU-Batch erneut abgefragt – auch wenn macOS keinen IOKit-Transportfehler meldet. CPU behält die bestehende Wiederverbindung nur bei einem IOKit-Transportfehler.
 - `AppLanguage` kapselt sichtbare EN/DE-Texte und typisierte Verfügbarkeits- beziehungsweise SMART-Statuswerte. Die App startet auf Englisch; Deutsch ist eine lokale, persistierte Wahl.
 - CPU- und GPU-Gesamtwerte werden aus passenden verfügbaren Rohsensoren als arithmetischer Mittelwert gebildet. Die ausgewählten Sensorfamilien und die Zuordnung sind im Backend dokumentiert.
 - Interne und externe Laufwerke werden über `diskutil info -plist` erkannt. Jede externe physische SSD erhält eine eigene Karte; virtuelle Disk-Images werden ignoriert. Bei APFS-Laufwerken wird der physische Store über den Container zum eingebundenen Volume-Namen aufgelöst. SMART-Temperaturen werden nur bei tatsächlich gelieferten Daten von Kelvin in Celsius umgerechnet; der von macOS gelieferte SMART-Status und die verbleibende Gesundheit aus NVMe-`PERCENTAGE_USED` werden als eigene Zeile auf SSD-Karten dargestellt. Ohne dieses Feld gibt es keinen geschätzten Prozentwert.
@@ -19,6 +21,7 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - `Package.swift` – Swift-Package-Konfiguration und Zielnamen.
 - `Sources/ThermalView/ThermalViewApp.swift` – SwiftUI-App-Einstieg und Menüleisten-Szene.
 - `Sources/ThermalView/SensorService.swift` – Aktualisierung, Datenbeschaffung und Fehlerbehandlung.
+- `Sources/ThermalView/SystemContext.swift` – rein lesender CPU-Last- und Energie-/Stromkontext.
 - `Sources/ThermalView/AppleSiliconSMCTemperatureBackend.swift` – isolierter Apple-Silicon-SMC-Adapter.
 - `Sources/ThermalView/TemperatureAggregation.swift` – nachvollziehbare Temperaturaggregation.
 - `Sources/ThermalView/Models.swift` – Temperatur- und Sensordatenmodelle.
@@ -33,8 +36,15 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 
 ## Umgesetzte Funktionen
 
-- Menüleistensymbol mit Thermometer und optional höchster verfügbarer Temperatur.
+- Die Menüleiste kann wahlweise alle aktuell verfügbaren Temperaturen der ausgewählten CPU-, GPU- und SSD-Gruppen mit kompakten Sensorsymbolen oder nur das ThermalAtlas-Symbol zeigen. Nicht lesbare Sensoren erhalten keine Ersatzwerte. Im Footer-Menü lässt sich pro Sensorgruppe wählen, ob ihre Temperaturen gleichzeitig in der Menüleiste und im aufgeklappten Fenster sichtbar sind; externe SSDs werden gemeinsam geschaltet.
+- Im Footer-Menü lässt sich die Popover-Größe zwischen Standard und einer rund 40 % schmaleren, auch in Abständen und Karten dichter gesetzten Kompaktansicht wechseln.
+- Das Popover wächst oder schrumpft mit seinem Karteninhalt. Wird ein Temperaturverlauf aufgeklappt, bleiben alle Karten direkt sichtbar und die äußere Fensterhöhe passt sich ohne einen zusätzlichen Scrollbereich an.
+- Temperaturkarten öffnen per Klick einen lokalen Verlauf mit 1, 6 oder 24 Stunden. Gespeichert werden pro lesbarem Sensor Minutenmittelwerte für höchstens 24 Stunden; kurzfristig überbrückte GPU-Werte werden nicht als neue Messung aufgezeichnet.
+- Jede Temperaturkarte hat ein separates Info-Symbol für Sensor-Details. Es zeigt Quelle, bei SSDs die lokale Laufwerks-ID, den letzten gültigen Wert, dessen Zeitpunkt sowie den vorhandenen Messhinweis, ohne den Klick auf die Karte vom Temperaturverlauf wegzunehmen.
+- Das Footer-Menü bietet lokale Temperaturwarnungen. CPU, GPU, interne SSD und externe SSDs haben getrennt wählbare Warnschwellen (CPU/GPU: 85–100 °C, SSD: 60–75 °C). Eine macOS-Mitteilung wird erst nach mindestens 60 Sekunden oberhalb der gewählten Schwelle ausgelöst und erst nach einer Abkühlung erneut für dieselbe Episode gesendet.
+- Das Footer-Menü bietet einen nutzerinitiierten Export: kopierbarer Klartext des aktuellen Snapshots für Support sowie CSV über einen lokalen macOS-Speichern-Dialog. CSV enthält Minutenmittelwerte des bis zu 24-stündigen Verlaufs für aktuell erkannte Sensoren und zusätzlich den aktuellen Snapshot; `record_type` unterscheidet `history_average` und `current_snapshot`. Es verwendet ISO-8601-Zeitstempel und einen locales-unabhängigen Dezimalpunkt; ohne Nutzeraktion wird keine Datei erzeugt.
 - Temperaturkarten für CPU, GPU, interne SSD sowie jede erkannte physische externe SSD mit ihrem tatsächlichen Laufwerks- beziehungsweise eingebundenen Volume-Namen als Kartenüberschrift; mehrere externe SSDs werden getrennt dargestellt.
+- Unter den Temperaturkarten zeigt ein separater Bereich „System Context“ beziehungsweise „Systemkontext“ die CPU-Gesamtauslastung, Stromquelle/Akku und den Energiesparmodus. Er ist ausdrücklich als Kontext und nicht als Temperatursignal gekennzeichnet; die CPU-Last erscheint erst nach dem zweiten regulären Scan, weil sie aus der Zeitdifferenz zweier Messungen berechnet wird.
 - SSD-Karten zeigen zusätzlich den von macOS gemeldeten SMART-Status sowie – falls verfügbar – die aus `PERCENTAGE_USED` abgeleitete verbleibende Gesundheit als eigene Zeile; fehlende Statusangaben werden als `SMART: Nicht verfügbar` ausgewiesen.
 - Menü `Scan Refresh` mit Aktualisierungsintervall von 1 bis 4 Sekunden in ganzen Sekunden; standardmäßig zwei Sekunden.
 - Robuste Anzeige `Nicht verfügbar`, ohne Schätzwerte, wenn ein Sensor oder SMART-Daten nicht verfügbar sind.
@@ -42,6 +52,7 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - Farbliche Trennung der Sensor-Karten sowie temperaturabhängige Statusfarben.
 - Vier Themes: Klassisch, Liquid Glass, Aurora und Ember. Liquid Glass nutzt einen gemeinsamen systemeigenen Material-Hintergrund, adaptive Reflexe für Hell- und Dunkelmodus sowie einen opaken Fallback bei aktivierter macOS-Einstellung „Transparenz reduzieren“.
 - Ein gemeinsames Footer-Menü bündelt `Themes`, `Scan Refresh`, `Language` beziehungsweise `Sprache`, öffentliche GitHub- und Homepage-Links, die englischen und deutschen Handbücher, das Öffnen der macOS-Aktivitätsanzeige und das Beenden der App. Aktuelles Theme, Intervall und Sprache sind jeweils mit einem Häkchen markiert.
+- Das Fenster-Popover wird bei seinem Öffnen um 32 Punkte näher an die Menüleiste gesetzt, damit es nicht mit dem großen Standardabstand der Fensterdarstellung erscheint.
 
 ## Wichtige Designentscheidungen
 
@@ -55,8 +66,8 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 
 - Laufwerksinformationen werden aus der Property-List-Ausgabe von `diskutil info -plist` gelesen.
 - SMART-Temperaturen werden nur dann dargestellt, wenn der Wert vorhanden und plausibel ist; die Quelle liefert Kelvin, die Darstellung Celsius.
-- Es werden keine Temperaturverläufe oder Messdaten persistent gespeichert.
-- Theme-Auswahl, Aktualisierungsintervall und die Sprachwahl werden lokal in `UserDefaults` unter `thermalatlas.theme`, `thermalatlas.refreshInterval` beziehungsweise `thermalatlas.language` gespeichert. Englisch ist der Standard; Deutsch kann im Footer-Menü unter `Language` beziehungsweise `Sprache` gewählt werden. Da `UserDefaults` pro Bundle-Identifier getrennt ist, teilen Dev, Beta und Final keine App-Einstellungen oder Caches.
+- Lokale Temperaturverläufe werden als codierte Minutenmittelwerte unter `thermalatlas.temperatureHistory` in `UserDefaults` gespeichert und beim Start auf maximal 24 Stunden gekürzt. Sie enthalten ausschließlich Zeit, Temperaturmittelwert, Anzahl der in die Minute eingeflossenen Werte und die lokale Sensor-ID; es gibt keine Cloud-Synchronisierung oder Telemetrie. Ein Klartext-Export des aktuellen Snapshots oder CSV-Export von Verlauf plus aktuellem Snapshot entsteht ausschließlich nach einer Nutzeraktion an einen von der Person gewählten lokalen Speicherort.
+- Theme-Auswahl, Aktualisierungsintervall, Sprachwahl, sichtbare Sensorgruppen, Menüleistenmodus, Popover-Größe und Warnschwellen werden lokal in `UserDefaults` gespeichert. Die Schlüssel sind `thermalatlas.theme`, `thermalatlas.refreshInterval`, `thermalatlas.language`, `thermalatlas.visibleSensors`, `thermalatlas.menuBarDisplayMode`, `thermalatlas.compactPopover`, `thermalatlas.temperatureAlertsEnabled` sowie je ein Schwellenwert für CPU, GPU, interne und externe SSD. Der Energie-/Last-Kontext wird nur angezeigt, nicht gespeichert. Englisch ist der Standard; Deutsch kann im Footer-Menü unter `Language` beziehungsweise `Sprache` gewählt werden. Da `UserDefaults` pro Bundle-Identifier getrennt ist, teilen Dev, Beta und Final keine App-Einstellungen oder Caches.
 - Zielplattform sind aktuelle Apple-Silicon-Macs, besonders Mac Studio mit M4 Max. Private SMC-Schlüssel sind nicht stabil garantiert und müssen zur Laufzeit geprüft werden.
 
 ## Build und Release
@@ -72,7 +83,7 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - Dev-Aufträge beschränken sich normalerweise auf lokale Entwicklung, Tests und Dev-Builds. Datenschutz-/Sicherheitsprüfungen für öffentliche Artefakte sowie Änderungen oder Neu-Erzeugungen von README, Handbüchern und Handbuch-PDFs sind sonst Teil eines ausdrücklich beauftragten Beta- oder Final-Builds mit anschließendem Git-Push. Eine ausdrücklich separat beauftragte lokale Handbuchpflege bleibt davon unberührt.
 - Öffentliche Vorabpakete sind ad-hoc signiert und ohne Apple-Developer-Program-Notarisierung. Die README erklärt deshalb die notwendige Gatekeeper-Bestätigung beim ersten Start aus dem offiziellen GitHub-Release.
 - `README.md` und `README.de.md` sind gleichwertige öffentliche Dokumentationen: Sie zeigen beide die vier Theme-Screenshots sowie gleichwertige Installations-, Gatekeeper-, Datenschutz-, Status-, Lizenz- und Linkinformationen. Der Changelog bleibt ausschließlich Englisch.
-- `MANUAL.md` und `MANUAL.de.md` sind gleichwertige öffentliche Handbücher. Die zugehörigen PDFs unter `Documentation/` verwenden ein dunkles, an die App angelehntes Farbdesign und füllen sechs gestaltete A4-Seiten pro Sprache mit der aktuellen Kartenoberfläche, allen vier Themes sowie den Menüs `Themes`, `Scan Refresh`, `Language` und `Manuals`. Das englische Handbuch dokumentiert Englisch als Standard; das deutsche Handbuch übersetzt die englischen Menübegriffe nachvollziehbar. Ihre reguläre Veröffentlichung erfolgt nur im beauftragten Beta-/Final-Releaseablauf mit Git-Push.
+- `MANUAL.md` und `MANUAL.de.md` sind gleichwertige öffentliche Handbücher. Die zugehörigen PDFs unter `Documentation/` verwenden ein dunkles, an die App angelehntes Farbdesign und füllen sieben gestaltete A4-Seiten pro Sprache mit der aktuellen Kartenoberfläche einschließlich Systemkontext, Menüleistenanzeige, lokalem Temperaturverlauf, Temperaturwarnungen, Export, allen vier Themes sowie den Menüs `Themes`, `Scan Refresh`, `Window Size`, `Visible Temperatures`, `Menu Bar Display`, `Temperature Alerts`, `Language` und `Manuals`. Das englische Handbuch dokumentiert Englisch als Standard; das deutsche Handbuch übersetzt die englischen Menübegriffe nachvollziehbar. Ihre reguläre Veröffentlichung erfolgt nur im beauftragten Beta-/Final-Releaseablauf mit Git-Push.
 - Jede SEO- oder Discoverability-Änderung an `README.md` wird im selben Auftrag als inhaltlich gleichwertige, natürlich formulierte deutsche Entsprechung in `README.de.md` umgesetzt: H1, Überblick, Funktionen, Screenshots und Alt-Texte, Voraussetzungen, Download/Installation, Gatekeeper, Datenschutz/Datenverarbeitung, Status, Lizenz, Links und Entwicklung bleiben strukturell gleich.
 - `PORTFOLIO_UPDATE.md` dokumentiert die Regeln für die öffentliche Darstellung von ThermalAtlas im Schrotty74-Profil und -Portfolio.
 - Das öffentliche Repository ist `Schrotty74/ThermalAtlas`; veröffentlichte Inhalte dürfen keine lokalen Pfade, privaten Daten oder Build-Artefakte enthalten.
@@ -81,6 +92,7 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 
 - Keine Hintergrundnetzwerkkommunikation, Telemetrie, Accounts oder Drittanbieter-SDKs. Die optionalen GitHub-, Homepage- und Handbuch-Menüeinträge übergeben eine öffentliche URL nur nach einer Nutzeraktion an den Standardbrowser.
 - Es werden ausschließlich lokale, lesende Sensor- und Laufwerksabfragen ausgeführt.
+- CPU-Last, Stromquelle/Akku und Energiesparmodus werden ausschließlich lokal und lesend abgefragt; ThermalAtlas steuert weder Leistung noch Stromversorgung.
 - Private SMC-Zugriffe sind auf lesende Operationen beschränkt.
 
 ## Bekannte Einschränkungen und bestätigte Probleme
@@ -89,4 +101,4 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - Die GPU kann trotz Wiederverbindung des SMC-Clients sporadisch `Nicht verfügbar` melden, wenn alle abgefragten GPU-Zonen vorübergehend keine gültige Antwort liefern.
 - Die CPU-Messung hängt von den auf diesem Mac lesbaren SMC-Schlüsseln ab; nicht lesbare Schlüssel werden nicht ersetzt oder geschätzt.
 - Externe SSDs und ihre Gehäuse stellen häufig keine SMART-Temperatur bereit. In diesem Fall ist `Nicht verfügbar` das erwartete Ergebnis.
-- Der letzte lokale Lauf von `swift test -c debug` hatte zehn erfolgreiche Tests; der Beta-Build und seine Code-Signatur wurden lokal erfolgreich geprüft. Eine vollständige visuelle Prüfung aller Themes wurde noch nicht dokumentiert.
+- Der letzte lokale Lauf von `swift test -c debug` hatte siebzehn erfolgreiche Tests; der Beta-Build und seine Code-Signatur wurden lokal erfolgreich geprüft. Eine vollständige visuelle Prüfung aller Themes wurde noch nicht dokumentiert.

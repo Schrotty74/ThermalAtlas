@@ -30,7 +30,7 @@ Die App ist bewusst auf die Anzeige konzentriert. Sie verändert **keine Lüfter
 | Interne SSD | SMART-Temperatur, Status und Gesundheit nur bei echten macOS-Daten |
 | Externe SSDs | Jede physische externe SSD wird getrennt angezeigt, wenn macOS sie erkennt |
 | Aktualisierung | Wählbar alle 1, 2, 3 oder 4 Sekunden; Standard: 2 Sekunden |
-| Speicherung | Das gewählte Theme, Aktualisierungsintervall und die Sprache werden lokal gespeichert |
+| Speicherung | Lokale Einstellungen, Warnschwellen und höchstens 24 Stunden minutenweise gemittelter Temperaturverlauf werden lokal gespeichert |
 | Netzwerk | Für die Temperaturanzeige ist keine Netzwerkfunktion nötig |
 | Telemetrie | Keine Telemetrie und keine Analyse-Dienste |
 
@@ -53,7 +53,7 @@ CPU- und GPU-Karten zeigen den Mittelwert der lesbaren passenden Sensoren. Jede 
 Wenn macOS die Daten liefert, zeigt eine SSD-Karte `SMART: Verifiziert` und eine eigene Zeile mit der verbleibenden Gesundheit in Prozent. Der Prozentwert wird ausschließlich aus dem NVMe-Feld `PERCENTAGE_USED` abgeleitet. Fehlen SMART-Daten oder dieses Feld, erfindet ThermalAtlas keinen Status und keinen Prozentwert.
 
 **Letzter echter GPU-Wert**
-Schlägt eine kurze GPU-SMC-Abfrage fehl, kann ThermalAtlas den letzten zuvor verifizierten echten GPU-Wert kurz weiter anzeigen. Die orange Beschriftung im Liquid-Glass-Screenshot macht das ausdrücklich sichtbar; es ist keine Schätzung und der Wert läuft nach kurzer Zeit aus.
+Schlägt eine kurze GPU-SMC-Abfrage fehl, kann ThermalAtlas den letzten zuvor verifizierten echten GPU-Wert kurz weiter anzeigen. Die orange Beschriftung im Aurora-Screenshot macht das ausdrücklich sichtbar; es ist keine Schätzung und der Wert läuft nach kurzer Zeit aus.
 
 <p align="center">
   <img src="Resources/Screenshots/liquid-glass.png" width="430" alt="ThermalAtlas Liquid Glass mit Hinweis auf den letzten verifizierten echten GPU-Wert">
@@ -73,13 +73,20 @@ Die Farben dienen nur als schnelle Orientierung. ThermalAtlas verändert aufgrun
 **Zeitpunkt „Aktualisiert“**  
 Unten im Fenster steht die Uhrzeit des zuletzt übernommenen Sensor-Snapshots.
 
+**Systemkontext**
+Unter den Temperaturkarten zeigt ThermalAtlas CPU-Last, Stromquelle oder Akku und Energiesparmodus. Der Bereich ist ausdrücklich als Kontext und nicht als Temperatursensor gekennzeichnet. Die CPU-Last wird aus zwei aufeinanderfolgenden System-Snapshots berechnet und erscheint deshalb nach dem zweiten regulären Scan. Diese rein lesenden Werte verändern niemals macOS-Energieeinstellungen und werden nicht gespeichert.
+
 ---
 
 ## 3. Menüleisten-Anzeige
 
-Nach dem Start erscheint ThermalAtlas als Thermometer in der macOS-Menüleiste. Neben dem Symbol zeigt die App die **höchste aktuell verfügbare Temperatur** als ganze Zahl.
+Nach dem Start kann ThermalAtlas in der macOS-Menüleiste kompakte Sensorsymbole und alle aktuell verfügbaren Temperaturen der ausgewählten Gruppen zeigen. CPU, GPU, interne SSD und jede erkannte externe SSD haben ein eigenes Symbol; nicht verfügbare Sensoren erhalten keine erfundenen Ersatzwerte.
 
-Das ist kein zusätzlicher Sensor. ThermalAtlas nimmt dafür den höchsten verfügbaren Wert aus den aktuell angezeigten Messgruppen. Ein Klick auf das Menüleisten-Symbol öffnet das ThermalAtlas-Fenster.
+Die angezeigten Gruppen werden im gemeinsamen Menü unter **Sichtbare Temperaturen** gewählt und gelten gleichermaßen für Menüleiste und ThermalAtlas-Fenster. Unter **Menüleistenanzeige** gibt es zwei Modi: **Alle Werte** ist der Standard und zeigt die gewählten Gruppen; **Nur Symbol** blendet Temperaturtexte aus und zeigt nur das ThermalAtlas-Symbol. Ein Klick auf den Menüleisteneintrag öffnet das ThermalAtlas-Fenster.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/menu-bar-temperatures.png" width="430" alt="ThermalAtlas-Menüleiste mit kompakten Sensorsymbolen und fünf Temperaturen">
+</p>
 
 ---
 
@@ -88,7 +95,7 @@ Das ist kein zusätzlicher Sensor. ThermalAtlas nimmt dafür den höchsten verf�
 Der runde **Dreipunkt-Button** im Footer öffnet ein gemeinsames Menü. So bleiben alle sekundären Aktionen zusammengefasst, ohne zusätzliche Buttons in der Temperaturansicht.
 
 <p align="center">
-  <img src="Resources/ManualScreenshots/shared-menu.png" width="360" alt="Englisches ThermalAtlas-Hauptmenü mit Themes, Scan Refresh, Language, Links, Handbüchern, Aktivitätsanzeige und Beenden">
+  <img src="Resources/ManualScreenshots/shared-menu.png" width="330" alt="Englisches ThermalAtlas-Hauptmenü mit Themes, Scan Refresh, Window Size, Visible Temperatures, Menu Bar Display, Temperature Alerts, Language, Export, Links, Handbüchern, Aktivitätsanzeige und Beenden">
 </p>
 
 ### Themes (Themen)
@@ -122,6 +129,55 @@ Wähle **Scan Refresh**, um 1, 2, 3 oder 4 Sekunden einzustellen. Der Standard i
 
 Ein kürzeres Intervall reagiert schneller auf echte Änderungen, fragt die rein lesenden Sensorquellen aber häufiger ab. Ein längeres Intervall reduziert diese Abfragen. Das Intervall verändert nur, wie oft ThermalAtlas neue Werte anfordert; Kühlung, Energieeinstellungen und Hardwareverhalten des Macs bleiben unverändert.
 
+### Window Size (Fenstergröße)
+
+Wähle **Window Size** und danach **Standard** oder **Compact (about 40% smaller)**. Die kompakte Ansicht reduziert die Fensterbreite um rund 40 % und verwendet zugleich dichtere Karten, kleinere Abstände und kleinere Schrift. Dadurch bleibt die Anzeige praktisch nutzbar, statt nur zusammengedrückt zu werden. Die Größenwahl wird lokal gespeichert.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/window-size-menu.png" width="360" alt="ThermalAtlas-Untermenü Window Size mit ausgewählter Option Compact about 40 percent smaller">
+</p>
+
+### Visible Temperatures (Sichtbare Temperaturen)
+
+Unter **Visible Temperatures** lassen sich CPU, GPU, interne SSD und alle externen SSDs ein- oder ausblenden. Die Auswahl wirkt sofort sowohl in der Menüleiste als auch im Fenster mit den Temperaturkarten. Externe SSDs werden gemeinsam geschaltet; bei sichtbarer Gruppe behält jedes erkannte Laufwerk seine eigene Karte. Mindestens eine Gruppe bleibt ausgewählt, damit ThermalAtlas immer eine sichtbare Temperaturanzeige besitzt.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/visible-temperatures-menu.png" width="230" alt="ThermalAtlas-Untermenü Visible Temperatures mit ausgewählten Gruppen CPU, GPU, Internal SSD und External SSD">
+</p>
+
+### Menu Bar Display (Menüleistenanzeige)
+
+Unter **Menu Bar Display** legst du fest, wie viel Platz ThermalAtlas in der macOS-Menüleiste verwendet. **All Values** zeigt die Temperaturen der unter **Visible Temperatures** gewählten Gruppen. **Symbol Only** lässt nur das ThermalAtlas-Thermometer stehen; die gewählten Gruppen bleiben unverändert und sind weiterhin im App-Fenster sichtbar. Die Auswahl wird lokal gespeichert.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/menu-bar-display-menu.png" width="260" alt="ThermalAtlas-Untermenü Menu Bar Display mit ausgewähltem All Values und verfügbarem Symbol Only">
+</p>
+
+### Temperature History (Temperaturverlauf)
+
+Klicke eine Temperaturkarte an, um ihren lokalen **Temperaturverlauf** zu öffnen. Wähle **1 Hour**, **6 Hours** oder **24 Hours**; die orange gestrichelte Linie markiert die für diese Sensorgruppe gewählte Warnschwelle. ThermalAtlas speichert nur Minutenmittelwerte echter, lesbarer Werte und bewahrt höchstens 24 Stunden auf. Direkt nach dem Start braucht das Diagramm zwei unterschiedliche Minuten, bevor es eine Linie zeichnen kann. Ein nur kurz überbrückter GPU-Wert ist klar markiert und wird nicht als neue Messung aufgezeichnet.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/temperature-history-card.png" width="430" alt="ThermalAtlas-SSD-Karte mit lokalem Einstunden-Temperaturverlauf und Warnschwellenlinie">
+</p>
+
+### Temperature Alerts (Temperaturwarnungen)
+
+Unter **Temperature Alerts** lassen sich lokale macOS-Mitteilungen ein- oder ausschalten. CPU, GPU, interne SSD und externe SSDs besitzen jeweils ein eigenes Schwellen-Untermenü. Für CPU und GPU stehen 85, 90, 95 oder 100 °C zur Wahl, für SSDs 60, 65, 70 oder 75 °C. Eine Mitteilung erscheint erst, wenn ein echter Wert mindestens eine Minute lang an oder über der Schwelle liegt. Dieselbe Temperaturphase meldet sich erst wieder, nachdem der Sensor unter die Schwelle abgekühlt ist. Beim ersten Aktivieren kann macOS die Benachrichtigungsberechtigung abfragen.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/temperature-alerts-menu.png" width="230" alt="ThermalAtlas-Menü Temperature Alerts mit getrennten CPU-, GPU- und SSD-Schwellen-Untermenüs">
+  <img src="Resources/ManualScreenshots/temperature-alert-thresholds.png" width="130" alt="ThermalAtlas-Untermenü der CPU-Warnschwelle mit ausgewählten 95 Grad Celsius">
+</p>
+
+### Export
+
+Unter **Export** bereitest du bei Bedarf lokale Diagnosedaten vor. **Copy Current Readings** kopiert den aktuellen Snapshot als Text in die Zwischenablage. **Export CSV** öffnet den normalen macOS-Speicherdialog und schreibt eine CSV mit den verfügbaren Minutenmittelwerten des lokalen Verlaufs sowie dem aktuellen Snapshot. Ohne deine Auswahl eines Speicherorts entsteht keine Exportdatei.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/export-menu.png" width="394" alt="ThermalAtlas-Untermenü Export mit Copy Current Readings und Export CSV">
+</p>
+
 ### Language (Sprache)
 
 ThermalAtlas startet standardmäßig auf **Englisch**. Wähle im gemeinsamen Menü **Language** (Sprache) und danach **English** oder **Deutsch**. Die Auswahl ändert die sichtbaren App-Texte und wird lokal gespeichert; Laufwerksnamen und Sensordaten bleiben unverändert.
@@ -136,6 +192,11 @@ Die Begriffe des englischen Standardmenüs entsprechen in der deutschen Oberflä
 | --- | --- |
 | Themes | Themen |
 | Scan Refresh | Aktualisierungsintervall |
+| Window Size | Fenstergröße |
+| Visible Temperatures | Sichtbare Temperaturen |
+| Menu Bar Display | Menüleistenanzeige |
+| Temperature Alerts | Temperaturwarnungen |
+| Export | Export |
 | Language | Sprache |
 | Manuals | Handbücher |
 | Open Activity Monitor | Aktivitätsanzeige öffnen |
@@ -222,7 +283,7 @@ ThermalAtlas ist datenschutzfreundlich und lokal ausgerichtet:
 - keine Netzwerkfunktion für die Temperaturanzeige
 - keine Drittanbieter-Abhängigkeiten
 
-Lokal gespeichert werden nur das gewählte Theme, das Scan-Refresh-Intervall und die Sprachwahl. Weitere Details stehen im [Datenschutzbericht](PRIVACY.de.md) und in der [Sicherheitsprüfung](SECURITY.md).
+Lokal gespeichert werden das gewählte Theme, das Scan-Refresh-Intervall, die sichtbaren Temperaturgruppen, der Menüleistenmodus, die Fenstergröße, die Sprachwahl und die Warnschwellen. Zusätzlich bewahrt ThermalAtlas höchstens 24 Stunden lokale, minutenweise gemittelte Temperaturverläufe auf. CPU-Last, Stromquelle oder Akku und Energiesparmodus werden nur angezeigt und nicht gespeichert. Es gibt keine Konten, Telemetrie, Analyse-Dienste oder Cloud-Synchronisierung. Weitere Details stehen im [Datenschutzbericht](PRIVACY.de.md) und in der [Sicherheitsprüfung](SECURITY.md).
 
 ---
 

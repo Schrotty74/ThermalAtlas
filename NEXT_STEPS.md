@@ -9,6 +9,7 @@
 
 - CPU-Sensorzuordnung auf dem Ziel-Mac weiter gegen die in Stats sichtbaren Quellsensoren prüfen und nur mit belegbarer Zuordnung anpassen.
 - Alle vier Themes manuell in Hell- und Dunkelmodus sowie mit aktivierter Bewegungs- und Transparenzreduktion prüfen.
+- Temperaturverlauf nach mindestens zwei Minuten Laufzeit sowie die macOS-Warnberechtigung, die Ein-Minuten-Schwelle, die erneute Warnung erst nach einer Abkühlung, Sensor-Details, Klartext-/CSV-Export, Systemkontext (CPU-Last, Stromquelle/Akku, Energiesparmodus) und Menüleistenanzeige (Alle Werte/Nur Symbol) in einem echten Dev-Lauf manuell prüfen.
 
 ## Priorität 3
 

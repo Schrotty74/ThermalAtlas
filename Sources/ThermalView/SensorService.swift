@@ -7,9 +7,21 @@ import Observation
 @Observable
 final class SensorService {
     private(set) var snapshot = ThermalSnapshot.unavailable
+    private(set) var systemContext = SystemContext.unavailable
     private(set) var refreshInterval: TimeInterval
+    let history = TemperatureHistoryStore()
     private var refreshTask: Task<Void, Never>?
     private var lastVerifiedGPU: (temperature: Double, measuredAt: Date)?
+    private var alertConfiguration = TemperatureAlertConfiguration(
+        isEnabled: false,
+        cpuThreshold: TemperatureAlertSettings.defaultThreshold(for: .cpu),
+        gpuThreshold: TemperatureAlertSettings.defaultThreshold(for: .gpu),
+        internalSSDThreshold: TemperatureAlertSettings.defaultThreshold(for: .internalSSD),
+        externalSSDThreshold: TemperatureAlertSettings.defaultThreshold(for: .externalSSD),
+        language: .defaultLanguage
+    )
+    private var alertEngine = TemperatureAlertEngine()
+    private var systemContextReader = SystemContextReader()
 
     init(refreshInterval: TimeInterval = RefreshIntervalOption.defaultOption.rawValue) {
         self.refreshInterval = RefreshIntervalOption.normalized(refreshInterval).rawValue
@@ -24,6 +36,13 @@ final class SensorService {
         refreshTask?.cancel()
         refreshTask = nil
         start()
+    }
+
+    func setAlertConfiguration(_ configuration: TemperatureAlertConfiguration) {
+        alertConfiguration = configuration
+        if configuration.isEnabled {
+            Task { await TemperatureAlertNotifier.requestAuthorizationIfNeeded() }
+        }
     }
 
     private func start() {
@@ -43,6 +62,17 @@ final class SensorService {
         let freshSnapshot = await Task.detached(priority: .utility) { SensorProbe.readSnapshot() }.value
         let readings = applyingTransientGPUFallback(to: freshSnapshot.readings, now: freshSnapshot.updatedAt)
         snapshot = ThermalSnapshot(readings: readings, updatedAt: freshSnapshot.updatedAt)
+        systemContext = systemContextReader.read()
+        history.record(snapshot)
+        let alerts = alertEngine.evaluate(
+            readings: readings,
+            configuration: alertConfiguration,
+            now: freshSnapshot.updatedAt
+        )
+        for alert in alerts {
+            let language = alertConfiguration.language
+            Task { await TemperatureAlertNotifier.send(alert, language: language) }
+        }
     }
 
     /// Preserve only a recent, previously verified GPU measurement when the
@@ -73,7 +103,8 @@ final class SensorService {
                 temperatureCelsius: lastVerifiedGPU.temperature,
                 detail: "Last verified GPU reading is \(seconds) seconds old",
                 unavailableReason: nil,
-                isLastVerifiedValue: true
+                isLastVerifiedValue: true,
+                lastVerifiedAt: lastVerifiedGPU.measuredAt
             )
         }
     }

@@ -29,8 +29,16 @@ The app is designed for people who want to check Mac thermal conditions without 
 - Shows the SSD SMART health status reported by macOS alongside the drive name.
 - Shows remaining SSD health when macOS exposes NVMe `PERCENTAGE_USED`; it does not estimate a percentage when that field is unavailable.
 - Uses a defensive, read-only Apple-silicon SMC adapter for CPU and GPU.
+- Lets you choose which CPU, GPU, internal SSD, and external SSD groups appear in the popover and menu bar.
+- Offers an **All Values** menu bar display or a space-saving **Symbol Only** display while keeping the chosen sensor groups.
+- Offers Standard and Compact popover sizes; Compact is about 40% narrower and keeps the history controls readable.
+- Shows a local 1-, 6-, or 24-hour temperature history when you open a card. It stores only local per-minute averages for up to 24 hours.
+- Provides per-group temperature alerts after a sustained threshold crossing, with separate CPU/GPU and SSD thresholds.
+- Shows source, latest valid reading, and update time in Sensor Details without replacing the temperature history.
+- Exports the current readings as copyable text or the local history plus a current snapshot as CSV, only after you choose an export location.
+- Separates CPU load, power source/battery, and Low Power Mode as read-only **System Context**, clearly distinct from temperature sensors.
 - Provides four native themes, including adaptive Liquid Glass.
-- Groups Themes, Scan Refresh, Language, public links, manuals, Activity Monitor, and Quit in one compact shared menu.
+- Groups Themes, Scan Refresh, Window Size, Visible Temperatures, Menu Bar Display, Temperature Alerts, Language, Export, public links, manuals, Activity Monitor, and Quit in one compact shared menu.
 - Starts in English and lets you switch the visible app interface to German locally.
 - Has no third-party dependencies, network communication, analytics, or accounts.
 
@@ -38,17 +46,17 @@ The app is designed for people who want to check Mac thermal conditions without 
 
 | Classic | Liquid Glass |
 | --- | --- |
-| <img src="Resources/Screenshots/classic.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Classic macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> | <img src="Resources/Screenshots/liquid-glass.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Liquid Glass macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> |
+| <img src="Resources/Screenshots/classic.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Classic macOS theme showing temperature cards and a separate System Context area"> | <img src="Resources/Screenshots/liquid-glass.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Liquid Glass macOS theme showing temperature cards and a separate System Context area"> |
 | Aurora | Ember |
-| <img src="Resources/Screenshots/aurora.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Aurora macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> | <img src="Resources/Screenshots/ember.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Ember macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> |
+| <img src="Resources/Screenshots/aurora.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Aurora macOS theme showing temperature cards and a separate System Context area"> | <img src="Resources/Screenshots/ember.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Ember macOS theme showing temperature cards and a separate System Context area"> |
 
 ## Shared menu and display options
 
-The footer ellipsis opens one shared menu, keeping the temperature view focused. It contains four appearance choices, **Scan Refresh** (1, 2, 3, or 4 seconds; default: 2 seconds), and **Language** with English as the default and German as an optional local display language. The checkmark identifies the active choice.
+The footer ellipsis opens one shared menu, keeping the temperature view focused. It contains four appearance choices, **Scan Refresh** (1, 2, 3, or 4 seconds; default: 2 seconds), **Window Size** (Standard or Compact), **Visible Temperatures**, **Menu Bar Display** (All Values or Symbol Only), **Temperature Alerts**, **Language**, and **Export**. The checkmark identifies the active choice.
 
-<p align="center"><img src="Resources/ManualScreenshots/shared-menu.png" width="360" alt="ThermalAtlas shared menu with Themes, Scan Refresh, Language, GitHub, Homepage, Manuals, Activity Monitor, and Quit"></p>
+<p align="center"><img src="Resources/ManualScreenshots/shared-menu.png" width="360" alt="ThermalAtlas shared menu with Themes, Scan Refresh, Window Size, Visible Temperatures, Menu Bar Display, Temperature Alerts, Language, Export, links, manuals, Activity Monitor, and Quit"></p>
 
-The menu also links to GitHub, the project homepage, and both manuals. **Open Activity Monitor** launches the macOS app only after you choose it; **Quit ThermalAtlas** ends the app and its periodic read-only refresh.
+Use **Visible Temperatures** to choose the sensor groups shown in both the popover and menu bar. **Export** can copy the current snapshot or save the local temperature history plus that snapshot as CSV. The menu also links to GitHub, the project homepage, and both manuals. **Open Activity Monitor** launches the macOS app only after you choose it; **Quit ThermalAtlas** ends the app and its periodic read-only refresh.
 
 ## Requirements
 
@@ -59,7 +67,7 @@ The menu also links to GitHub, the project homepage, and both manuals. **Open Ac
 
 Download the available macOS prerelease packages from [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases). Open the DMG and drag ThermalAtlas to the `Applications` alias to install it.
 
-After opening the app, use the thermometer in the macOS menu bar to view the current temperatures. Open the footer ellipsis for visual themes, Scan Refresh, the optional German interface, manuals, links, Activity Monitor, and Quit. The app displays `Not available` when a sensor, SSD, or external enclosure does not provide a real temperature.
+After opening the app, use the thermometer in the macOS menu bar to view the current temperatures. Open the footer ellipsis for visual themes, Scan Refresh, display options, alerts, export, the optional German interface, manuals, links, Activity Monitor, and Quit. Select a card for its local temperature history; use its info button for sensor details. The app displays `Not available` when a sensor, SSD, or external enclosure does not provide a real temperature.
 
 ### Gatekeeper confirmation
 
@@ -83,7 +91,7 @@ All builds are ad-hoc signed locally. Building does not publish a release.
 
 ## Privacy, data handling, and security
 
-ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, and SMART temperature data only when macOS provides them. It stores only the selected visual theme, Scan Refresh interval, and display language in local `UserDefaults`; temperature readings are not persisted. The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. Its optional GitHub, Homepage, and manual menu actions open the selected public page in your default browser only after you select them.
+ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, SMART temperature data, CPU load, power source/battery, and Low Power Mode only when macOS provides them. It stores selected display preferences, alert thresholds, and local per-minute temperature averages for up to 24 hours in local `UserDefaults`; system-context values are displayed but not stored. The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. A text or CSV export is created only after you explicitly choose it and a local save location. Its optional GitHub, Homepage, and manual menu actions open the selected public page in your default browser only after you select them.
 
 See [Privacy report](PRIVACY.md), [Datenschutzbericht](PRIVACY.de.md), and the [security review](SECURITY.md).
 
