@@ -19,6 +19,8 @@ ThermalAtlas is a lightweight, privacy-friendly, local-first macOS menu bar temp
 
 The app is designed for people who want to check Mac thermal conditions without a hardware-control tool: it defaults to a two-second refresh interval, clearly shows unavailable measurements instead of estimating them, and never changes fan, power, or system settings. Its interface defaults to English and includes an optional German display language. ThermalAtlas works offline and has no accounts, analytics, or network communication.
 
+No admin/root access is required. ThermalAtlas uses a read-only approach and only reads sensor data exposed by macOS.
+
 ## Features
 
 - Defaults to a two-second refresh interval.
