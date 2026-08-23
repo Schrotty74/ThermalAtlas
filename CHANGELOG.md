@@ -2,6 +2,17 @@
 
 All notable user-visible changes are documented here in English. Development builds remain local; public prereleases are announced through GitHub Releases.
 
+## 0.3.1
+
+### Fixed
+
+- Corrected the public privacy reports to describe the locally stored display and alert settings, the bounded 24-hour temperature history, the read-only System Context, and user-initiated export accurately.
+- Dev and Beta builds now open the current manuals from the `beta` branch; Final builds continue to open the Final manuals from `main`.
+
+### Documentation
+
+- Synced the documented footer controls, manual menu list, security review, and Beta/Final release-documentation workflow with the current app.
+
 ## 0.3.0
 
 ### Added

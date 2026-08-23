@@ -15,6 +15,7 @@ The app's hardware access is restricted to:
 
 - Read-only IOKit calls for Apple-silicon SMC temperature keys.
 - `diskutil info -plist` with internally discovered disk identifiers.
+- Public Mach CPU-tick snapshots plus read-only IOKit power-source data for the separately labelled System Context.
 
 There are no SMC write commands, fan-control APIs, power-control APIs, shell
 commands constructed from user input, network requests, or third-party packages.

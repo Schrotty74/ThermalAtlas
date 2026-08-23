@@ -227,12 +227,16 @@ struct ThermalPopover: View {
         openPublicURL("https://schrotty74.github.io/Portfolio/")
     }
 
+    private var manualBranch: String {
+        Bundle.main.bundleIdentifier == "io.github.schrotty74.thermalatlas" ? "main" : "beta"
+    }
+
     private func openEnglishManual() {
-        openPublicURL("https://github.com/Schrotty74/ThermalAtlas/blob/main/MANUAL.md")
+        openPublicURL("https://github.com/Schrotty74/ThermalAtlas/blob/\(manualBranch)/MANUAL.md")
     }
 
     private func openGermanManual() {
-        openPublicURL("https://github.com/Schrotty74/ThermalAtlas/blob/main/MANUAL.de.md")
+        openPublicURL("https://github.com/Schrotty74/ThermalAtlas/blob/\(manualBranch)/MANUAL.de.md")
     }
 
     private func openPublicURL(_ address: String) {
