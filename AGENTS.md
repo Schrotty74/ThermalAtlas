@@ -1,6 +1,5 @@
 # ThermalAtlas – Arbeitsregeln
 
-- Bei einem bestehenden Projekt in einem neuen Chat zuerst `AGENTS.md`, danach `PROJECT_CONTEXT.md` und `NEXT_STEPS.md` vollständig lesen.
 - Anhand von `PROJECT_CONTEXT.md` Projektname, Projekt-Root beziehungsweise Repository und Projektziel ermitteln.
 - Vor jeder weiteren Projektarbeit `PROJECT_CONTEXT.md` und `NEXT_STEPS.md` vollständig lesen.
 - `PROJECT_CONTEXT.md` ist die dauerhafte Quelle für den aktuellen Projektkontext.
