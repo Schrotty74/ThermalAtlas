@@ -32,7 +32,7 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - `Tests/ThermalViewTests/TemperatureAggregationTests.swift` – Tests der Aggregationslogik.
 - `build_dev_app.sh` – lokaler Dev-Build als App-Bundle.
 - `build_beta_app.sh` und `build_final_app.sh` – lokale Builds für die getrennten Beta- und Final-Bundles.
-- `Scripts/build-release-package.sh` und `Scripts/privacy-check.sh` – versionierte Beta-Release-Paketierung beziehungsweise Quellenprüfung; sie liegen derzeit nur auf dem Branch `beta`.
+- `Scripts/build-release-package.sh` und `Scripts/privacy-check.sh` – versionierte Beta-Release-Paketierung beziehungsweise Quellenprüfung; sie liegen auf `beta` und im lokalen Dev-Stand, jedoch noch nicht auf `main`.
 - `Resources/Dev-Info.plist` – Dev-Bundle-Metadaten.
 
 ## Umgesetzte Funktionen
