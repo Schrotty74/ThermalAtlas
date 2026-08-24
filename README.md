@@ -60,7 +60,7 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 
 The footer ellipsis opens one shared menu, keeping the temperature view focused. It contains four appearance choices, **Scan Refresh** (1, 2, 3, or 4 seconds; default: 2 seconds), **Window Size** (Standard or Compact), **Visible Temperatures**, **Menu Bar Display** (All Values or Symbol Only), **Temperature Alerts**, **Language**, and **Export**. The checkmark identifies the active choice.
 
-<p align="center"><img src="Resources/ManualScreenshots/shared-menu.png" width="360" alt="ThermalAtlas shared menu with Themes, Scan Refresh, Window Size, Visible Temperatures, Menu Bar Display, Temperature Alerts, Language, Export, links, manuals, Activity Monitor, and Quit"></p>
+<p align="center"><img src="Resources/ManualScreenshots/shared-menu.png" width="300" alt="ThermalAtlas shared menu with Themes, Scan Refresh, Window Size, Visible Temperatures, Menu Bar Display, Temperature Alerts, Language, Export, links, manuals, Activity Monitor, and Quit"></p>
 
 Use **Visible Temperatures** to choose the sensor groups shown in both the popover and menu bar. **Export** can copy the current snapshot or save the local temperature history plus that snapshot as CSV. The menu also links to GitHub, the project homepage, and both manuals. **Open Activity Monitor** launches the macOS app only after you choose it; **Quit ThermalAtlas** ends the app and its periodic read-only refresh.
 
@@ -83,17 +83,16 @@ Public prerelease builds are ad-hoc signed and are not notarized with an Apple D
 2. Confirm **Open** in the macOS dialog.
 3. If macOS still blocks the app, open **System Settings → Privacy & Security**, then choose **Open Anyway** for ThermalAtlas and confirm the next dialog.
 
-## Build channels
+## Published build channels
 
-Each channel has its own bundle identifier, `UserDefaults` domain, app bundle, and Swift build cache.
+Each published channel has its own bundle identifier, `UserDefaults` domain, app bundle, and Swift build cache.
 
 | Channel | Build command | Bundle identifier | Output |
 | --- | --- | --- | --- |
-| Dev | `./build_dev_app.sh` | `io.github.schrotty74.thermalatlas.dev` | `Build/Dev/ThermalAtlas Dev.app` |
 | Beta | `./build_beta_app.sh` | `io.github.schrotty74.thermalatlas.beta` | `Build/Beta/ThermalAtlas Beta.app` |
 | Final | `./build_final_app.sh` | `io.github.schrotty74.thermalatlas` | `Build/Final/ThermalAtlas.app` |
 
-All builds are ad-hoc signed locally. Building does not publish a release.
+Published builds are ad-hoc signed locally. Building does not publish a release.
 
 ## Privacy, data handling, and security
 
@@ -103,7 +102,7 @@ See [Privacy report](PRIVACY.md), [Datenschutzbericht](PRIVACY.de.md), and the [
 
 ## Project status
 
-ThermalAtlas is in active development. Downloadable prerelease builds are published through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases); Dev builds remain local.
+ThermalAtlas is in active development. Downloadable prerelease builds are published through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
 
 ## Repo activity
 
@@ -126,7 +125,6 @@ ThermalAtlas is licensed under the [GNU General Public License v3.0](LICENSE).
 
 ```zsh
 swift test -c debug
-./build_dev_app.sh
 ```
 
 `Build/` and `.build/` are intentionally ignored.
