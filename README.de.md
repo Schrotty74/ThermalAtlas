@@ -67,17 +67,16 @@ Nach dem Öffnen der App zeigt das Thermometer in der macOS-Menüleiste die aktu
 2. Bestätige **Öffnen** im macOS-Dialog.
 3. Falls macOS die App weiterhin blockiert, öffne **Systemeinstellungen → Datenschutz & Sicherheit**, wähle bei ThermalAtlas **Dennoch öffnen** und bestätige den nächsten Dialog.
 
-## Build-Kanäle
+## Veröffentlichte Build-Kanäle
 
-Jeder Kanal hat eine eigene Bundle-Kennung, eigene `UserDefaults`, ein eigenes App-Bundle und einen eigenen Swift-Build-Cache.
+Jeder veröffentlichte Kanal hat eine eigene Bundle-Kennung, eigene `UserDefaults`, ein eigenes App-Bundle und einen eigenen Swift-Build-Cache.
 
 | Kanal | Build-Befehl | Bundle-Kennung | Ausgabe |
 | --- | --- | --- | --- |
-| Dev | `./build_dev_app.sh` | `io.github.schrotty74.thermalatlas.dev` | `Build/Dev/ThermalAtlas Dev.app` |
 | Beta | `./build_beta_app.sh` | `io.github.schrotty74.thermalatlas.beta` | `Build/Beta/ThermalAtlas Beta.app` |
 | Final | `./build_final_app.sh` | `io.github.schrotty74.thermalatlas` | `Build/Final/ThermalAtlas.app` |
 
-Alle Builds werden lokal ad-hoc signiert. Ein Build veröffentlicht nichts.
+Veröffentlichte Builds werden lokal ad-hoc signiert. Ein Build veröffentlicht nichts.
 
 ## Datenschutz, Datenverarbeitung und Sicherheit
 
@@ -87,7 +86,7 @@ Siehe [Datenschutzbericht](PRIVACY.de.md), [Privacy report](PRIVACY.md) und die 
 
 ## Projektstatus
 
-ThermalAtlas befindet sich in aktiver Entwicklung. Herunterladbare Vorab-Builds werden über die [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) veröffentlicht; Dev-Builds bleiben lokal.
+ThermalAtlas befindet sich in aktiver Entwicklung. Herunterladbare Vorab-Builds werden über die [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) veröffentlicht.
 
 ## Lizenz
 
@@ -106,7 +105,6 @@ ThermalAtlas steht unter der [GNU General Public License v3.0](LICENSE).
 
 ```zsh
 swift test -c debug
-./build_dev_app.sh
 ```
 
 `Build/` und `.build/` werden absichtlich ignoriert.
