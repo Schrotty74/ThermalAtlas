@@ -40,7 +40,7 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 - Shows source, latest valid reading, and update time in Sensor Details without replacing the temperature history.
 - Exports the current readings as copyable text or the local history plus a current snapshot as CSV, only after you choose an export location.
 - Separates CPU load, GPU load, used memory, power source/battery, and Low Power Mode as read-only **System Context**, clearly distinct from temperature sensors.
-- Recognizes separate CPU and GPU sensor-key families for Apple-silicon M1 through M5, including known Pro, Max, and Ultra variants. CPU/GPU recognition is currently hardware-confirmed only on M4 Max, M5, and M5 Pro; all other variants remain to be tested. Unsupported future generations remain explicitly unavailable rather than guessed.
+- Recognizes separate CPU and GPU sensor-key families for Apple-silicon M1 through M5, including known Pro, Max, and Ultra variants. Unsupported future generations remain explicitly unavailable rather than guessed.
 - Refreshes external-drive topology at launch and when macOS reports mounting or unmounting. Mounted physical SSDs remain separate cards; an ejected but still connected drive is hidden.
 - Reads known SSD temperatures every minute for local history and warnings, while SMART status and remaining health are refreshed at launch, after an actual topology change, and at most once per day.
 - Provides four native themes, including adaptive Liquid Glass.
@@ -99,6 +99,10 @@ Published builds are ad-hoc signed locally. Building does not publish a release.
 ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, SMART temperature data, CPU/GPU load, used memory, power source/battery, and Low Power Mode only when macOS provides them. It stores selected display preferences, alert thresholds, and local per-minute temperature averages for up to 24 hours in local `UserDefaults`; system-context values are displayed but not stored. The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. A text or CSV export is created only after you explicitly choose it and a local save location. Its optional GitHub, Homepage, and manual menu actions open the selected public page in your default browser only after you select them.
 
 See [Privacy report](PRIVACY.md), [Datenschutzbericht](PRIVACY.de.md), and the [security review](SECURITY.md).
+
+## Hardware compatibility
+
+CPU and GPU recognition is hardware-confirmed on M4 Max, M5, and M5 Pro. The other M1 through M5 variants and their raw sensors are implemented defensively, but still need verification on real hardware. When macOS or a device does not expose a usable sensor value, ThermalAtlas shows `Not available` rather than estimating one.
 
 ## Project status
 
