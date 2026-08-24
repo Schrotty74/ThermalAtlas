@@ -40,7 +40,7 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 - Shows source, latest valid reading, and update time in Sensor Details without replacing the temperature history.
 - Exports the current readings as copyable text or the local history plus a current snapshot as CSV, only after you choose an export location.
 - Separates CPU load, GPU load, used memory, power source/battery, and Low Power Mode as read-only **System Context**, clearly distinct from temperature sensors.
-- Recognizes separate CPU and GPU sensor-key families for Apple-silicon M1 through M5, including known Pro, Max, and Ultra variants; unsupported future generations remain explicitly unavailable rather than guessed.
+- Recognizes separate CPU and GPU sensor-key families for Apple-silicon M1 through M5, including known Pro, Max, and Ultra variants. CPU/GPU recognition is currently hardware-confirmed only on M4 Max, M5, and M5 Pro; all other variants remain to be tested. Unsupported future generations remain explicitly unavailable rather than guessed.
 - Refreshes external-drive topology at launch and when macOS reports mounting or unmounting. Mounted physical SSDs remain separate cards; an ejected but still connected drive is hidden.
 - Reads known SSD temperatures every minute for local history and warnings, while SMART status and remaining health are refreshed at launch, after an actual topology change, and at most once per day.
 - Provides four native themes, including adaptive Liquid Glass.

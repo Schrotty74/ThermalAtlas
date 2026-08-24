@@ -6,7 +6,7 @@ All notable user-visible changes are documented here in English. Development bui
 
 ### Added
 
-- CPU and GPU temperature-key families for Apple-silicon M1 through M5, including known Pro, Max, and Ultra variants. External testers confirmed the CPU display on M5 and M5 Pro.
+- CPU and GPU temperature-key families for Apple-silicon M1 through M5, including known Pro, Max, and Ultra variants. CPU/GPU recognition is currently hardware-confirmed only on M4 Max, M5, and M5 Pro; all other variants remain to be tested.
 - GPU load and used memory alongside CPU load, power source/battery, and Low Power Mode in the separate read-only System Context.
 - New compact-view and System Context screenshots in the English and German manuals and their PDFs.
 

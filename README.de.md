@@ -40,7 +40,7 @@ Weder Administrator- noch Root-Rechte sind nötig. ThermalAtlas verfolgt einen r
 - Zeigt Quelle, letzten gültigen Wert und Aktualisierungszeit in den Sensor-Details, ohne den Temperaturverlauf zu ersetzen.
 - Exportiert die aktuellen Werte als kopierbaren Text oder den lokalen Verlauf plus aktuellen Snapshot als CSV – nur nach Auswahl eines Speicherorts.
 - Trennt CPU-Last, GPU-Last, belegten Arbeitsspeicher, Stromquelle/Akku und Energiesparmodus als rein lesenden **Systemkontext** klar von Temperatursensoren.
-- Erkennt getrennte CPU- und GPU-Sensor-Schlüsselfamilien für Apple Silicon von M1 bis M5 einschließlich bekannter Pro-, Max- und Ultra-Varianten; unbekannte spätere Generationen bleiben klar als nicht verfügbar ausgewiesen, statt geschätzt zu werden.
+- Erkennt getrennte CPU- und GPU-Sensor-Schlüsselfamilien für Apple Silicon von M1 bis M5 einschließlich bekannter Pro-, Max- und Ultra-Varianten. Die CPU-/GPU-Erkennung ist derzeit nur auf M4 Max, M5 und M5 Pro auf echter Hardware bestätigt; alle anderen Varianten stehen noch zur Prüfung aus. Unbekannte spätere Generationen bleiben klar als nicht verfügbar ausgewiesen, statt geschätzt zu werden.
 - Aktualisiert die Topologie externer Laufwerke beim Start und wenn macOS Einbinden oder Auswerfen meldet. Eingebundene physische SSDs bleiben getrennte Karten; ein ausgeworfenes, aber weiter verbundenes Laufwerk wird ausgeblendet.
 - Liest die Temperatur bekannter SSDs jede Minute für Verlauf und Warnungen; SMART-Status und verbleibende Gesundheit werden beim Start, nach einer tatsächlichen Topologieänderung und höchstens einmal täglich aktualisiert.
 - Vier native Themes, darunter adaptives Liquid Glass.

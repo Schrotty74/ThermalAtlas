@@ -101,8 +101,8 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 ## Bekannte Einschränkungen und bestätigte Probleme
 
 - Apple-Silicon-SMC-Sensoren sind private Schnittstellen. macOS-Updates oder Gerätevarianten können Schlüssel verändern oder zeitweise nicht lesbar machen.
-- Die M1- bis M5-Schlüsselgruppen sind im Quellcode hinterlegt und durch Abwesenheits- und Plausibilitätsprüfungen abgesichert; sie wurden nicht auf jeder Hardwarevariante manuell verifiziert.
-- Externe Tests des aktuellen Dev-Builds auf Macs mit M5 und M5 Pro bestätigten, dass die CPU-Temperatur nach der M5-Schlüsselzuordnung wieder angezeigt wird. Rohsensoren und weitere M5-Varianten bleiben separat zu prüfen.
+- Die M1- bis M5-Schlüsselgruppen sind im Quellcode hinterlegt und durch Abwesenheits- und Plausibilitätsprüfungen abgesichert; sie wurden nicht auf jeder Hardwarevariante manuell verifiziert. CPU- und GPU-Erkennung sind bislang nur auf M4 Max lokal sowie auf M5 und M5 Pro extern bestätigt.
+- Alle weiteren M1- bis M5-Varianten, ihre Rohsensoren sowie spätere M-Generationen bleiben separat auf echter Hardware zu prüfen.
 - Die GPU kann trotz Wiederverbindung des SMC-Clients sporadisch `Nicht verfügbar` melden, wenn alle abgefragten GPU-Zonen vorübergehend keine gültige Antwort liefern.
 - Seit der letzten Änderung am GPU-Fix zeigte der lokale Dev-Lauf durchgehend GPU-Werte; ob der zuvor sporadische Ausfall damit dauerhaft behoben ist, bleibt ohne längeren Lauf noch offen.
 - Die CPU-Messung hängt von den auf diesem Mac lesbaren SMC-Schlüsseln ab; nicht lesbare Schlüssel werden nicht ersetzt oder geschätzt.
