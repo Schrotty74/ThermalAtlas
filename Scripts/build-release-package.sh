@@ -63,7 +63,7 @@ if rg -a -q '/Users/|/Volumes/|/private/' "$app_bundle/Contents/MacOS/ThermalAtl
   exit 1
 fi
 
-ditto -c -k --sequesterRsrc --keepParent "$app_bundle" "$zip_file"
+ditto -c -k --norsrc --keepParent "$app_bundle" "$zip_file"
 ditto "$app_bundle" "$dmg_staging/$app_bundle_name"
 ln -s /Applications "$dmg_staging/Applications"
 hdiutil create -volname "$app_name $version" -srcfolder "$dmg_staging" -ov -format UDZO "$dmg_file" > /dev/null
