@@ -7,6 +7,11 @@ import IOKit
 /// This adapter only uses the SMC read-key-info and read-bytes commands. It
 /// contains no write command, fan operation, or energy-management operation.
 struct AppleSiliconSMCTemperatureBackend {
+    struct SensorKeySet: Equatable {
+        let cpu: [String]
+        let gpu: [String]
+    }
+
     struct Result {
         let celsius: Double?
         let detail: String?
@@ -14,20 +19,66 @@ struct AppleSiliconSMCTemperatureBackend {
     }
 
     func cpuTemperature() -> Result {
-        result(
-            keys: Self.m4MaxCPUKeys,
+        guard let keySet = Self.sensorKeys(for: Self.detectedChipName()) else {
+            return unsupportedProcessorResult(for: "CPU")
+        }
+        return result(
+            keys: keySet.cpu,
             label: "CPU-Kerne",
             unavailablePrefix: "Keine lesbaren CPU-Temperatursensoren"
         )
     }
 
     func gpuTemperature() -> Result {
-        result(
-            keys: Self.m4MaxGPUKeys,
+        guard let keySet = Self.sensorKeys(for: Self.detectedChipName()) else {
+            return unsupportedProcessorResult(for: "GPU")
+        }
+        return result(
+            keys: keySet.gpu,
             label: "GPU-Zonen",
             unavailablePrefix: "Keine lesbaren GPU-Temperatursensoren",
             retryEmptyBatchAfterReconnect: true
         )
+    }
+
+    private func unsupportedProcessorResult(for component: String) -> Result {
+        let chipName = Self.detectedChipName() ?? "unbekannter Chip"
+        return Result(
+            celsius: nil,
+            detail: nil,
+            unavailableReason: "Keine unterstützte Apple-Silicon-Sensorzuordnung für \(component) (\(chipName))"
+        )
+    }
+
+    static func sensorKeys(for chipName: String?) -> SensorKeySet? {
+        guard let chipName else { return nil }
+        let tokens = chipName.lowercased().split { !$0.isLetter && !$0.isNumber }
+        guard let family = ["m1", "m2", "m3", "m4", "m5"].first(where: { tokens.contains($0) }) else {
+            return nil
+        }
+
+        switch family {
+        case "m1": return Self.m1Keys
+        case "m2": return Self.m2Keys
+        case "m3": return Self.m3Keys
+        case "m4": return Self.m4Keys
+        case "m5": return Self.m5Keys
+        default: return nil
+        }
+    }
+
+    private static func detectedChipName() -> String? {
+        var size = 0
+        guard sysctlbyname("machdep.cpu.brand_string", nil, &size, nil, 0) == 0, size > 1 else {
+            return nil
+        }
+
+        var value = [CChar](repeating: 0, count: size)
+        guard sysctlbyname("machdep.cpu.brand_string", &value, &size, nil, 0) == 0 else {
+            return nil
+        }
+        let bytes = value.map { UInt8(bitPattern: $0) }
+        return String(decoding: bytes.prefix(while: { $0 != 0 }), as: UTF8.self)
     }
 
     private func result(
@@ -55,15 +106,31 @@ struct AppleSiliconSMCTemperatureBackend {
         return Result(celsius: nil, detail: nil, unavailableReason: "\(unavailablePrefix) (\(reason))")
     }
 
-    // These M4 Max CPU-core and GPU-zone keys were verified against the local
-    // sensor registry. Their arithmetic mean intentionally matches the
-    // "Average CPU" / "Average GPU" semantics used by Stats.
-    private static let m4MaxCPUKeys = [
-        "Te05", "Te0S", "Te09", "Te0H",
-        "Tp01", "Tp05", "Tp09", "Tp0D", "Tp0V", "Tp0Y", "Tp0b", "Tp0e"
-    ]
-
-    private static let m4MaxGPUKeys = ["Tg1U", "Tg1k", "Tg0K", "Tg0L", "Tg0d", "Tg0e", "Tg0j", "Tg0k"]
+    // The private keys below are grouped by Apple-silicon generation. Each
+    // candidate is individually decoded and range-checked before it can
+    // contribute to an average; model-specific missing keys remain harmless.
+    private static let m1Keys = SensorKeySet(
+        cpu: ["Tp09", "Tp0T", "Tp01", "Tp05", "Tp0D", "Tp0H", "Tp0L", "Tp0P", "Tp0X", "Tp0b"],
+        gpu: ["Tg05", "Tg0D", "Tg0L", "Tg0T"]
+    )
+    private static let m2Keys = SensorKeySet(
+        cpu: ["Tp1h", "Tp1t", "Tp1p", "Tp1l", "Tp01", "Tp05", "Tp09", "Tp0D", "Tp0X", "Tp0b", "Tp0f", "Tp0j"],
+        gpu: ["Tg0f", "Tg0j"]
+    )
+    private static let m3Keys = SensorKeySet(
+        cpu: ["Te05", "Te0L", "Te0P", "Te0S", "Tf04", "Tf09", "Tf0A", "Tf0B", "Tf0D", "Tf0E", "Tf44", "Tf49", "Tf4A", "Tf4B", "Tf4D", "Tf4E"],
+        gpu: ["Tf14", "Tf18", "Tf19", "Tf1A", "Tf24", "Tf28", "Tf29", "Tf2A"]
+    )
+    private static let m4Keys = SensorKeySet(
+        // M4 Pro uses three reported alternate zone keys. They are read only
+        // when present and otherwise do not affect the aggregate.
+        cpu: ["Te05", "Te0S", "Te09", "Te0H", "Te06", "Te0T", "Tp01", "Tp05", "Tp09", "Tp0D", "Tp0V", "Tp0Y", "Tp0b", "Tp0e", "Tp0H"],
+        gpu: ["Tg0G", "Tg0H", "Tg1U", "Tg1k", "Tg0K", "Tg0L", "Tg0d", "Tg0e", "Tg0j", "Tg0k"]
+    )
+    private static let m5Keys = SensorKeySet(
+        cpu: ["Tp00", "Tp04", "Tp08", "Tp0C", "Tp0G", "Tp0K", "Tp0O", "Tp0R", "Tp0U", "Tp0X", "Tp0a", "Tp0d", "Tp0g", "Tp0j", "Tp0m", "Tp0p", "Tp0u", "Tp0y"],
+        gpu: ["Tg0U", "Tg0X", "Tg0d", "Tg0g", "Tg0j", "Tg1Y", "Tg1c", "Tg1g"]
+    )
 }
 
 private final class SMCReader: @unchecked Sendable {

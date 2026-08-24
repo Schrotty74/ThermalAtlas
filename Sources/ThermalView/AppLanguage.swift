@@ -40,6 +40,8 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var systemContextTitle: String { self == .english ? "System Context" : "Systemkontext" }
     var systemContextHint: String { self == .english ? "Context only — not temperature sensors" : "Nur Kontext — keine Temperatursensoren" }
     var cpuLoadTitle: String { self == .english ? "CPU Load" : "CPU-Last" }
+    var gpuLoadTitle: String { self == .english ? "GPU Load" : "GPU-Last" }
+    var memoryUsageTitle: String { self == .english ? "Memory" : "Arbeitsspeicher" }
     var powerSourceTitle: String { self == .english ? "Power" : "Stromversorgung" }
     var powerAdapterTitle: String { self == .english ? "Power adapter" : "Netzteil" }
     var batteryTitle: String { self == .english ? "Battery" : "Akku" }

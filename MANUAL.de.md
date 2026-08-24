@@ -74,7 +74,11 @@ Die Farben dienen nur als schnelle Orientierung. ThermalAtlas verändert aufgrun
 Unten im Fenster steht die Uhrzeit des zuletzt übernommenen Sensor-Snapshots.
 
 **Systemkontext**
-Unter den Temperaturkarten zeigt ThermalAtlas CPU-Last, Stromquelle oder Akku und Energiesparmodus. Der Bereich ist ausdrücklich als Kontext und nicht als Temperatursensor gekennzeichnet. Die CPU-Last wird aus zwei aufeinanderfolgenden System-Snapshots berechnet und erscheint deshalb nach dem zweiten regulären Scan. Diese rein lesenden Werte verändern niemals macOS-Energieeinstellungen und werden nicht gespeichert.
+Unter den Temperaturkarten zeigt ThermalAtlas CPU- und GPU-Last, den belegten Arbeitsspeicher im Verhältnis zum eingebauten RAM, Stromquelle oder Akku und Energiesparmodus. Der Bereich ist ausdrücklich als Kontext und nicht als Temperatursensor gekennzeichnet. Diese Werte aktualisieren sich unabhängig alle 0,5 Sekunden; die CPU-Last wird aus zwei aufeinanderfolgenden System-Snapshots berechnet und erscheint deshalb nach der zweiten Kontext-Aktualisierung. Diese rein lesenden Werte verändern niemals macOS-Energieeinstellungen und werden nicht gespeichert.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/system-context-load.png" width="620" alt="ThermalAtlas-Systemkontext mit CPU-Last, GPU-Last, Arbeitsspeicher, Stromquelle und Energiesparmodus">
+</p>
 
 ---
 
@@ -132,6 +136,10 @@ Ein kürzeres Intervall reagiert schneller auf echte Änderungen, fragt die rein
 ### Window Size (Fenstergröße)
 
 Wähle **Window Size** und danach **Standard** oder **Compact (about 40% smaller)**. Die kompakte Ansicht reduziert die Fensterbreite um rund 40 % und verwendet zugleich dichtere Karten, kleinere Abstände und kleinere Schrift. Dadurch bleibt die Anzeige praktisch nutzbar, statt nur zusammengedrückt zu werden. Die Größenwahl wird lokal gespeichert.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/compact-view.png" width="300" alt="Kompaktansicht von ThermalAtlas mit Temperaturkarten und Systemkontext">
+</p>
 
 <p align="center">
   <img src="Resources/ManualScreenshots/window-size-menu.png" width="360" alt="ThermalAtlas-Untermenü Window Size mit ausgewählter Option Compact about 40 percent smaller">

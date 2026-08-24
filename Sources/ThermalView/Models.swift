@@ -113,6 +113,8 @@ struct TemperatureReading: Identifiable, Sendable {
     let smartStatus: SMARTStatus?
     let smartHealthPercentage: Int?
     let unavailableReason: SensorAvailabilityReason?
+    let measuredAt: Date?
+    let isFreshMeasurement: Bool
     let isLastVerifiedValue: Bool
     let lastVerifiedAt: Date?
 
@@ -125,6 +127,8 @@ struct TemperatureReading: Identifiable, Sendable {
         smartStatus: SMARTStatus? = nil,
         smartHealthPercentage: Int? = nil,
         unavailableReason: SensorAvailabilityReason?,
+        measuredAt: Date? = nil,
+        isFreshMeasurement: Bool = true,
         isLastVerifiedValue: Bool = false,
         lastVerifiedAt: Date? = nil
     ) {
@@ -136,11 +140,35 @@ struct TemperatureReading: Identifiable, Sendable {
         self.smartStatus = smartStatus
         self.smartHealthPercentage = smartHealthPercentage
         self.unavailableReason = unavailableReason
+        self.measuredAt = measuredAt
+        self.isFreshMeasurement = isFreshMeasurement
         self.isLastVerifiedValue = isLastVerifiedValue
         self.lastVerifiedAt = lastVerifiedAt
     }
 
     var id: String { sourceIdentifier ?? kind.rawValue }
+
+    func cached() -> TemperatureReading {
+        TemperatureReading(
+            kind: kind, sourceIdentifier: sourceIdentifier, title: title,
+            temperatureCelsius: temperatureCelsius, detail: detail,
+            smartStatus: smartStatus, smartHealthPercentage: smartHealthPercentage,
+            unavailableReason: unavailableReason, measuredAt: measuredAt,
+            isFreshMeasurement: false, isLastVerifiedValue: isLastVerifiedValue,
+            lastVerifiedAt: lastVerifiedAt
+        )
+    }
+
+    func replacingSMARTMetadata(from previous: TemperatureReading) -> TemperatureReading {
+        TemperatureReading(
+            kind: kind, sourceIdentifier: sourceIdentifier, title: title,
+            temperatureCelsius: temperatureCelsius, detail: detail,
+            smartStatus: previous.smartStatus, smartHealthPercentage: previous.smartHealthPercentage,
+            unavailableReason: unavailableReason, measuredAt: measuredAt,
+            isFreshMeasurement: isFreshMeasurement, isLastVerifiedValue: isLastVerifiedValue,
+            lastVerifiedAt: lastVerifiedAt
+        )
+    }
 }
 
 extension SensorKind {

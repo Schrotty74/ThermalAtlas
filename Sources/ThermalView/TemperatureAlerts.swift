@@ -72,6 +72,7 @@ struct TemperatureAlertEngine {
         var alerts: [TemperatureAlert] = []
         for reading in readings {
             let identifier = reading.id
+            guard reading.isFreshMeasurement else { continue }
             guard !reading.isLastVerifiedValue,
                   let temperature = reading.temperatureCelsius,
                   temperature >= configuration.threshold(for: reading.kind) else {

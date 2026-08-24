@@ -581,12 +581,28 @@ private struct ThermalSystemContext: View {
             }
             .foregroundStyle(palette.secondary)
 
-            HStack(spacing: compact ? 7 : 10) {
+            LazyVGrid(
+                columns: Array(repeating: GridItem(.flexible(), spacing: compact ? 7 : 10), count: compact ? 2 : 3),
+                alignment: .leading,
+                spacing: compact ? 7 : 10
+            ) {
                 contextItem(
                     title: language.cpuLoadTitle,
                     value: cpuUsageText,
                     symbol: "chart.bar.fill",
                     tint: palette.cpu
+                )
+                contextItem(
+                    title: language.gpuLoadTitle,
+                    value: gpuUsageText,
+                    symbol: "rectangle.3.group.fill",
+                    tint: palette.gpu
+                )
+                contextItem(
+                    title: language.memoryUsageTitle,
+                    value: memoryUsageText,
+                    symbol: "memorychip.fill",
+                    tint: palette.internalSSD
                 )
                 contextItem(
                     title: language.powerSourceTitle,
@@ -629,6 +645,22 @@ private struct ThermalSystemContext: View {
     private var cpuUsageText: String {
         guard let usage = context.cpuUsagePercent else { return language.calculatingTitle }
         return usage.formatted(.number.precision(.fractionLength(0))) + " %"
+    }
+
+    private var gpuUsageText: String {
+        guard let usage = context.gpuUsagePercent else { return language.notAvailable }
+        return usage.formatted(.number.precision(.fractionLength(0))) + " %"
+    }
+
+    private var memoryUsageText: String {
+        guard let memory = context.memoryUsage else { return language.notAvailable }
+        let gigabyte = Double(1 << 30)
+        let used = Double(memory.usedBytes) / gigabyte
+        let total = Double(memory.totalBytes) / gigabyte
+        if total >= 10 {
+            return "\(used.formatted(.number.precision(.fractionLength(0)))) / \(total.formatted(.number.precision(.fractionLength(0)))) GB"
+        }
+        return "\(used.formatted(.number.precision(.fractionLength(1)))) / \(total.formatted(.number.precision(.fractionLength(1)))) GB"
     }
 
     private var powerText: String {

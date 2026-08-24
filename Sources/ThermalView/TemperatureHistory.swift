@@ -58,7 +58,7 @@ final class TemperatureHistoryStore {
         let cutoff = snapshot.updatedAt.addingTimeInterval(-Self.maximumAge)
 
         var startedNewMinute = false
-        for reading in snapshot.readings where !reading.isLastVerifiedValue {
+        for reading in snapshot.readings where reading.isFreshMeasurement && !reading.isLastVerifiedValue {
             guard let temperature = reading.temperatureCelsius else { continue }
             let identifier = reading.id
             var points = pointsByReadingID[identifier] ?? []

@@ -2,6 +2,28 @@
 
 All notable user-visible changes are documented here in English. Development builds remain local; public prereleases are announced through GitHub Releases.
 
+## 0.4.0
+
+### Added
+
+- CPU and GPU temperature-key families for Apple-silicon M1 through M5, including known Pro, Max, and Ultra variants. External testers confirmed the CPU display on M5 and M5 Pro.
+- GPU load and used memory alongside CPU load, power source/battery, and Low Power Mode in the separate read-only System Context.
+- New compact-view and System Context screenshots in the English and German manuals and their PDFs.
+
+### Improved
+
+- System Context refreshes independently every 0.5 seconds, while CPU/GPU temperature refresh stays selectable from one to four seconds.
+- External-drive topology now refreshes at launch, on macOS mount/unmount events, and hourly. An ejected but still connected external SSD no longer remains visible.
+- Known physical SSD temperatures refresh every minute for local history and alerts. SMART status and remaining health refresh at launch, after a real topology change, and at most once per day.
+
+### Fixed
+
+- Retried a complete unavailable GPU sensor batch with a newly opened read-only SMC client, avoiding a transient all-GPU-sensor failure on supported Macs.
+
+### Documentation
+
+- Updated English and German documentation for M1-M5 support, separate refresh cycles, System Context load and memory values, and the current manual screenshots.
+
 ## 0.3.0
 
 ### Added

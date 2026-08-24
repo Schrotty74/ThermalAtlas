@@ -74,7 +74,11 @@ The colors are a quick visual guide only. ThermalAtlas does not change anything 
 The bottom of the window shows the time of the latest accepted sensor snapshot.
 
 **System context**
-Below the temperature cards, ThermalAtlas shows CPU load, power source or battery, and Low Power Mode. It is explicitly marked as context rather than a temperature sensor. CPU load is calculated from two successive system snapshots, so it appears after the second regular scan. These read-only values never change macOS energy settings and are not stored.
+Below the temperature cards, ThermalAtlas shows CPU and GPU load, used memory in relation to installed RAM, power source or battery, and Low Power Mode. It is explicitly marked as context rather than a temperature sensor. These values update independently every 0.5 seconds; CPU load is calculated from two successive system snapshots, so it appears after the second context update. These read-only values never change macOS energy settings and are not stored.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/system-context-load.png" width="620" alt="ThermalAtlas System Context with CPU load, GPU load, memory use, power source and Low Power Mode">
+</p>
 
 ---
 
@@ -132,6 +136,10 @@ A shorter interval makes the display react sooner to real changes, but asks the 
 ### Window Size
 
 Choose **Window Size** and then **Standard** or **Compact (about 40% smaller)**. Compact mode reduces the window width by about 40% and also uses denser cards, smaller spacing and smaller type so the display remains practical rather than merely squeezed. The chosen size is stored locally.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/compact-view.png" width="300" alt="ThermalAtlas compact view with temperature cards and System Context">
+</p>
 
 <p align="center">
   <img src="Resources/ManualScreenshots/window-size-menu.png" width="360" alt="ThermalAtlas Window Size menu with Compact about 40 percent smaller selected">

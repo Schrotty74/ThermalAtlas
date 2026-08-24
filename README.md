@@ -25,6 +25,7 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 
 - Defaults to a two-second refresh interval.
 - Lets you choose a local Scan Refresh interval from 1 to 4 seconds in one-second steps.
+- Refreshes the separate System Context every 0.5 seconds with total CPU load, total GPU load, and used memory relative to installed RAM; this does not change the selected temperature interval.
 - Shows **Not available** rather than estimating missing values.
 - Reads SSD SMART temperatures only when macOS exposes them.
 - Lists each detected physical external SSD separately with its mounted volume name when available, and ignores virtual disk images.
@@ -38,7 +39,10 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 - Provides per-group temperature alerts after a sustained threshold crossing, with separate CPU/GPU and SSD thresholds.
 - Shows source, latest valid reading, and update time in Sensor Details without replacing the temperature history.
 - Exports the current readings as copyable text or the local history plus a current snapshot as CSV, only after you choose an export location.
-- Separates CPU load, power source/battery, and Low Power Mode as read-only **System Context**, clearly distinct from temperature sensors.
+- Separates CPU load, GPU load, used memory, power source/battery, and Low Power Mode as read-only **System Context**, clearly distinct from temperature sensors.
+- Recognizes separate CPU and GPU sensor-key families for Apple-silicon M1 through M5, including known Pro, Max, and Ultra variants; unsupported future generations remain explicitly unavailable rather than guessed.
+- Refreshes external-drive topology at launch and when macOS reports mounting or unmounting. Mounted physical SSDs remain separate cards; an ejected but still connected drive is hidden.
+- Reads known SSD temperatures every minute for local history and warnings, while SMART status and remaining health are refreshed at launch, after an actual topology change, and at most once per day.
 - Provides four native themes, including adaptive Liquid Glass.
 - Groups Themes, Scan Refresh, Window Size, Visible Temperatures, Menu Bar Display, Temperature Alerts, Language, Export, public links, manuals, Activity Monitor, and Quit in one compact shared menu.
 - Starts in English and lets you switch the visible app interface to German locally.
@@ -93,7 +97,7 @@ All builds are ad-hoc signed locally. Building does not publish a release.
 
 ## Privacy, data handling, and security
 
-ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, SMART temperature data, CPU load, power source/battery, and Low Power Mode only when macOS provides them. It stores selected display preferences, alert thresholds, and local per-minute temperature averages for up to 24 hours in local `UserDefaults`; system-context values are displayed but not stored. The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. A text or CSV export is created only after you explicitly choose it and a local save location. Its optional GitHub, Homepage, and manual menu actions open the selected public page in your default browser only after you select them.
+ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, SMART temperature data, CPU/GPU load, used memory, power source/battery, and Low Power Mode only when macOS provides them. It stores selected display preferences, alert thresholds, and local per-minute temperature averages for up to 24 hours in local `UserDefaults`; system-context values are displayed but not stored. The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. A text or CSV export is created only after you explicitly choose it and a local save location. Its optional GitHub, Homepage, and manual menu actions open the selected public page in your default browser only after you select them.
 
 See [Privacy report](PRIVACY.md), [Datenschutzbericht](PRIVACY.de.md), and the [security review](SECURITY.md).
 

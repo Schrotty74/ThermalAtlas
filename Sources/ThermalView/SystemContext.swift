@@ -1,10 +1,21 @@
 import Foundation
+import IOKit
 import IOKit.ps
 import MachO
 
 /// Read-only operating context displayed separately from temperature sensors.
 /// It never controls performance, battery charging, or macOS power settings.
 struct SystemContext: Sendable, Equatable {
+    struct MemoryUsage: Sendable, Equatable {
+        let usedBytes: UInt64
+        let totalBytes: UInt64
+
+        var usagePercent: Double {
+            guard totalBytes > 0 else { return 0 }
+            return min(100, max(0, Double(usedBytes) / Double(totalBytes) * 100))
+        }
+    }
+
     enum PowerSource: Sendable, Equatable {
         case powerAdapter
         case battery(percentage: Int?)
@@ -12,11 +23,15 @@ struct SystemContext: Sendable, Equatable {
     }
 
     let cpuUsagePercent: Double?
+    let gpuUsagePercent: Double?
+    let memoryUsage: MemoryUsage?
     let powerSource: PowerSource
     let isLowPowerModeEnabled: Bool
 
     static let unavailable = SystemContext(
         cpuUsagePercent: nil,
+        gpuUsagePercent: nil,
+        memoryUsage: nil,
         powerSource: .unavailable,
         isLowPowerModeEnabled: false
     )
@@ -81,6 +96,8 @@ struct SystemContextReader {
     mutating func read() -> SystemContext {
         SystemContext(
             cpuUsagePercent: cpuUsageSampler.sample(),
+            gpuUsagePercent: GPUUsageReader.currentUsagePercent(),
+            memoryUsage: MemoryUsageReader.currentUsage(),
             powerSource: Self.powerSource(),
             isLowPowerModeEnabled: ProcessInfo.processInfo.isLowPowerModeEnabled
         )
@@ -100,5 +117,73 @@ struct SystemContextReader {
             return .battery(percentage: percentage)
         }
         return .powerAdapter
+    }
+}
+
+/// Reads the memory pages currently occupied by apps, the system and the
+/// compressed-memory store. File cache pages are intentionally excluded, so
+/// the value describes actual RAM pressure rather than available cache.
+enum MemoryUsageReader {
+    static func currentUsage() -> SystemContext.MemoryUsage? {
+        var statistics = vm_statistics64()
+        var count = mach_msg_type_number_t(
+            MemoryLayout<vm_statistics64>.size / MemoryLayout<integer_t>.size
+        )
+        let result = withUnsafeMutablePointer(to: &statistics) { pointer in
+            pointer.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
+                host_statistics64(mach_host_self(), HOST_VM_INFO64, $0, &count)
+            }
+        }
+        guard result == KERN_SUCCESS else { return nil }
+
+        var pageSize: vm_size_t = 0
+        guard host_page_size(mach_host_self(), &pageSize) == KERN_SUCCESS else { return nil }
+        let usedPages = UInt64(statistics.active_count)
+            + UInt64(statistics.wire_count)
+            + UInt64(statistics.compressor_page_count)
+        let totalBytes = ProcessInfo.processInfo.physicalMemory
+        guard totalBytes > 0 else { return nil }
+        return SystemContext.MemoryUsage(
+            usedBytes: min(totalBytes, usedPages * UInt64(pageSize)),
+            totalBytes: totalBytes
+        )
+    }
+}
+
+/// Reads the aggregate utilization currently published by Apple's integrated
+/// GPU driver. This is observational only; the registry value is not present
+/// on every macOS or Apple-silicon generation, so absence is represented by
+/// `nil` rather than an estimate.
+enum GPUUsageReader {
+    static func currentUsagePercent() -> Double? {
+        guard let matching = IOServiceMatching("AGXAccelerator") else { return nil }
+        var iterator: io_iterator_t = 0
+        guard IOServiceGetMatchingServices(kIOMainPortDefault, matching, &iterator) == KERN_SUCCESS else {
+            return nil
+        }
+        defer { IOObjectRelease(iterator) }
+
+        while true {
+            let service = IOIteratorNext(iterator)
+            guard service != 0 else { return nil }
+            defer { IOObjectRelease(service) }
+
+            guard let statistics = IORegistryEntryCreateCFProperty(
+                service,
+                "PerformanceStatistics" as CFString,
+                kCFAllocatorDefault,
+                0
+            )?.takeRetainedValue() as? [String: Any] else {
+                continue
+            }
+            if let usage = usagePercent(from: statistics) {
+                return usage
+            }
+        }
+    }
+
+    static func usagePercent(from statistics: [String: Any]) -> Double? {
+        guard let number = statistics["Device Utilization %"] as? NSNumber else { return nil }
+        return min(100, max(0, number.doubleValue))
     }
 }

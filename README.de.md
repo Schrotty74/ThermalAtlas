@@ -19,10 +19,13 @@ ThermalAtlas ist eine schlanke, datenschutzfreundliche und lokale macOS-Menülei
 
 Die App richtet sich an Menschen, die die thermische Auslastung ihres Macs ohne Hardwaresteuerung prüfen möchten: Sie aktualisiert sich standardmäßig alle zwei Sekunden, zeigt nicht verfügbare Messwerte klar statt sie zu schätzen und verändert niemals Lüfter, Energieoptionen oder Systemeinstellungen. ThermalAtlas funktioniert offline und enthält keine Konten, Telemetrie oder Netzwerkkommunikation.
 
+Weder Administrator- noch Root-Rechte sind nötig. ThermalAtlas verfolgt einen rein lesenden Ansatz und liest ausschließlich von macOS bereitgestellte Sensordaten.
+
 ## Funktionen
 
 - Standardmäßig Aktualisierung alle zwei Sekunden.
 - Lokales Scan-Refresh-Intervall von 1 bis 4 Sekunden in ganzen Sekunden wählbar.
+- Der separate Systemkontext aktualisiert CPU- und GPU-Gesamtlast sowie belegten Arbeitsspeicher unabhängig alle 0,5 Sekunden; das gewählte Temperaturintervall bleibt davon unberührt.
 - **Nicht verfügbar** statt geschätzter Werte.
 - SSD-SMART-Temperaturen nur, wenn macOS sie bereitstellt.
 - Listet jede erkannte physische externe SSD separat mit ihrem eingebundenen Volume-Namen, wenn vorhanden, auf und ignoriert virtuelle Disk-Images.
@@ -36,7 +39,10 @@ Die App richtet sich an Menschen, die die thermische Auslastung ihres Macs ohne 
 - Bietet getrennte Temperaturwarnungen je Gruppe nach einer anhaltenden Schwellenüberschreitung, mit eigenen CPU/GPU- und SSD-Schwellen.
 - Zeigt Quelle, letzten gültigen Wert und Aktualisierungszeit in den Sensor-Details, ohne den Temperaturverlauf zu ersetzen.
 - Exportiert die aktuellen Werte als kopierbaren Text oder den lokalen Verlauf plus aktuellen Snapshot als CSV – nur nach Auswahl eines Speicherorts.
-- Trennt CPU-Last, Stromquelle/Akku und Energiesparmodus als rein lesenden **Systemkontext** klar von Temperatursensoren.
+- Trennt CPU-Last, GPU-Last, belegten Arbeitsspeicher, Stromquelle/Akku und Energiesparmodus als rein lesenden **Systemkontext** klar von Temperatursensoren.
+- Erkennt getrennte CPU- und GPU-Sensor-Schlüsselfamilien für Apple Silicon von M1 bis M5 einschließlich bekannter Pro-, Max- und Ultra-Varianten; unbekannte spätere Generationen bleiben klar als nicht verfügbar ausgewiesen, statt geschätzt zu werden.
+- Aktualisiert die Topologie externer Laufwerke beim Start und wenn macOS Einbinden oder Auswerfen meldet. Eingebundene physische SSDs bleiben getrennte Karten; ein ausgeworfenes, aber weiter verbundenes Laufwerk wird ausgeblendet.
+- Liest die Temperatur bekannter SSDs jede Minute für Verlauf und Warnungen; SMART-Status und verbleibende Gesundheit werden beim Start, nach einer tatsächlichen Topologieänderung und höchstens einmal täglich aktualisiert.
 - Vier native Themes, darunter adaptives Liquid Glass.
 - Bündelt Themes, Scan Refresh, Fenstergröße, Sichtbare Temperaturen, Menüleistenanzeige, Temperaturwarnungen, Sprache, Export, öffentliche Links, Handbücher, Aktivitätsanzeige und Beenden in einem kompakten gemeinsamen Menü.
 - Startet auf Englisch und erlaubt die lokale Umstellung der sichtbaren App-Oberfläche auf Deutsch.
@@ -91,7 +97,7 @@ Alle Builds werden lokal ad-hoc signiert. Ein Build veröffentlicht nichts.
 
 ## Datenschutz, Datenverarbeitung und Sicherheit
 
-ThermalAtlas liest lokale Apple-Silicon-SMC-Temperaturen, lokale Laufwerksmetadaten, SMART-Temperaturen, CPU-Last, Stromquelle/Akku und Energiesparmodus nur dann, wenn macOS sie bereitstellt. Lokal gespeichert werden Anzeigeneinstellungen, Warnschwellen und lokale Temperatur-Minutenmittelwerte für höchstens 24 Stunden in `UserDefaults`; Systemkontextwerte werden angezeigt, aber nicht gespeichert. Die App enthält keine Hintergrundnetzwerkfunktionen, Telemetrie, Analyse-Dienste, Konten, Cloud-Synchronisation, Werbe-SDKs oder Drittanbieter-Abhängigkeiten. Ein Text- oder CSV-Export entsteht nur nach einer ausdrücklichen Auswahl und an einem lokal gewählten Speicherort. Die optionalen Menüeinträge GitHub, Homepage und Handbücher öffnen die gewählte öffentliche Seite nur nach einem Klick im Standardbrowser.
+ThermalAtlas liest lokale Apple-Silicon-SMC-Temperaturen, lokale Laufwerksmetadaten, SMART-Temperaturen, CPU-/GPU-Last, belegten Arbeitsspeicher, Stromquelle/Akku und Energiesparmodus nur dann, wenn macOS sie bereitstellt. Lokal gespeichert werden Anzeigeneinstellungen, Warnschwellen und lokale Temperatur-Minutenmittelwerte für höchstens 24 Stunden in `UserDefaults`; Systemkontextwerte werden angezeigt, aber nicht gespeichert. Die App enthält keine Hintergrundnetzwerkfunktionen, Telemetrie, Analyse-Dienste, Konten, Cloud-Synchronisation, Werbe-SDKs oder Drittanbieter-Abhängigkeiten. Ein Text- oder CSV-Export entsteht nur nach einer ausdrücklichen Auswahl und an einem lokal gewählten Speicherort. Die optionalen Menüeinträge GitHub, Homepage und Handbücher öffnen die gewählte öffentliche Seite nur nach einem Klick im Standardbrowser.
 
 Siehe [Datenschutzbericht](PRIVACY.de.md), [Privacy report](PRIVACY.md) und die [Sicherheitsprüfung](SECURITY.md).
 

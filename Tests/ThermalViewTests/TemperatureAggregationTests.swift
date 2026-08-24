@@ -17,6 +17,28 @@ final class TemperatureAggregationTests: XCTestCase {
         XCTAssertNil(TemperatureAggregation.median([]))
     }
 
+    func testAppleSiliconSensorKeysSelectEverySupportedMFamily() throws {
+        let m1 = try XCTUnwrap(AppleSiliconSMCTemperatureBackend.sensorKeys(for: "Apple M1 Max"))
+        let m2 = try XCTUnwrap(AppleSiliconSMCTemperatureBackend.sensorKeys(for: "Apple M2 Ultra"))
+        let m3 = try XCTUnwrap(AppleSiliconSMCTemperatureBackend.sensorKeys(for: "Apple M3 Pro"))
+        let m4 = try XCTUnwrap(AppleSiliconSMCTemperatureBackend.sensorKeys(for: "Apple M4 Max"))
+        let m5 = try XCTUnwrap(AppleSiliconSMCTemperatureBackend.sensorKeys(for: "Apple M5 Pro"))
+
+        XCTAssertTrue(m1.cpu.contains("Tp09"))
+        XCTAssertTrue(m2.cpu.contains("Tp1h"))
+        XCTAssertTrue(m3.cpu.contains("Tf04"))
+        XCTAssertTrue(m4.cpu.contains("Te05"))
+        XCTAssertTrue(m5.cpu.contains("Tp0O"))
+        XCTAssertTrue(m5.gpu.contains("Tg1Y"))
+        XCTAssertFalse(Set(m4.cpu).isSuperset(of: Set(m5.cpu)))
+    }
+
+    func testUnknownAppleSiliconFamilyHasNoGuessedSensorKeys() {
+        XCTAssertNil(AppleSiliconSMCTemperatureBackend.sensorKeys(for: "Apple M6 Pro"))
+        XCTAssertNil(AppleSiliconSMCTemperatureBackend.sensorKeys(for: "Intel Core i9"))
+        XCTAssertNil(AppleSiliconSMCTemperatureBackend.sensorKeys(for: nil))
+    }
+
     func testFourThemesIncludeTheFullWindowMilkGlassTheme() {
         XCTAssertEqual(ThermalTheme.allCases.count, 4)
         XCTAssertTrue(ThermalTheme.milkGlass.usesFullWindowGlass)
@@ -99,6 +121,10 @@ final class TemperatureAggregationTests: XCTestCase {
     func testSystemContextKeepsPowerStateSeparateFromSensorKinds() {
         XCTAssertFalse(SensorKind.allCases.map(\.rawValue).contains("power"))
         XCTAssertEqual(SystemContext.PowerSource.battery(percentage: 73), .battery(percentage: 73))
+        XCTAssertEqual(GPUUsageReader.usagePercent(from: ["Device Utilization %": 34]), 34)
+        XCTAssertNil(GPUUsageReader.usagePercent(from: [:]))
+        let memory = SystemContext.MemoryUsage(usedBytes: 24, totalBytes: 96)
+        XCTAssertEqual(memory.usagePercent, 25)
     }
 
     func testTemperatureAlertOnlyFiresAfterOneMinuteAndResetsAfterRecovery() {
@@ -123,6 +149,41 @@ final class TemperatureAggregationTests: XCTestCase {
         XCTAssertTrue(engine.evaluate(readings: [recovered], configuration: configuration, now: base.addingTimeInterval(121)).isEmpty)
         XCTAssertTrue(engine.evaluate(readings: [reading], configuration: configuration, now: base.addingTimeInterval(122)).isEmpty)
         XCTAssertEqual(engine.evaluate(readings: [reading], configuration: configuration, now: base.addingTimeInterval(182)).count, 1)
+    }
+
+    @MainActor
+    func testCachedDiskReadingDoesNotCreateExtraHistorySamples() throws {
+        let suiteName = "ThermalAtlasTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let history = TemperatureHistoryStore(defaults: defaults, storageKey: "history")
+        let measuredAt = Date(timeIntervalSinceReferenceDate: 40_000)
+        let fresh = TemperatureReading(
+            kind: .internalSSD, temperatureCelsius: 45, detail: nil,
+            unavailableReason: nil, measuredAt: measuredAt
+        )
+
+        history.record(ThermalSnapshot(readings: [fresh], updatedAt: measuredAt))
+        history.record(ThermalSnapshot(readings: [fresh.cached()], updatedAt: measuredAt.addingTimeInterval(30)))
+
+        XCTAssertEqual(history.points(for: fresh.id, range: .oneHour, now: measuredAt).first?.sampleCount, 1)
+    }
+
+    func testCachedReadingDoesNotAdvanceTemperatureAlertEpisode() {
+        var engine = TemperatureAlertEngine()
+        let configuration = TemperatureAlertConfiguration(
+            isEnabled: true, cpuThreshold: 95, gpuThreshold: 95,
+            internalSSDThreshold: 70, externalSSDThreshold: 70, language: .english
+        )
+        let base = Date(timeIntervalSinceReferenceDate: 50_000)
+        let fresh = TemperatureReading(
+            kind: .internalSSD, temperatureCelsius: 75, detail: nil,
+            unavailableReason: nil, measuredAt: base
+        )
+
+        XCTAssertTrue(engine.evaluate(readings: [fresh], configuration: configuration, now: base).isEmpty)
+        XCTAssertTrue(engine.evaluate(readings: [fresh.cached()], configuration: configuration, now: base.addingTimeInterval(60)).isEmpty)
+        XCTAssertEqual(engine.evaluate(readings: [fresh], configuration: configuration, now: base.addingTimeInterval(61)).count, 1)
     }
 
     @MainActor

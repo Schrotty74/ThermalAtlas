@@ -117,15 +117,14 @@ def build(language, output):
 
     # 2 Readings
     base(c, 1, "Messwerte" if de else "Readings", t["readings"], t["interface"], 2)
-    image(c, ASSETS / "Screenshots" / "classic.png", 48, 300, 238, 380)
-    panel(c, 310, 550, 240, 110, VIOLET, "CPU / GPU",
+    image(c, ASSETS / "ManualScreenshots" / "compact-view.png", 48, 180, 220, 490)
+    image(c, ASSETS / "ManualScreenshots" / "system-context-load.png", 290, 555, 260, 105)
+    panel(c, 290, 415, 260, 110, VIOLET, "CPU / GPU",
           "Mittelwert der aktuell lesbaren passenden Sensoren." if de else "Average of matching sensors that are readable right now.")
-    panel(c, 310, 410, 240, 110, GREEN, "SSD / SMART",
+    panel(c, 290, 275, 260, 110, GREEN, "SSD / SMART",
           "Temperatur, SMART-Status und Gesundheit erscheinen nur bei echten macOS-Daten." if de else "Temperature, SMART status and health appear only when macOS supplies real data.")
-    panel(c, 310, 270, 240, 110, ORANGE, "GPU",
-          "Ein kurzfristiger Ausfall kann klar als letzter echter Wert markiert sein." if de else "A short failure can be clearly marked as the last real value.")
-    panel(c, 48, 130, W - 96, 92, CYAN, "Aktualisierung" if de else "Refresh",
-          "Der separate Systemkontext zeigt CPU-Last, Stromquelle und Energiesparmodus. Der Footer zeigt die Zeit des letzten akzeptierten Sensor-Snapshots." if de else "The separate system context shows CPU load, power source and Low Power Mode. The footer shows the time of the last accepted sensor snapshot.")
+    panel(c, 290, 120, 260, 125, CYAN, "Systemkontext" if de else "System Context",
+          "CPU- und GPU-Last, Arbeitsspeicher, Stromquelle und Energiesparmodus aktualisieren sich unabhängig alle 0,5 Sekunden." if de else "CPU and GPU load, memory, power source and Low Power Mode update independently every 0.5 seconds.")
     c.showPage()
 
     # 3 Menu bar and shared menu

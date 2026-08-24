@@ -8,11 +8,11 @@ ThermalAtlas ist eine ausschließlich lokale Temperaturanzeige. Die App erhebt, 
 
 - Lokale Apple-Silicon-SMC-Temperaturwerte über rein lesende IOKit-Aufrufe.
 - Lokale Laufwerksmetadaten und SMART-Temperaturen über `diskutil info -plist`.
-- Öffentliche macOS-CPU-Tick-Daten für den angezeigten CPU-Last-Kontext sowie aktuelle Stromquelle/Akkustand und Energiesparmodus.
+- Öffentliche macOS-CPU-Tick-Daten, die aktuell vom Apple-Grafiktreiber veröffentlichte GPU-Gesamtauslastung und lokale virtuelle Speicherstatistiken für den angezeigten CPU-/GPU-Last- und Speicherkontext sowie aktuelle Stromquelle/Akkustand und Energiesparmodus.
 
 ## Speicherung
 
-Lokale `UserDefaults` speichern das gewählte Theme, Scan-Refresh-Intervall, die Anzeigesprache, sichtbare Sensorgruppen, den Menüleistenmodus, die Fenstergröße und Temperaturwarn-Einstellungen. Zusätzlich speichert ThermalAtlas je Sensor minutenweise gemittelte Temperaturverläufe für höchstens 24 Stunden, damit das Diagramm in der App dargestellt werden kann. Jeder gespeicherte Verlaufspunkt enthält nur eine lokale Sensor-ID, Zeitstempel, Temperaturmittelwert und Anzahl der Messungen. CPU-Last, Stromquelle/Akku und Energiesparmodus werden angezeigt, aber nicht gespeichert. Dev, Beta und Final besitzen getrennte Bundle-Kennungen, Einstellungen und Caches.
+Lokale `UserDefaults` speichern das gewählte Theme, Scan-Refresh-Intervall, die Anzeigesprache, sichtbare Sensorgruppen, den Menüleistenmodus, die Fenstergröße und Temperaturwarn-Einstellungen. Zusätzlich speichert ThermalAtlas je Sensor minutenweise gemittelte Temperaturverläufe für höchstens 24 Stunden, damit das Diagramm in der App dargestellt werden kann. Jeder gespeicherte Verlaufspunkt enthält nur eine lokale Sensor-ID, Zeitstempel, Temperaturmittelwert und Anzahl der Messungen. CPU-/GPU-Last, RAM-Auslastung, Stromquelle/Akku und Energiesparmodus werden angezeigt, aber nicht gespeichert. Dev, Beta und Final besitzen getrennte Bundle-Kennungen, Einstellungen und Caches.
 
 ## Netzwerk und Systemänderungen
 
