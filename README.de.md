@@ -23,30 +23,16 @@ Weder Administrator- noch Root-Rechte sind nötig. ThermalAtlas verfolgt einen r
 
 ## Funktionen
 
-- Standardmäßig Aktualisierung alle zwei Sekunden.
-- Lokales Scan-Refresh-Intervall von 1 bis 4 Sekunden in ganzen Sekunden wählbar.
-- Der separate Systemkontext aktualisiert CPU- und GPU-Gesamtlast sowie belegten Arbeitsspeicher unabhängig alle 0,5 Sekunden; das gewählte Temperaturintervall bleibt davon unberührt.
-- **Nicht verfügbar** statt geschätzter Werte.
-- SSD-SMART-Temperaturen nur, wenn macOS sie bereitstellt.
-- Listet jede erkannte physische externe SSD separat mit ihrem eingebundenen Volume-Namen, wenn vorhanden, auf und ignoriert virtuelle Disk-Images.
-- Zeigt den von macOS gemeldeten SSD-SMART-Status neben dem Laufwerksnamen.
-- Zeigt die verbleibende SSD-Gesundheit, wenn macOS NVMe-`PERCENTAGE_USED` bereitstellt; ohne dieses Feld wird kein Prozentwert geschätzt.
-- Defensiver, rein lesender Apple-Silicon-SMC-Adapter für CPU und GPU.
-- Lässt wählen, welche CPU-, GPU-, internen SSD- und externen SSD-Gruppen im Popover und in der Menüleiste erscheinen.
-- Bietet **Alle Werte** in der Menüleiste oder die platzsparende Anzeige **Nur Symbol**; die gewählten Sensorgruppen bleiben dabei erhalten.
-- Bietet Standard- und Kompaktgröße für das Popover; Kompakt ist rund 40 % schmaler und hält die Verlaufssteuerung gut lesbar.
-- Zeigt beim Öffnen einer Karte einen lokalen Temperaturverlauf für 1, 6 oder 24 Stunden. Gespeichert werden ausschließlich lokale Minutenmittelwerte für höchstens 24 Stunden.
-- Bietet getrennte Temperaturwarnungen je Gruppe nach einer anhaltenden Schwellenüberschreitung, mit eigenen CPU/GPU- und SSD-Schwellen.
-- Zeigt Quelle, letzten gültigen Wert und Aktualisierungszeit in den Sensor-Details, ohne den Temperaturverlauf zu ersetzen.
-- Exportiert die aktuellen Werte als kopierbaren Text oder den lokalen Verlauf plus aktuellen Snapshot als CSV – nur nach Auswahl eines Speicherorts.
-- Trennt CPU-Last, GPU-Last, belegten Arbeitsspeicher, Stromquelle/Akku und Energiesparmodus als rein lesenden **Systemkontext** klar von Temperatursensoren.
-- Erkennt getrennte CPU- und GPU-Sensor-Schlüsselfamilien für Apple Silicon von M1 bis M5 einschließlich bekannter Pro-, Max- und Ultra-Varianten. Unbekannte spätere Generationen bleiben klar als nicht verfügbar ausgewiesen, statt geschätzt zu werden.
-- Aktualisiert die Topologie externer Laufwerke beim Start und wenn macOS Einbinden oder Auswerfen meldet. Eingebundene physische SSDs bleiben getrennte Karten; ein ausgeworfenes, aber weiter verbundenes Laufwerk wird ausgeblendet.
-- Liest die Temperatur bekannter SSDs jede Minute für Verlauf und Warnungen; SMART-Status und verbleibende Gesundheit werden beim Start, nach einer tatsächlichen Topologieänderung und höchstens einmal täglich aktualisiert.
-- Vier native Themes, darunter adaptives Liquid Glass.
-- Bündelt Themes, Scan Refresh, Fenstergröße, Sichtbare Temperaturen, Menüleistenanzeige, Temperaturwarnungen, Sprache, Export, öffentliche Links, Handbücher, Aktivitätsanzeige und Beenden in einem kompakten gemeinsamen Menü.
-- Startet auf Englisch und erlaubt die lokale Umstellung der sichtbaren App-Oberfläche auf Deutsch.
-- Keine Drittanbieter-Abhängigkeiten, Netzwerkkommunikation, Telemetrie oder Konten.
+- Überwacht verfügbare Temperaturen von CPU, GPU, interner SSD und physischen externen SSDs, ohne fehlende Werte zu schätzen.
+- Zeigt SMART-Status und verbleibende SSD-Gesundheit, sobald macOS diese Werte bereitstellt.
+- Trennt schnellen, rein lesenden Systemkontext für CPU-/GPU-Last und belegten Arbeitsspeicher von der Temperaturüberwachung.
+- Führt lokale Temperaturverläufe, bietet optionale Temperaturwarnungen und exportiert Snapshot oder CSV nur auf Wunsch.
+- Bietet Standard- und Kompaktansicht, wählbare sichtbare Sensorgruppen sowie Menüleistenmodi für alle Werte oder nur das Symbol.
+- Enthält vier native Themes und eine lokale Sprachwahl zwischen Englisch und Deutsch.
+- Nutzt defensiven Apple-Silicon-Sensorzugriff und getrennte Laufwerkszyklen, damit langsame Laufwerksabfragen CPU-/GPU-Temperaturen nicht verzögern.
+- Funktioniert lokal ohne Konten, Telemetrie, Analysedienste, Drittanbieter-Abhängigkeiten oder Hardwaresteuerung.
+
+Die vollständige, gegliederte [Funktionsübersicht](FEATURES.de.md) enthält alle Details.
 
 ## Screenshots und Themes
 
@@ -115,6 +101,7 @@ ThermalAtlas steht unter der [GNU General Public License v3.0](LICENSE).
 ## Links
 
 - [Benutzerhandbuch (PDF)](Documentation/ThermalAtlas-Handbuch-DE.pdf)
+- [Funktionsübersicht](FEATURES.de.md)
 - [Releases und Downloads](https://github.com/Schrotty74/ThermalAtlas/releases)
 - [Changelog (English)](CHANGELOG.md)
 - [Datenschutzbericht](PRIVACY.de.md)

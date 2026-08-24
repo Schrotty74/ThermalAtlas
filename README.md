@@ -23,30 +23,16 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 
 ## Features
 
-- Defaults to a two-second refresh interval.
-- Lets you choose a local Scan Refresh interval from 1 to 4 seconds in one-second steps.
-- Refreshes the separate System Context every 0.5 seconds with total CPU load, total GPU load, and used memory relative to installed RAM; this does not change the selected temperature interval.
-- Shows **Not available** rather than estimating missing values.
-- Reads SSD SMART temperatures only when macOS exposes them.
-- Lists each detected physical external SSD separately with its mounted volume name when available, and ignores virtual disk images.
-- Shows the SSD SMART health status reported by macOS alongside the drive name.
-- Shows remaining SSD health when macOS exposes NVMe `PERCENTAGE_USED`; it does not estimate a percentage when that field is unavailable.
-- Uses a defensive, read-only Apple-silicon SMC adapter for CPU and GPU.
-- Lets you choose which CPU, GPU, internal SSD, and external SSD groups appear in the popover and menu bar.
-- Offers an **All Values** menu bar display or a space-saving **Symbol Only** display while keeping the chosen sensor groups.
-- Offers Standard and Compact popover sizes; Compact is about 40% narrower and keeps the history controls readable.
-- Shows a local 1-, 6-, or 24-hour temperature history when you open a card. It stores only local per-minute averages for up to 24 hours.
-- Provides per-group temperature alerts after a sustained threshold crossing, with separate CPU/GPU and SSD thresholds.
-- Shows source, latest valid reading, and update time in Sensor Details without replacing the temperature history.
-- Exports the current readings as copyable text or the local history plus a current snapshot as CSV, only after you choose an export location.
-- Separates CPU load, GPU load, used memory, power source/battery, and Low Power Mode as read-only **System Context**, clearly distinct from temperature sensors.
-- Recognizes separate CPU and GPU sensor-key families for Apple-silicon M1 through M5, including known Pro, Max, and Ultra variants. Unsupported future generations remain explicitly unavailable rather than guessed.
-- Refreshes external-drive topology at launch and when macOS reports mounting or unmounting. Mounted physical SSDs remain separate cards; an ejected but still connected drive is hidden.
-- Reads known SSD temperatures every minute for local history and warnings, while SMART status and remaining health are refreshed at launch, after an actual topology change, and at most once per day.
-- Provides four native themes, including adaptive Liquid Glass.
-- Groups Themes, Scan Refresh, Window Size, Visible Temperatures, Menu Bar Display, Temperature Alerts, Language, Export, public links, manuals, Activity Monitor, and Quit in one compact shared menu.
-- Starts in English and lets you switch the visible app interface to German locally.
-- Has no third-party dependencies, network communication, analytics, or accounts.
+- Monitors available CPU, GPU, internal-SSD, and physical external-SSD temperatures without estimating missing readings.
+- Shows SMART status and remaining SSD health whenever macOS supplies those values.
+- Separates fast, read-only CPU/GPU load and used-memory context from temperature monitoring.
+- Keeps local temperature history, provides optional temperature alerts, and exports a snapshot or CSV only on request.
+- Offers Standard and Compact views, selectable visible sensor groups, and menu-bar modes for all values or just the symbol.
+- Includes four native themes and a local English/German interface choice.
+- Uses defensive Apple-silicon sensor access and independent drive refresh cycles, so slow drive queries do not delay CPU/GPU temperatures.
+- Works locally without accounts, telemetry, analytics, third-party dependencies, or hardware control.
+
+See the complete, grouped [feature overview](FEATURES.md).
 
 ## Screenshots and themes
 
@@ -119,6 +105,7 @@ ThermalAtlas is licensed under the [GNU General Public License v3.0](LICENSE).
 ## Links
 
 - [User Manual (PDF)](Documentation/ThermalAtlas-User-Manual-EN.pdf)
+- [Feature overview](FEATURES.md)
 - [Releases and downloads](https://github.com/Schrotty74/ThermalAtlas/releases)
 - [Changelog](CHANGELOG.md)
 - [Privacy report](PRIVACY.md)
