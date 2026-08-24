@@ -14,7 +14,7 @@
 📘 **[User Manual (PDF)](Documentation/ThermalAtlas-User-Manual-EN.pdf)** – interface, buttons, sensors, themes, installation and privacy explained in detail.
 
 > [!IMPORTANT]
-> **Looking for the latest features?** `main` contains the final source status. Newer development changes and current prerelease source are usually available on the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta). On GitHub, use the branch menu above the file list and select **beta**.
+> **No final release is available yet.** `main` is reserved for the future final source status. For the latest features and current prerelease source, open the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta). On GitHub, use the branch menu above the file list and select **beta**.
 
 ## Overview
 

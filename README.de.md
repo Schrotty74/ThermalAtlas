@@ -14,7 +14,7 @@
 📘 **[Benutzerhandbuch (PDF)](Documentation/ThermalAtlas-Handbuch-DE.pdf)** – Oberfläche, Buttons, Sensoren, Themes, Installation und Datenschutz ausführlich erklärt.
 
 > [!IMPORTANT]
-> **Du suchst die neuesten Funktionen?** `main` enthält den finalen Quellstand. Neuere Entwicklungsänderungen und der aktuelle Vorab-Quellstand liegen meist im [`beta`-Branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta). Wähle auf GitHub im Branch-Menü oberhalb der Dateiliste **beta**.
+> **Es gibt noch keinen Final-Release.** `main` ist für den künftigen finalen Quellstand vorgesehen. Für die neuesten Funktionen und den aktuellen Vorab-Quellstand öffne den [`beta`-Branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta). Wähle auf GitHub im Branch-Menü oberhalb der Dateiliste **beta**.
 
 ## Überblick
 
