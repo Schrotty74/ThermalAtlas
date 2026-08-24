@@ -13,6 +13,9 @@
 
 📘 **[User Manual (PDF)](Documentation/ThermalAtlas-User-Manual-EN.pdf)** – interface, buttons, sensors, themes, installation and privacy explained in detail.
 
+> [!IMPORTANT]
+> **Looking for the latest features?** `main` contains the final source status. Newer development changes and current prerelease source are usually available on the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta). On GitHub, use the branch menu above the file list and select **beta**.
+
 ## Overview
 
 ThermalAtlas is a lightweight, privacy-friendly, local-first macOS menu bar temperature monitor for Apple silicon. It shows real CPU, GPU, internal SSD, and every detected physical external SSD sensor value whenever macOS exposes it, without telemetry, accounts, or hardware control.

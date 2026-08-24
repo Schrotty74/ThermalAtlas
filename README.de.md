@@ -13,6 +13,9 @@
 
 📘 **[Benutzerhandbuch (PDF)](Documentation/ThermalAtlas-Handbuch-DE.pdf)** – Oberfläche, Buttons, Sensoren, Themes, Installation und Datenschutz ausführlich erklärt.
 
+> [!IMPORTANT]
+> **Du suchst die neuesten Funktionen?** `main` enthält den finalen Quellstand. Neuere Entwicklungsänderungen und der aktuelle Vorab-Quellstand liegen meist im [`beta`-Branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta). Wähle auf GitHub im Branch-Menü oberhalb der Dateiliste **beta**.
+
 ## Überblick
 
 ThermalAtlas ist eine schlanke, datenschutzfreundliche und lokale macOS-Menüleisten-App für Apple Silicon. Sie zeigt echte Sensorwerte für CPU, GPU, interne SSD und jede erkannte physische externe SSD, sobald macOS sie bereitstellt – ohne Telemetrie, Konten oder Hardwaresteuerung. Die Oberfläche startet auf Englisch und bietet Deutsch als optional wählbare Anzeigesprache.
