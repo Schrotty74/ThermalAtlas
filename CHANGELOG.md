@@ -2,6 +2,24 @@
 
 All notable user-visible changes are documented here in English. Development builds remain local; public prereleases are announced through GitHub Releases.
 
+## 0.5.0
+
+### Added
+
+- Optional macOS **Start at Login** registration, controlled locally from the shared footer menu.
+- A copyable diagnostic report with the Mac model, macOS version, detected Apple-silicon chip name, and current sensor states.
+- A transparent memory status of Normal, Elevated, or High based on the displayed locally used-memory share.
+- The detected connection type for an external SSD in its Sensor Details when macOS provides it.
+
+### Improved
+
+- All-values menu-bar readings now use distinct CPU, GPU, internal-SSD, and external-SSD colours with a high-contrast status frame: green normally, yellow near the configured warning threshold, and red at the threshold.
+- Renamed the system-following appearance to **Adaptive** and refined the Liquid Glass presentation.
+
+### Documentation
+
+- Updated the English and German public documentation for the current monitoring interface, local diagnostics, Start at Login, memory status, and menu-bar presentation.
+
 ## 0.4.0
 
 ### Added
