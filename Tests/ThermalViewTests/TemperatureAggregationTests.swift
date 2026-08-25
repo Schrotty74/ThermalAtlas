@@ -265,4 +265,24 @@ final class TemperatureAggregationTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(cpuPoints.first).sampleCount, 2)
         XCTAssertEqual(store.points(for: gpu80.id, range: .oneHour, now: firstMinute.addingTimeInterval(20)).count, 1)
     }
+
+    func testTimedProcessRunnerReturnsOutputForSuccessfulCommand() {
+        let runner = TimedProcessRunner(
+            executableURL: URL(fileURLWithPath: "/usr/bin/printf"),
+            timeout: 1
+        )
+
+        XCTAssertEqual(runner.output(arguments: ["thermalatlas"]), Data("thermalatlas".utf8))
+    }
+
+    func testTimedProcessRunnerTerminatesAStalledCommand() {
+        let runner = TimedProcessRunner(
+            executableURL: URL(fileURLWithPath: "/bin/sleep"),
+            timeout: 0.05
+        )
+        let startedAt = Date()
+
+        XCTAssertNil(runner.output(arguments: ["2"]))
+        XCTAssertLessThan(Date().timeIntervalSince(startedAt), 1)
+    }
 }

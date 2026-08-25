@@ -21,6 +21,13 @@ final class SensorService {
     private var topologyRefreshTask: Task<Void, Never>?
     private var ssdTemperatureRefreshTask: Task<Void, Never>?
     private var smartRefreshTask: Task<Void, Never>?
+    private var processorRefreshInFlight = false
+    private var processorRefreshPending = false
+    private var diskTopologyRefreshInFlight = false
+    private var diskTopologyRefreshPending = false
+    private var diskReadingsRefreshInFlight = false
+    private var diskTemperatureRefreshPending = false
+    private var smartRefreshPending = false
     private var processorReadings = SensorKind.allCases.prefix(2).map {
         TemperatureReading(kind: $0, temperatureCelsius: nil, detail: nil, unavailableReason: .checking)
     }
@@ -41,7 +48,7 @@ final class SensorService {
         language: .defaultLanguage
     )
     private var alertEngine = TemperatureAlertEngine()
-    private var systemContextReader = SystemContextReader()
+    private let systemContextSampler = SystemContextSampler()
 
     init(refreshInterval: TimeInterval = RefreshIntervalOption.defaultOption.rawValue) {
         self.refreshInterval = RefreshIntervalOption.normalized(refreshInterval).rawValue
@@ -91,11 +98,11 @@ final class SensorService {
     private func startSystemContextRefresh() {
         guard systemContextRefreshTask == nil else { return }
         systemContextRefreshTask = Task { [weak self] in
-            self?.refreshSystemContext()
+            await self?.refreshSystemContext()
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(Self.systemContextRefreshInterval))
                 guard !Task.isCancelled, let self else { break }
-                self.refreshSystemContext()
+                await self.refreshSystemContext()
             }
         }
     }
@@ -130,52 +137,101 @@ final class SensorService {
     }
 
     private func refreshProcessors() async {
-        let now = Date.now
-        let readings = await Task.detached(priority: .utility) {
-            SensorProbe.processorReadings(measuredAt: now)
-        }.value
-        processorReadings = applyingTransientGPUFallback(to: readings, now: now)
-        publishSnapshot(at: now)
-        processorReadings = processorReadings.map { $0.cached() }
+        guard !processorRefreshInFlight else {
+            processorRefreshPending = true
+            return
+        }
+
+        processorRefreshInFlight = true
+        defer { processorRefreshInFlight = false }
+        repeat {
+            processorRefreshPending = false
+            let now = Date.now
+            let readings = await Task.detached(priority: .utility) {
+                SensorProbe.processorReadings(measuredAt: now)
+            }.value
+            processorReadings = applyingTransientGPUFallback(to: readings, now: now)
+            publishSnapshot(at: now)
+            processorReadings = processorReadings.map { $0.cached() }
+        } while processorRefreshPending && !Task.isCancelled
     }
 
-    private func refreshSystemContext() {
-        systemContext = systemContextReader.read()
+    private func refreshSystemContext() async {
+        let updatedContext = await systemContextSampler.read()
+        guard updatedContext != systemContext else { return }
+        systemContext = updatedContext
     }
 
     private func refreshDiskTopology() async {
-        let topology = await Task.detached(priority: .utility) { DiskUtility.topology() }.value
-        let topologyChanged = diskTopology != topology
-        diskTopology = topology
-        guard !hasCompletedInitialDiskRefresh || topologyChanged else { return }
-        await refreshSMART()
+        guard !diskTopologyRefreshInFlight else {
+            diskTopologyRefreshPending = true
+            return
+        }
+
+        diskTopologyRefreshInFlight = true
+        defer { diskTopologyRefreshInFlight = false }
+        repeat {
+            diskTopologyRefreshPending = false
+            let topology = await Task.detached(priority: .utility) { DiskUtility.topology() }.value
+            let topologyChanged = diskTopology != topology
+            diskTopology = topology
+            if !hasCompletedInitialDiskRefresh || topologyChanged {
+                await refreshSMART()
+            }
+        } while diskTopologyRefreshPending && !Task.isCancelled
     }
 
     private func refreshSMART() async {
-        let now = Date.now
-        let topology = diskTopology
-        let readings = await Task.detached(priority: .utility) {
-            DiskUtility.readings(for: topology, measuredAt: now)
-        }.value
-        diskReadings = readings
-        hasCompletedInitialDiskRefresh = true
-        publishSnapshot(at: now)
-        diskReadings = diskReadings.map { $0.cached() }
+        await refreshDiskReadings(includingSMARTMetadata: true)
     }
 
     private func refreshSSDTemperatures() async {
         guard hasCompletedInitialDiskRefresh else { return }
-        let now = Date.now
-        let topology = diskTopology
-        let readings = await Task.detached(priority: .utility) {
-            DiskUtility.readings(for: topology, measuredAt: now)
-        }.value
-        diskReadings = readings.map { reading in
-            guard let previous = diskReadings.first(where: { $0.id == reading.id }) else { return reading }
-            return reading.replacingSMARTMetadata(from: previous)
+        await refreshDiskReadings(includingSMARTMetadata: false)
+    }
+
+    private func refreshDiskReadings(includingSMARTMetadata: Bool) async {
+        guard !diskReadingsRefreshInFlight else {
+            if includingSMARTMetadata {
+                smartRefreshPending = true
+            } else {
+                diskTemperatureRefreshPending = true
+            }
+            return
         }
-        publishSnapshot(at: now)
-        diskReadings = diskReadings.map { $0.cached() }
+
+        diskReadingsRefreshInFlight = true
+        defer { diskReadingsRefreshInFlight = false }
+        var needsSMARTMetadata = includingSMARTMetadata
+        while true {
+            let now = Date.now
+            let topology = diskTopology
+            let readings = await Task.detached(priority: .utility) {
+                DiskUtility.readings(for: topology, measuredAt: now)
+            }.value
+            if needsSMARTMetadata {
+                diskReadings = readings
+                hasCompletedInitialDiskRefresh = true
+            } else {
+                diskReadings = readings.map { reading in
+                    guard let previous = diskReadings.first(where: { $0.id == reading.id }) else { return reading }
+                    return reading.replacingSMARTMetadata(from: previous)
+                }
+            }
+            publishSnapshot(at: now)
+            diskReadings = diskReadings.map { $0.cached() }
+
+            if smartRefreshPending {
+                smartRefreshPending = false
+                needsSMARTMetadata = true
+            } else if diskTemperatureRefreshPending {
+                diskTemperatureRefreshPending = false
+                needsSMARTMetadata = false
+            } else {
+                break
+            }
+            guard !Task.isCancelled else { break }
+        }
     }
 
     private func publishSnapshot(at date: Date) {
@@ -317,6 +373,11 @@ private struct DiskInfo {
 }
 
 private enum DiskUtility {
+    private static let commandRunner = TimedProcessRunner(
+        executableURL: URL(fileURLWithPath: "/usr/sbin/diskutil"),
+        timeout: 8
+    )
+
     static func topology() -> [DiskTopology] {
         guard let list = propertyList(arguments: ["list", "-plist"]),
               let identifiers = list["AllDisks"] as? [String] else { return [] }
@@ -477,16 +538,7 @@ private enum DiskUtility {
     }
 
     private static func propertyList(arguments: [String]) -> [String: Any]? {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/sbin/diskutil")
-        process.arguments = arguments
-        let output = Pipe()
-        process.standardOutput = output
-        process.standardError = Pipe()
-        do { try process.run() } catch { return nil }
-        process.waitUntilExit()
-        guard process.terminationStatus == 0 else { return nil }
-        let data = output.fileHandleForReading.readDataToEndOfFile()
+        guard let data = commandRunner.output(arguments: arguments) else { return nil }
         return (try? PropertyListSerialization.propertyList(from: data, format: nil)) as? [String: Any]
     }
 }

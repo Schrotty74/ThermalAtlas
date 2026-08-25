@@ -72,10 +72,13 @@ final class TemperatureHistoryStore {
             }
             pointsByReadingID[identifier] = points.filter { $0.date >= cutoff }
         }
-        pointsByReadingID = Self.pruned(pointsByReadingID, before: cutoff)
         // Keep refining the in-memory average during a minute, but write only
-        // when a new minute begins. This avoids disk activity on every scan.
-        if startedNewMinute { persist() }
+        // when a new minute begins. Pruning and persistence follow that same
+        // cadence, avoiding a complete history walk on every sensor scan.
+        if startedNewMinute {
+            pointsByReadingID = Self.pruned(pointsByReadingID, before: cutoff)
+            persist()
+        }
     }
 
     func points(for readingID: String, range: TemperatureHistoryRange, now: Date = .now) -> [TemperatureHistoryPoint] {

@@ -145,6 +145,17 @@ struct SystemContextReader {
     }
 }
 
+/// Owns the stateful CPU sampler away from SwiftUI's main actor. System calls
+/// remain read-only, but a temporarily slow IOKit query must not delay menus or
+/// animation on the main thread.
+actor SystemContextSampler {
+    private var reader = SystemContextReader()
+
+    func read() -> SystemContext {
+        reader.read()
+    }
+}
+
 /// Reads the memory pages currently occupied by apps, the system and the
 /// compressed-memory store. File cache pages are intentionally excluded, so
 /// the value describes actual RAM pressure rather than available cache.
