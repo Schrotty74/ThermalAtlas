@@ -14,6 +14,31 @@ struct SystemContext: Sendable, Equatable {
             guard totalBytes > 0 else { return 0 }
             return min(100, max(0, Double(usedBytes) / Double(totalBytes) * 100))
         }
+
+        var loadStatus: MemoryLoadStatus {
+            switch usagePercent {
+            case ..<70: .normal
+            case ..<85: .elevated
+            default: .high
+            }
+        }
+    }
+
+    enum MemoryLoadStatus: Sendable, Equatable {
+        case normal
+        case elevated
+        case high
+
+        func title(for language: AppLanguage) -> String {
+            switch (self, language) {
+            case (.normal, .english): "Normal"
+            case (.elevated, .english): "Elevated"
+            case (.high, .english): "High"
+            case (.normal, .german): "Normal"
+            case (.elevated, .german): "Erhöht"
+            case (.high, .german): "Hoch"
+            }
+        }
     }
 
     enum PowerSource: Sendable, Equatable {

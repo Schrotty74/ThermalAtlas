@@ -1,4 +1,5 @@
 import Foundation
+import Darwin
 
 @MainActor
 enum TemperatureExport {
@@ -56,7 +57,43 @@ enum TemperatureExport {
         return ([header] + historyRows + currentRows).map { $0.map(csvField).joined(separator: ",") }.joined(separator: "\n") + "\n"
     }
 
+    static func diagnosticReport(snapshot: ThermalSnapshot, language: AppLanguage) -> String {
+        let heading = language == .english ? "ThermalAtlas diagnostic report" : "ThermalAtlas-Diagnosebericht"
+        let generated = language == .english ? "Generated" : "Erstellt"
+        let hardware = language == .english ? "Hardware" : "Hardware"
+        let system = language == .english ? "macOS" : "macOS"
+        let chip = language == .english ? "Chip" : "Chip"
+        let sensorStatus = language == .english ? "Sensor status" : "Sensorstatus"
+        let timestamp = snapshot.updatedAt.formatted(.dateTime.year().month().day().hour().minute().second().locale(language.locale))
+        let chipName = AppleSiliconSMCTemperatureBackend.detectedChipNameForDiagnostics() ?? language.notAvailable
+        let lines = snapshot.readings.map { reading in
+            let name = reading.title ?? reading.kind.title(for: language)
+            let result = reading.temperatureCelsius.map {
+                "\($0.formatted(.number.precision(.fractionLength(1)).locale(language.locale))) °C"
+            } ?? reading.unavailableReason?.localized(for: language) ?? language.notAvailable
+            let detail = reading.detail.map { " · \($0)" } ?? ""
+            return "- \(name): \(result)\(detail)"
+        }
+        return ([
+            heading,
+            "\(generated): \(timestamp)",
+            "\(hardware): \(hardwareModel())",
+            "\(system): \(ProcessInfo.processInfo.operatingSystemVersionString)",
+            "\(chip): \(chipName)",
+            "",
+            sensorStatus
+        ] + lines).joined(separator: "\n")
+    }
+
     private static func csvField(_ value: String) -> String {
         "\"\(value.replacingOccurrences(of: "\"", with: "\"\""))\""
+    }
+
+    private static func hardwareModel() -> String {
+        var size = 0
+        guard sysctlbyname("hw.model", nil, &size, nil, 0) == 0, size > 1 else { return "Unknown" }
+        var value = [CChar](repeating: 0, count: size)
+        guard sysctlbyname("hw.model", &value, &size, nil, 0) == 0 else { return "Unknown" }
+        return String(decoding: value.map { UInt8(bitPattern: $0) }.prefix(while: { $0 != 0 }), as: UTF8.self)
     }
 }

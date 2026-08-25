@@ -23,7 +23,7 @@ Diese Seite beschreibt die aktuellen Beta-Funktionen ausführlich. Installation 
 
 ## Systemkontext
 
-- Zeigt getrennt CPU- und GPU-Gesamtlast, belegten Arbeitsspeicher im Verhältnis zum installierten RAM, Stromquelle/Akku und Energiesparmodus.
+- Zeigt getrennt CPU- und GPU-Gesamtlast, belegten Arbeitsspeicher im Verhältnis zum installierten RAM mit dem Status Normal, Erhöht oder Hoch, Stromquelle/Akku und Energiesparmodus.
 - Aktualisiert CPU-/GPU-Last und belegten Speicher alle 0,5 Sekunden, unabhängig vom gewählten Temperaturintervall.
 - Behandelt diese Werte als rein lesenden Kontext, niemals als Temperaturmessungen oder Systemsteuerung.
 
@@ -32,16 +32,18 @@ Diese Seite beschreibt die aktuellen Beta-Funktionen ausführlich. Installation 
 - Öffnet von jeder Temperaturkarte einen lokalen Verlauf für 1, 6 oder 24 Stunden.
 - Speichert nur lokale Minutenmittelwerte für höchstens 24 Stunden; vorübergehend gehaltene GPU-Werte werden nicht als neue Messung aufgezeichnet.
 - Bietet getrennte Warnschwellen für CPU, GPU, interne SSD und externe SSDs. Eine Mitteilung benötigt mindestens 60 Sekunden über der Schwelle und wird erst nach einer Abkühlung erneut gesendet.
-- Exportiert einen kopierbaren aktuellen Snapshot oder lokalen Verlauf plus aktuellen Snapshot als CSV – nur nach der Auswahl eines Speicherorts.
+- Exportiert einen kopierbaren aktuellen Snapshot, einen kopierbaren Diagnosebericht mit Mac-Modell, macOS-Version, Chipbezeichnung und Sensorstatus oder lokalen Verlauf plus aktuellen Snapshot als CSV; CSV entsteht erst nach der Auswahl eines Speicherorts.
 
 ## Oberfläche und Anzeige
 
 - Bietet Standard- und Kompaktgröße für das Popover; Kompakt ist rund 40 % schmaler und hält die Bedienelemente lesbar.
 - Lässt CPU-, GPU-, interne SSD- und externe SSD-Gruppen für Popover und Menüleiste wählen.
 - Bietet Menüleistenmodi für **Alle Werte** oder **Nur Symbol**.
-- Enthält vier native Themes: Klassisch, Liquid Glass, Aurora und Ember.
+- Trennt CPU-, GPU- und SSD-Werte im Modus **Alle Werte** farblich und ergänzt eine kontrastreiche Statusfläche: grün im Normalbereich, gelb nahe einer Schwelle und rot ab der gewählten Warnschwelle.
+- Enthält vier native Themes: Adaptiv, Liquid Glass, Aurora und Ember.
 - Startet auf Englisch und bietet eine lokale deutsche Oberfläche.
-- Bündelt Erscheinungsbild, Aktualisierung, Anzeige, Warnungen, Sprache, Export, Handbücher, Links, Aktivitätsanzeige und Beenden in einem Footer-Menü.
+- Bietet eine optionale macOS-Registrierung für **Bei Anmeldung starten**.
+- Bündelt Erscheinungsbild, Aktualisierung, Anzeige, Warnungen, Bei Anmeldung starten, Sprache, Export, Handbücher, Links, Aktivitätsanzeige und Beenden in einem Footer-Menü.
 
 ## Datenschutz und Sicherheit
 

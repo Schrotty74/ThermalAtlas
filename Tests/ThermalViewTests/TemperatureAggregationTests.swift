@@ -125,6 +125,36 @@ final class TemperatureAggregationTests: XCTestCase {
         XCTAssertNil(GPUUsageReader.usagePercent(from: [:]))
         let memory = SystemContext.MemoryUsage(usedBytes: 24, totalBytes: 96)
         XCTAssertEqual(memory.usagePercent, 25)
+        XCTAssertEqual(memory.loadStatus, .normal)
+        XCTAssertEqual(SystemContext.MemoryUsage(usedBytes: 86, totalBytes: 100).loadStatus, .high)
+    }
+
+    func testMenuBarStatusUsesConfiguredThresholds() {
+        let configuration = TemperatureAlertConfiguration(
+            isEnabled: false, cpuThreshold: 95, gpuThreshold: 95,
+            internalSSDThreshold: 70, externalSSDThreshold: 70, language: .english
+        )
+        XCTAssertEqual(
+            MenuBarTemperatureStatus.from(
+                readings: [TemperatureReading(kind: .cpu, temperatureCelsius: 40, detail: nil, unavailableReason: nil)],
+                configuration: configuration
+            ),
+            .normal
+        )
+        XCTAssertEqual(
+            MenuBarTemperatureStatus.from(
+                readings: [TemperatureReading(kind: .internalSSD, temperatureCelsius: 62, detail: nil, unavailableReason: nil)],
+                configuration: configuration
+            ),
+            .warm
+        )
+        XCTAssertEqual(
+            MenuBarTemperatureStatus.from(
+                readings: [TemperatureReading(kind: .gpu, temperatureCelsius: 95, detail: nil, unavailableReason: nil)],
+                configuration: configuration
+            ),
+            .warning
+        )
     }
 
     func testTemperatureAlertOnlyFiresAfterOneMinuteAndResetsAfterRecovery() {

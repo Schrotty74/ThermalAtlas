@@ -67,6 +67,10 @@ struct AppleSiliconSMCTemperatureBackend {
         }
     }
 
+    static func detectedChipNameForDiagnostics() -> String? {
+        detectedChipName()
+    }
+
     private static func detectedChipName() -> String? {
         var size = 0
         guard sysctlbyname("machdep.cpu.brand_string", nil, &size, nil, 0) == 0, size > 1 else {

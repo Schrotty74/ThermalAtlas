@@ -11,8 +11,8 @@ enum ThermalTheme: String, CaseIterable, Identifiable {
 
     func displayName(for language: AppLanguage) -> String {
         switch (self, language) {
-        case (.classic, .english): "Classic"
-        case (.classic, .german): "Klassisch"
+        case (.classic, .english): "Adaptive"
+        case (.classic, .german): "Adaptiv"
         case (.milkGlass, _): "Liquid Glass"
         case (.aurora, _): "Aurora"
         case (.ember, _): "Ember"
@@ -181,10 +181,10 @@ final class ThermalMilkGlassBackdropView: NSVisualEffectView {
         material = allowsTransparency ? .hudWindow : .windowBackground
         blendingMode = allowsTransparency ? .behindWindow : .withinWindow
         glowLayer.colors = [
-            NSColor.systemTeal.withAlphaComponent(darkAppearance ? 0.30 : 0.18).cgColor,
-            NSColor.systemCyan.withAlphaComponent(darkAppearance ? 0.23 : 0.14).cgColor,
-            NSColor.systemBlue.withAlphaComponent(darkAppearance ? 0.18 : 0.10).cgColor,
-            NSColor.systemPurple.withAlphaComponent(darkAppearance ? 0.14 : 0.08).cgColor
+            NSColor.systemTeal.withAlphaComponent(darkAppearance ? 0.30 : 0.28).cgColor,
+            NSColor.systemCyan.withAlphaComponent(darkAppearance ? 0.23 : 0.22).cgColor,
+            NSColor.systemBlue.withAlphaComponent(darkAppearance ? 0.18 : 0.16).cgColor,
+            NSColor.systemPurple.withAlphaComponent(darkAppearance ? 0.14 : 0.13).cgColor
         ]
         glowLayer.opacity = allowsTransparency ? 0.46 : 0.18
     }

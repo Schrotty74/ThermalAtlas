@@ -73,7 +73,15 @@ struct ThermalAtlasApp: App {
                 service: sensorService,
                 visibleSensorKinds: visibleSensorKinds,
                 displayMode: selectedMenuBarDisplayMode.wrappedValue,
-                language: selectedLanguage.wrappedValue
+                language: selectedLanguage.wrappedValue,
+                alertConfiguration: TemperatureAlertConfiguration(
+                    isEnabled: alertsEnabled,
+                    cpuThreshold: cpuAlertThreshold,
+                    gpuThreshold: gpuAlertThreshold,
+                    internalSSDThreshold: internalSSDAlertThreshold,
+                    externalSSDThreshold: externalSSDAlertThreshold,
+                    language: selectedLanguage.wrappedValue
+                )
             )
         }
         .menuBarExtraStyle(.window)

@@ -19,6 +19,26 @@ struct TemperatureAlertConfiguration: Equatable, Sendable {
     }
 }
 
+enum MenuBarTemperatureStatus: Sendable, Equatable {
+    case normal
+    case warm
+    case warning
+
+    static func from(readings: [TemperatureReading], configuration: TemperatureAlertConfiguration) -> Self {
+        for reading in readings {
+            guard let temperature = reading.temperatureCelsius,
+                  temperature >= configuration.threshold(for: reading.kind) else { continue }
+            return .warning
+        }
+        for reading in readings {
+            guard let temperature = reading.temperatureCelsius,
+                  temperature >= configuration.threshold(for: reading.kind) - 10 else { continue }
+            return .warm
+        }
+        return .normal
+    }
+}
+
 enum TemperatureAlertSettings {
     static let enabledKey = "thermalatlas.temperatureAlertsEnabled"
     static let cpuThresholdKey = "thermalatlas.cpuAlertThreshold"

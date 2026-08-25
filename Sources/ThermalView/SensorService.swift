@@ -287,8 +287,13 @@ private struct DiskTopology: Sendable, Equatable {
     let volumeName: String?
     let hasMountedVolume: Bool
     let isVirtual: Bool
+    let connectionType: String?
 
     var displayName: String { volumeName?.isEmpty == false ? volumeName! : mediaName }
+    var connectionDescription: String? {
+        guard !isInternal, let connectionType else { return nil }
+        return connectionType
+    }
 }
 
 private struct DiskInfo {
@@ -338,7 +343,8 @@ private enum DiskUtility {
                 hasMountedVolume: internalDrive || hasMountedVolume(
                     for: identifier, ownInfo: info, allInfos: infos
                 ),
-                isVirtual: (info["VirtualOrPhysical"] as? String) == "Virtual"
+                isVirtual: (info["VirtualOrPhysical"] as? String) == "Virtual",
+                connectionType: connectionType(in: info)
             )
         }.sorted { $0.identifier.localizedStandardCompare($1.identifier) == .orderedAscending }
     }
@@ -379,14 +385,14 @@ private enum DiskUtility {
         guard let kelvin = disk.smartTemperatureKelvin, (200...450).contains(kelvin) else {
             return TemperatureReading(
                 kind: kind, sourceIdentifier: disk.identifier, title: disk.displayName,
-                temperatureCelsius: nil, detail: nil, smartStatus: disk.smartStatusValue,
+                temperatureCelsius: nil, detail: disk.topology.connectionDescription, smartStatus: disk.smartStatusValue,
                 smartHealthPercentage: disk.smartHealthPercentage,
                 unavailableReason: .smartTemperatureUnavailable, measuredAt: measuredAt
             )
         }
         return TemperatureReading(
             kind: kind, sourceIdentifier: disk.identifier, title: disk.displayName,
-            temperatureCelsius: kelvin - 273.15, detail: nil,
+            temperatureCelsius: kelvin - 273.15, detail: disk.topology.connectionDescription,
             smartStatus: disk.smartStatusValue, smartHealthPercentage: disk.smartHealthPercentage,
             unavailableReason: nil, measuredAt: measuredAt
         )
@@ -462,6 +468,12 @@ private enum DiskUtility {
     private static func nonEmptyString(_ value: Any?) -> String? {
         guard let value = value as? String, !value.isEmpty else { return nil }
         return value
+    }
+
+    private static func connectionType(in info: [String: Any]) -> String? {
+        ["BusProtocol", "Protocol", "DeviceProtocol"]
+            .compactMap { nonEmptyString(info[$0]) }
+            .first
     }
 
     private static func propertyList(arguments: [String]) -> [String: Any]? {

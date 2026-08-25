@@ -64,7 +64,10 @@ def base(c, number, section, title, subtitle, page):
     c.setFont("Helvetica", 9)
     c.drawString(42, H - 68, f"{number:02d} · {section.upper()}")
     c.setFillColor(white)
-    c.setFont("Helvetica", 27)
+    title_size = 27
+    while title_size > 18 and stringWidth(title, "Helvetica", title_size) > W - 84:
+        title_size -= 1
+    c.setFont("Helvetica", title_size)
     c.drawString(42, H - 98, title)
     c.setFillColor(MUTED)
     c.setFont("Helvetica", 12)
@@ -131,13 +134,13 @@ def build(language, output):
     base(c, 2, "Steuerung" if de else "Controls", t["menu"], t["menu_sub"], 3)
     panel(c, 48, 555, W - 96, 115, CYAN,
           "Menüleisten-Anzeige" if de else "Menu bar display",
-          "Kompakte Sensorsymbole zeigen alle verfügbaren Werte der ausgewählten Gruppen." if de else "Compact sensor symbols show every available value from the selected groups.")
+          "Farbig getrennte Sensorsymbole zeigen alle verfügbaren Werte der ausgewählten Gruppen in einer kontrastreichen Statusfläche." if de else "Colour-coded sensor symbols show every available value from the selected groups in a high-contrast status frame.")
     image(c, ASSETS / "ManualScreenshots" / "menu-bar-temperatures.png", 76, 490, W - 152, 45)
     image(c, ASSETS / "ManualScreenshots" / "shared-menu.png", 70, 105, 250, 345)
     panel(c, 345, 310, 200, 140, VIOLET, "Themes / Scan Refresh",
           "Darstellung und Aktualisierungsintervall ändern nur die Oberfläche beziehungsweise die Häufigkeit der lesenden Abfragen." if de else "Appearance and refresh interval change only the interface or the frequency of read-only checks.")
-    panel(c, 345, 145, 200, 135, GREEN, "Alerts / Language",
-          "Menüleistenmodus, Warnungen, Export, Sprache, Handbücher, öffentliche Links, Aktivitätsanzeige und Beenden bleiben zusammen im Footer-Menü." if de else "Menu bar mode, alerts, export, language, manuals, public links, Activity Monitor and quit remain together in the footer menu.")
+    panel(c, 345, 145, 200, 135, GREEN, "Alerts / Start at Login",
+          "Warnungen, Start bei Anmeldung, Diagnosebericht, Export, Sprache, Handbücher, öffentliche Links, Aktivitätsanzeige und Beenden bleiben zusammen im Footer-Menü." if de else "Alerts, Start at Login, diagnostic report, export, language, manuals, public links, Activity Monitor and quit remain together in the footer menu.")
     c.showPage()
 
     # 4 New options
@@ -168,7 +171,7 @@ def build(language, output):
     # 6 Themes
     base(c, 5, "Darstellung" if de else "Appearance", t["themes"], t["theme_sub"], 6)
     positions = [(55, 450), (312, 450), (55, 175), (312, 175)]
-    names = ["Classic", "Liquid Glass", "Aurora", "Ember"]
+    names = ["Adaptiv" if de else "Adaptive", "Liquid Glass", "Aurora", "Ember"]
     files = ["classic.png", "liquid-glass.png", "aurora.png", "ember.png"]
     colors = [CYAN, VIOLET, CYAN, ORANGE]
     for (x, y), name, filename, color in zip(positions, names, files, colors):

@@ -41,7 +41,7 @@ Die App ist bewusst auf die Anzeige konzentriert. Sie verändert **keine Lüfter
 Die Screenshots in diesem Handbuch zeigen die aktuelle ThermalAtlas-Oberfläche. Die angezeigten SSD-Namen, Temperaturen und Gesundheitswerte sind Beispiele vom aufgenommenen Mac; Anzahl und Namen externer SSD-Karten unterscheiden sich je nach angeschlossener Hardware.
 
 <p align="center">
-  <img src="Resources/Screenshots/classic.png" width="430" alt="ThermalAtlas Klassisch mit CPU, GPU, interner SSD und zwei externen SSD-Karten">
+  <img src="Resources/Screenshots/classic.png" width="430" alt="ThermalAtlas Adaptiv mit CPU, GPU, interner SSD und zwei externen SSD-Karten">
 </p>
 
 ### Was du im Fenster siehst
@@ -84,12 +84,12 @@ Unter den Temperaturkarten zeigt ThermalAtlas CPU- und GPU-Last, den belegten Ar
 
 ## 3. Menüleisten-Anzeige
 
-Nach dem Start kann ThermalAtlas in der macOS-Menüleiste kompakte Sensorsymbole und alle aktuell verfügbaren Temperaturen der ausgewählten Gruppen zeigen. CPU, GPU, interne SSD und jede erkannte externe SSD haben ein eigenes Symbol; nicht verfügbare Sensoren erhalten keine erfundenen Ersatzwerte.
+Nach dem Start kann ThermalAtlas in der macOS-Menüleiste kompakte, farblich getrennte Sensorsymbole und alle aktuell verfügbaren Temperaturen der ausgewählten Gruppen zeigen. CPU ist goldgelb, GPU blau, die interne SSD türkis und externe SSDs sind grün; nicht verfügbare Sensoren erhalten keine erfundenen Ersatzwerte.
 
 Die angezeigten Gruppen werden im gemeinsamen Menü unter **Sichtbare Temperaturen** gewählt und gelten gleichermaßen für Menüleiste und ThermalAtlas-Fenster. Unter **Menüleistenanzeige** gibt es zwei Modi: **Alle Werte** ist der Standard und zeigt die gewählten Gruppen; **Nur Symbol** blendet Temperaturtexte aus und zeigt nur das ThermalAtlas-Symbol. Ein Klick auf den Menüleisteneintrag öffnet das ThermalAtlas-Fenster.
 
 <p align="center">
-  <img src="Resources/ManualScreenshots/menu-bar-temperatures.png" width="430" alt="ThermalAtlas-Menüleiste mit kompakten Sensorsymbolen und fünf Temperaturen">
+  <img src="Resources/ManualScreenshots/menu-bar-temperatures.png" width="430" alt="ThermalAtlas-Menüleiste mit farblich getrennten CPU-, GPU- und SSD-Temperaturen in einer kontrastreichen Statusfläche">
 </p>
 
 ---
@@ -99,7 +99,7 @@ Die angezeigten Gruppen werden im gemeinsamen Menü unter **Sichtbare Temperatur
 Der runde **Dreipunkt-Button** im Footer öffnet ein gemeinsames Menü. So bleiben alle sekundären Aktionen zusammengefasst, ohne zusätzliche Buttons in der Temperaturansicht.
 
 <p align="center">
-  <img src="Resources/ManualScreenshots/shared-menu.png" width="330" alt="Englisches ThermalAtlas-Hauptmenü mit Themes, Scan Refresh, Window Size, Visible Temperatures, Menu Bar Display, Temperature Alerts, Language, Export, Links, Handbüchern, Aktivitätsanzeige und Beenden">
+  <img src="Resources/ManualScreenshots/shared-menu.png" width="330" alt="Englisches ThermalAtlas-Hauptmenü mit Themes, Scan Refresh, Window Size, Visible Temperatures, Menu Bar Display, Temperature Alerts, Start at Login, Language, Export, Links, Handbüchern, Aktivitätsanzeige und Beenden">
 </p>
 
 ### Themes (Themen)
@@ -107,19 +107,19 @@ Der runde **Dreipunkt-Button** im Footer öffnet ein gemeinsames Menü. So bleib
 Wähle im gemeinsamen Menü **Themes**, um eine Darstellung zu wählen. Die aktive Auswahl ist mit einem Häkchen markiert.
 
 <p align="center">
-  <img src="Resources/ManualScreenshots/themes-menu.png" width="232" alt="ThermalAtlas-Menü Themes mit Klassisch, Liquid Glass, Aurora und Ember">
+  <img src="Resources/ManualScreenshots/themes-menu.png" width="232" alt="ThermalAtlas-Menü Themes mit Adaptiv, Liquid Glass, Aurora und Ember">
 </p>
 
-- **Klassisch** - zurückhaltende, systemnahe Optik
-- **Liquid Glass** - adaptives Systemmaterial mit Glasflächen; folgt dem macOS-Hell- und Dunkelmodus und nutzt bei aktivierter Transparenzreduktion eine opake Darstellung
+- **Adaptiv** - folgt dem macOS-Hell- oder Dunkelmodus mit einer zurückhaltenden Oberfläche aus Systemmaterial
+- **Liquid Glass** - kühl eingefärbte, durchscheinende Glasflächen mit opaker Darstellung bei aktivierter Transparenzreduktion
 - **Aurora** - dunkle Blau- und Violett-Töne
 - **Ember** - warme Rot- und Orange-Töne
 
 Die Auswahl verändert nur die Darstellung, nicht die Messlogik. Sie wird lokal gespeichert. Alle vier Varianten zeigen dieselben Sensordaten.
 
-| Klassisch | Liquid Glass |
+| Adaptiv | Liquid Glass |
 | --- | --- |
-| <img src="Resources/Screenshots/classic.png" width="300" alt="ThermalAtlas Theme Klassisch"> | <img src="Resources/Screenshots/liquid-glass.png" width="300" alt="ThermalAtlas Theme Liquid Glass"> |
+| <img src="Resources/Screenshots/classic.png" width="300" alt="ThermalAtlas Theme Adaptiv"> | <img src="Resources/Screenshots/liquid-glass.png" width="300" alt="ThermalAtlas Theme Liquid Glass"> |
 | **Aurora** | **Ember** |
 | <img src="Resources/Screenshots/aurora.png" width="300" alt="ThermalAtlas Theme Aurora"> | <img src="Resources/Screenshots/ember.png" width="300" alt="ThermalAtlas Theme Ember"> |
 
@@ -178,12 +178,16 @@ Unter **Temperature Alerts** lassen sich lokale macOS-Mitteilungen ein- oder aus
   <img src="Resources/ManualScreenshots/temperature-alert-thresholds.png" width="130" alt="ThermalAtlas-Untermenü der CPU-Warnschwelle mit ausgewählten 95 Grad Celsius">
 </p>
 
+### Start at Login (Bei Anmeldung starten)
+
+Mit **Start at Login** registrierst du ThermalAtlas bei macOS für den automatischen Start nach der Anmeldung. Die erneute Auswahl deaktiviert diese Registrierung wieder. Es ändert nur den Login-Start der App, niemals Energie-, Leistungs- oder Sensoreinstellungen.
+
 ### Export
 
-Unter **Export** bereitest du bei Bedarf lokale Diagnosedaten vor. **Copy Current Readings** kopiert den aktuellen Snapshot als Text in die Zwischenablage. **Export CSV** öffnet den normalen macOS-Speicherdialog und schreibt eine CSV mit den verfügbaren Minutenmittelwerten des lokalen Verlaufs sowie dem aktuellen Snapshot. Ohne deine Auswahl eines Speicherorts entsteht keine Exportdatei.
+Unter **Export** bereitest du bei Bedarf lokale Diagnosedaten vor. **Copy Current Readings** kopiert den aktuellen Snapshot als Text in die Zwischenablage. **Copy Diagnostic Report** kopiert Mac-Modell, macOS-Version, Chipbezeichnung und den aktuellen lesbaren beziehungsweise nicht verfügbaren Sensorstatus. **Export CSV** öffnet den normalen macOS-Speicherdialog und schreibt eine CSV mit den verfügbaren Minutenmittelwerten des lokalen Verlaufs sowie dem aktuellen Snapshot. Ohne deine Auswahl eines Speicherorts entsteht keine Exportdatei.
 
 <p align="center">
-  <img src="Resources/ManualScreenshots/export-menu.png" width="394" alt="ThermalAtlas-Untermenü Export mit Copy Current Readings und Export CSV">
+  <img src="Resources/ManualScreenshots/export-menu.png" width="394" alt="ThermalAtlas-Untermenü Export">
 </p>
 
 ### Language (Sprache)
@@ -204,6 +208,7 @@ Die Begriffe des englischen Standardmenüs entsprechen in der deutschen Oberflä
 | Visible Temperatures | Sichtbare Temperaturen |
 | Menu Bar Display | Menüleistenanzeige |
 | Temperature Alerts | Temperaturwarnungen |
+| Start at Login | Bei Anmeldung starten |
 | Export | Export |
 | Language | Sprache |
 | Manuals | Handbücher |

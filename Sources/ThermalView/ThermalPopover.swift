@@ -7,6 +7,7 @@ struct MenuBarLabel: View {
     let visibleSensorKinds: Set<SensorKind>
     let displayMode: MenuBarDisplayMode
     let language: AppLanguage
+    let alertConfiguration: TemperatureAlertConfiguration
 
     private var readings: [TemperatureReading] {
         service.snapshot.readings.filter { visibleSensorKinds.contains($0.kind) }
@@ -15,7 +16,7 @@ struct MenuBarLabel: View {
     var body: some View {
         Image(nsImage: displayMode == .symbolOnly
               ? MenuBarStatusImage.symbolOnly()
-              : MenuBarStatusImage.make(readings: readings))
+              : MenuBarStatusImage.make(readings: readings, status: MenuBarTemperatureStatus.from(readings: readings, configuration: alertConfiguration)))
         .accessibilityLabel(menuBarAccessibilityLabel)
     }
 
@@ -35,13 +36,15 @@ struct MenuBarLabel: View {
 }
 
 /// `MenuBarExtra` renders only the first direct child in its status item on
-/// this macOS version. Draw all symbols and values into one template image so
-/// the native status item receives a single, compact label.
+/// this macOS version. Draw all symbols and values into one image so the native
+/// status item receives a single, compact label while keeping sensor groups
+/// visually distinct.
 enum MenuBarStatusImage {
-    private static let height: CGFloat = 18
+    private static let height: CGFloat = 20
     private static let symbolWidth: CGFloat = 15
     private static let segmentSpacing: CGFloat = 3
     private static let separator = " · "
+    private static let horizontalInset: CGFloat = 5
 
     static func symbolOnly() -> NSImage {
         let image = NSImage(systemSymbolName: "thermometer.medium", accessibilityDescription: "ThermalAtlas") ?? NSImage()
@@ -49,10 +52,14 @@ enum MenuBarStatusImage {
         return image
     }
 
-    static func make(readings: [TemperatureReading]) -> NSImage {
-        let segments = readings.compactMap { reading -> (symbol: String, value: String)? in
+    static func make(readings: [TemperatureReading], status: MenuBarTemperatureStatus) -> NSImage {
+        let segments = readings.compactMap { reading -> (symbol: String, value: String, color: NSColor)? in
             guard let temperature = reading.temperatureCelsius else { return nil }
-            return (reading.kind.symbol, "\(Int(temperature.rounded()))°")
+            return (
+                reading.kind.symbol,
+                "\(Int(temperature.rounded()))°",
+                menuBarColor(for: reading.kind)
+            )
         }
 
         guard !segments.isEmpty else {
@@ -60,38 +67,77 @@ enum MenuBarStatusImage {
         }
 
         let font = NSFont.monospacedDigitSystemFont(ofSize: 13, weight: .regular)
-        let attributes: [NSAttributedString.Key: Any] = [
+        let measurementAttributes: [NSAttributedString.Key: Any] = [.font: font]
+        let separatorAttributes: [NSAttributedString.Key: Any] = [
             .font: font,
-            .foregroundColor: NSColor.black
+            .foregroundColor: NSColor.secondaryLabelColor
         ]
-        let separatorWidth = (separator as NSString).size(withAttributes: attributes).width
+        let separatorWidth = (separator as NSString).size(withAttributes: measurementAttributes).width
         let segmentWidths = segments.map {
-            symbolWidth + segmentSpacing + ($0.value as NSString).size(withAttributes: attributes).width
+            symbolWidth + segmentSpacing + ($0.value as NSString).size(withAttributes: measurementAttributes).width
         }
-        let width = segmentWidths.reduce(0, +) + separatorWidth * CGFloat(segments.count - 1)
+        let contentWidth = segmentWidths.reduce(0, +) + separatorWidth * CGFloat(segments.count - 1)
+        let width = contentWidth + horizontalInset * 2
         let image = NSImage(size: NSSize(width: ceil(width), height: height))
 
         image.lockFocus()
-        var x: CGFloat = 0
+        NSColor.black.withAlphaComponent(0.62).setFill()
+        NSBezierPath(
+            roundedRect: NSRect(x: 0, y: 1, width: ceil(width), height: height - 2),
+            xRadius: 6,
+            yRadius: 6
+        ).fill()
+        statusColor(for: status).withAlphaComponent(0.9).setStroke()
+        let statusBorder = NSBezierPath(
+            roundedRect: NSRect(x: 0.75, y: 1.75, width: ceil(width) - 1.5, height: height - 3.5),
+            xRadius: 5,
+            yRadius: 5
+        )
+        statusBorder.lineWidth = 1.2
+        statusBorder.stroke()
+
+        var x = horizontalInset
         for (index, segment) in segments.enumerated() {
             if index > 0 {
-                (separator as NSString).draw(at: NSPoint(x: x, y: 1), withAttributes: attributes)
+                (separator as NSString).draw(at: NSPoint(x: x, y: 1), withAttributes: separatorAttributes)
                 x += separatorWidth
             }
 
             let configuration = NSImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+                .applying(NSImage.SymbolConfiguration(paletteColors: [segment.color]))
             let symbol = NSImage(systemSymbolName: segment.symbol, accessibilityDescription: nil)?
                 .withSymbolConfiguration(configuration)
             symbol?.draw(in: NSRect(x: x, y: 2, width: symbolWidth, height: symbolWidth))
             x += symbolWidth + segmentSpacing
 
-            let valueWidth = (segment.value as NSString).size(withAttributes: attributes).width
-            (segment.value as NSString).draw(at: NSPoint(x: x, y: 1), withAttributes: attributes)
+            let valueAttributes: [NSAttributedString.Key: Any] = [
+                .font: font,
+                .foregroundColor: segment.color
+            ]
+            let valueWidth = (segment.value as NSString).size(withAttributes: measurementAttributes).width
+            (segment.value as NSString).draw(at: NSPoint(x: x, y: 1), withAttributes: valueAttributes)
             x += valueWidth
         }
         image.unlockFocus()
-        image.isTemplate = true
+        image.isTemplate = false
         return image
+    }
+
+    private static func menuBarColor(for kind: SensorKind) -> NSColor {
+        switch kind {
+        case .cpu: .systemYellow
+        case .gpu: .systemBlue
+        case .internalSSD: .systemTeal
+        case .externalSSD: .systemGreen
+        }
+    }
+
+    private static func statusColor(for status: MenuBarTemperatureStatus) -> NSColor {
+        switch status {
+        case .normal: .systemGreen
+        case .warm: .systemYellow
+        case .warning: .systemRed
+        }
     }
 }
 
@@ -108,11 +154,16 @@ struct ThermalPopover: View {
     @Binding var gpuAlertThreshold: Double
     @Binding var internalSSDAlertThreshold: Double
     @Binding var externalSSDAlertThreshold: Double
+    @State private var launchAtLoginEnabled = LaunchAtLogin.isEnabled
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.colorScheme) private var colorScheme
 
     private var palette: ThermalThemePalette { selectedTheme.palette }
+    private var footerMenuForeground: Color { palette.title }
+    private var footerMenuBackgroundOpacity: Double {
+        selectedTheme == .classic && colorScheme == .light ? 0.10 : 0.16
+    }
 
     var body: some View {
         ZStack {
@@ -190,6 +241,7 @@ struct ThermalPopover: View {
                 allowsTransparency: !reduceTransparency,
                 colorScheme: colorScheme
             )
+            .overlay { liquidGlassLightTint }
         } else if selectedTheme == .classic {
             RoundedRectangle(cornerRadius: 24, style: .continuous).fill(.regularMaterial)
         } else {
@@ -256,6 +308,7 @@ struct ThermalPopover: View {
             visibleTemperaturesMenu
             menuBarDisplayMenu
             temperatureAlertsMenu
+            startAtLoginMenu
             languageMenu
             exportMenu
             Divider()
@@ -273,11 +326,34 @@ struct ThermalPopover: View {
             }
         } label: {
             Image(systemName: "ellipsis.circle")
+                .font(compactPopover ? .body.weight(.semibold) : .title3.weight(.semibold))
+                .foregroundStyle(footerMenuForeground)
+                .frame(width: compactPopover ? 26 : 30, height: compactPopover ? 26 : 30)
+                .background(footerMenuForeground.opacity(footerMenuBackgroundOpacity), in: Circle())
+                .overlay {
+                    Circle().stroke(footerMenuForeground.opacity(0.32), lineWidth: 1)
+                }
         }
         .menuStyle(.borderlessButton)
         .menuIndicator(.hidden)
+        .tint(footerMenuForeground)
         .accessibilityLabel(selectedLanguage.footerMenuAccessibilityLabel)
         .help(selectedLanguage.footerMenuHelp)
+    }
+
+    @ViewBuilder
+    private var liquidGlassLightTint: some View {
+        if colorScheme == .light {
+            LinearGradient(
+                colors: [
+                    Color(red: 0.42, green: 0.78, blue: 1.0).opacity(0.30),
+                    Color(red: 0.66, green: 0.54, blue: 1.0).opacity(0.18),
+                    Color.white.opacity(0.08)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
     }
 
     private var themesMenu: some View {
@@ -375,7 +451,23 @@ struct ThermalPopover: View {
             Button(action: exportCSV) {
                 Label(selectedLanguage.exportCSVTitle, systemImage: "tablecells")
             }
+            Button(action: copyDiagnosticReport) {
+                Label(selectedLanguage.copyDiagnosticReportTitle, systemImage: "stethoscope")
+            }
         }
+    }
+
+    private var startAtLoginMenu: some View {
+        Button {
+            LaunchAtLogin.setEnabled(!launchAtLoginEnabled)
+            launchAtLoginEnabled = LaunchAtLogin.isEnabled
+        } label: {
+            Label(
+                "\(selectedLanguage.startAtLoginMenuTitle): \(launchAtLoginEnabled ? selectedLanguage.startAtLoginEnabledTitle : selectedLanguage.startAtLoginDisabledTitle)",
+                systemImage: launchAtLoginEnabled ? "checkmark" : "arrow.right.circle"
+            )
+        }
+        .menuActionDismissBehavior(.enabled)
     }
 
     private var languageMenu: some View {
@@ -433,6 +525,14 @@ struct ThermalPopover: View {
             language: selectedLanguage
         )
         try? contents.write(to: url, atomically: true, encoding: .utf8)
+    }
+
+    private func copyDiagnosticReport() {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(
+            TemperatureExport.diagnosticReport(snapshot: service.snapshot, language: selectedLanguage),
+            forType: .string
+        )
     }
 
 }
@@ -599,10 +699,10 @@ private struct ThermalSystemContext: View {
                     tint: palette.gpu
                 )
                 contextItem(
-                    title: language.memoryUsageTitle,
+                    title: memoryTitle,
                     value: memoryUsageText,
                     symbol: "memorychip.fill",
-                    tint: palette.internalSSD
+                    tint: memoryTint
                 )
                 contextItem(
                     title: language.powerSourceTitle,
@@ -661,6 +761,20 @@ private struct ThermalSystemContext: View {
             return "\(used.formatted(.number.precision(.fractionLength(0)))) / \(total.formatted(.number.precision(.fractionLength(0)))) GB"
         }
         return "\(used.formatted(.number.precision(.fractionLength(1)))) / \(total.formatted(.number.precision(.fractionLength(1)))) GB"
+    }
+
+    private var memoryTitle: String {
+        guard let memory = context.memoryUsage else { return language.memoryUsageTitle }
+        return "\(language.memoryUsageTitle) · \(memory.loadStatus.title(for: language))"
+    }
+
+    private var memoryTint: Color {
+        guard let memory = context.memoryUsage else { return palette.internalSSD }
+        return switch memory.loadStatus {
+        case .normal: Color.green
+        case .elevated: Color.orange
+        case .high: Color.red
+        }
     }
 
     private var powerText: String {
@@ -738,33 +852,13 @@ private struct SensorCard: View {
                     }
                 }
             }
-            Spacer(minLength: compact ? 7 : 12)
+            .frame(maxWidth: .infinity, alignment: .leading)
             VStack(alignment: .trailing, spacing: compact ? 2 : 4) {
                 Text(temperatureText)
                     .font(compact ? .title3.weight(.semibold) : .title2.weight(.semibold))
                     .monospacedDigit()
                     .contentTransition(.numericText())
-                HStack(spacing: compact ? 3 : 5) {
-                    Circle().fill(statusColor).frame(width: compact ? 4 : 6, height: compact ? 4 : 6)
-                    Capsule().fill(statusColor).frame(width: compact ? 16 : 23, height: compact ? 3 : 4)
-                }
-                Button {
-                    showsDetails = true
-                } label: {
-                    Image(systemName: "info.circle")
-                        .font(compact ? .caption : .caption.weight(.semibold))
-                }
-                .buttonStyle(.borderless)
-                .foregroundStyle(palette.secondary)
-                .accessibilityLabel(language.sensorDetailsTitle)
-                .popover(isPresented: $showsDetails, arrowEdge: .trailing) {
-                    SensorDetailsView(
-                        reading: reading,
-                        snapshotUpdatedAt: snapshotUpdatedAt,
-                        language: language,
-                        palette: palette
-                    )
-                }
+                statusAndDetails
             }
         }
             if showsHistory {
@@ -822,14 +916,16 @@ private struct SensorCard: View {
     }
 
     private var liquidGlassFallback: Color {
-        colorScheme == .dark ? Color(red: 0.08, green: 0.11, blue: 0.16) : Color.white
+        colorScheme == .dark
+            ? Color(red: 0.08, green: 0.11, blue: 0.16)
+            : Color(red: 0.82, green: 0.93, blue: 0.99)
     }
 
     private var liquidGlassReflection: some View {
         LinearGradient(
             colors: [
-                Color.white.opacity(colorScheme == .dark ? 0.12 : 0.30),
-                Color.white.opacity(0.025),
+                Color.white.opacity(colorScheme == .dark ? 0.12 : 0.24),
+                colorScheme == .dark ? Color.white.opacity(0.025) : Color.cyan.opacity(0.12),
                 Color.clear
             ],
             startPoint: .topLeading,
@@ -852,7 +948,31 @@ private struct SensorCard: View {
         switch reading.kind {
         case .cpu: return language.averageCPUSensors
         case .gpu: return language.averageGPUSensors
-        case .internalSSD, .externalSSD: return reading.detail
+        case .internalSSD, .externalSSD: return nil
+        }
+    }
+
+    private var statusAndDetails: some View {
+        HStack(spacing: compact ? 3 : 5) {
+            Circle().fill(statusColor).frame(width: compact ? 4 : 6, height: compact ? 4 : 6)
+            Capsule().fill(statusColor).frame(width: compact ? 16 : 23, height: compact ? 3 : 4)
+            Button {
+                showsDetails = true
+            } label: {
+                Image(systemName: "info.circle")
+                    .font(compact ? .caption : .caption.weight(.semibold))
+            }
+            .buttonStyle(.borderless)
+            .foregroundStyle(palette.secondary)
+            .accessibilityLabel(language.sensorDetailsTitle)
+            .popover(isPresented: $showsDetails, arrowEdge: .trailing) {
+                SensorDetailsView(
+                    reading: reading,
+                    snapshotUpdatedAt: snapshotUpdatedAt,
+                    language: language,
+                    palette: palette
+                )
+            }
         }
     }
 

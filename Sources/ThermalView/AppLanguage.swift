@@ -42,6 +42,7 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var cpuLoadTitle: String { self == .english ? "CPU Load" : "CPU-Last" }
     var gpuLoadTitle: String { self == .english ? "GPU Load" : "GPU-Last" }
     var memoryUsageTitle: String { self == .english ? "Memory" : "Arbeitsspeicher" }
+    var memoryLoadTitle: String { self == .english ? "Memory status" : "RAM-Status" }
     var powerSourceTitle: String { self == .english ? "Power" : "Stromversorgung" }
     var powerAdapterTitle: String { self == .english ? "Power adapter" : "Netzteil" }
     var batteryTitle: String { self == .english ? "Battery" : "Akku" }
@@ -55,6 +56,7 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var lastValidTimeTitle: String { self == .english ? "Last valid time" : "Zeitpunkt des letzten gültigen Werts" }
     var copiedReadingsTitle: String { self == .english ? "Copy Current Readings" : "Aktuelle Messwerte kopieren" }
     var exportCSVTitle: String { self == .english ? "Export CSV…" : "CSV exportieren…" }
+    var copyDiagnosticReportTitle: String { self == .english ? "Copy Diagnostic Report" : "Diagnosebericht kopieren" }
     var exportMenuTitle: String { self == .english ? "Export" : "Export" }
     var collectingHistoryTitle: String { self == .english ? "Collecting local history…" : "Lokaler Verlauf wird gesammelt …" }
     var historyHint: String { self == .english ? "Tap the card again to close" : "Karte erneut anklicken zum Schließen" }
@@ -62,6 +64,9 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var standardWindowSizeTitle: String { self == .english ? "Standard" : "Standard" }
     var compactWindowSizeTitle: String { self == .english ? "Compact (about 40% smaller)" : "Kompakt (ca. 40 % kleiner)" }
     var languageMenuTitle: String { self == .english ? "Language" : "Sprache" }
+    var startAtLoginMenuTitle: String { self == .english ? "Start at Login" : "Bei Anmeldung starten" }
+    var startAtLoginEnabledTitle: String { self == .english ? "Enabled" : "Aktiv" }
+    var startAtLoginDisabledTitle: String { self == .english ? "Disabled" : "Deaktiviert" }
     var manualsMenuTitle: String { self == .english ? "Manuals" : "Handbücher" }
     var englishManualTitle: String { "English Manual" }
     var germanManualTitle: String { "Deutsches Handbuch" }

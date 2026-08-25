@@ -36,19 +36,11 @@ Die vollständige, gegliederte [Funktionsübersicht](FEATURES.de.md) enthält al
 
 ## Screenshots und Themes
 
-| Klassisch | Liquid Glass |
+| Adaptiv | Liquid Glass |
 | --- | --- |
-| <img src="Resources/Screenshots/classic.png?v=20260823-monitoring" width="330" alt="Klassisches ThermalAtlas-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> | <img src="Resources/Screenshots/liquid-glass.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Liquid-Glass-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> |
+| <img src="Resources/Screenshots/classic.png?v=20260823-monitoring" width="330" alt="Adaptives ThermalAtlas-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> | <img src="Resources/Screenshots/liquid-glass.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Liquid-Glass-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> |
 | Aurora | Ember |
 | <img src="Resources/Screenshots/aurora.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Aurora-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> | <img src="Resources/Screenshots/ember.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Ember-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> |
-
-## Gemeinsames Menü und Anzeigeoptionen
-
-Der Dreipunkt-Button im Footer öffnet ein gemeinsames Menü und hält die Temperaturansicht bewusst ruhig. Es enthält vier Darstellungen, **Scan Refresh** (1, 2, 3 oder 4 Sekunden; Standard: 2 Sekunden), **Fenstergröße** (Standard oder Kompakt), **Sichtbare Temperaturen**, **Menüleistenanzeige** (Alle Werte oder Nur Symbol), **Temperaturwarnungen**, **Sprache** und **Export**. Das Häkchen markiert die aktive Auswahl.
-
-<p align="center"><img src="Resources/ManualScreenshots/shared-menu.png" width="300" alt="ThermalAtlas-Hauptmenü mit Themes, Scan Refresh, Fenstergröße, Sichtbaren Temperaturen, Menüleistenanzeige, Temperaturwarnungen, Sprache, Export, Links, Handbüchern, Aktivitätsanzeige und Beenden"></p>
-
-Über **Sichtbare Temperaturen** legst du fest, welche Sensorgruppen gleichzeitig im Popover und in der Menüleiste erscheinen. **Export** kopiert den aktuellen Snapshot oder speichert den lokalen Temperaturverlauf plus Snapshot als CSV. Das Menü verlinkt außerdem zu GitHub, der Projekt-Homepage und beiden Handbüchern. **Aktivitätsanzeige öffnen** startet die gleichnamige macOS-App erst nach deiner Auswahl; **ThermalAtlas beenden** beendet die App und die regelmäßige rein lesende Aktualisierung.
 
 ## Voraussetzungen
 
