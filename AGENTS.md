@@ -1,37 +1,51 @@
-# ThermalAtlas – Arbeitsregeln
+# AGENTS.md
 
-- Anhand von `PROJECT_CONTEXT.md` Projektname, Projekt-Root beziehungsweise Repository und Projektziel ermitteln.
-- Vor jeder weiteren Projektarbeit `PROJECT_CONTEXT.md` und `NEXT_STEPS.md` vollständig lesen.
+Vor jeder Projektarbeit zuerst `PROJECT_CONTEXT.md` und `NEXT_STEPS.md` lesen.
+
+## Verbindliche Arbeitsregeln
+
 - `PROJECT_CONTEXT.md` ist die dauerhafte Quelle für den aktuellen Projektkontext.
-- `NEXT_STEPS.md` enthält ausschließlich tatsächlich offene Aufgaben, bestätigte Bugs und nächste Schritte.
-- Bei relevanten Änderungen an Funktionen, Architektur, Datenformaten, Datenschutz, Build-/Release-Abläufen oder offenen Aufgaben die betroffenen Kontextdateien im selben Auftrag aktualisieren.
-- Erledigte Punkte aus `NEXT_STEPS.md` entfernen oder nach vorhandenen Projektregeln archivieren. Historische Informationen niemals ersatzlos löschen.
-- Keine Projektzustände, Testergebnisse oder offenen Punkte erfinden.
-- Anschließend nur die für den Auftrag relevanten Projektdateien und zusätzlichen Dokumente lesen. Den aktuellen Repository-Stand höher gewichten als frühere Chats.
+- `NEXT_STEPS.md` enthält nur tatsächlich offene Aufgaben, bestätigte Bugs und konkrete nächste Schritte.
+- Bei relevanten Änderungen an Funktionen, Architektur, Datenformaten, Datenschutz, Build/Release oder offenen Aufgaben die betroffenen Kontextdateien im selben Auftrag aktualisieren.
+- Erledigte Punkte aus `NEXT_STEPS.md` entfernen oder nach vorhandenen Projektregeln archivieren.
 - Weitere projektspezifische Regeln und Dokumente beachten.
-- Keine Regeln zur Vorbereitung oder Fortsetzung eines neuen Chats aufnehmen. Solche Anweisungen gehören ausschließlich in `CHAT_TEMPLATE.md` beziehungsweise in einen separaten Prompt zur Vorbereitung eines neuen Chats.
-- Projektweite Arbeitsregeln und Kontextvorgaben werden bei relevanten Änderungen im selben Auftrag aktualisiert. Commits und Pushes dieser Änderungen erfolgen jedoch ausschließlich auf ausdrücklichen Auftrag. Ohne ausdrücklichen Auftrag bleiben Änderungen lokal und werden nicht automatisch auf `beta` oder `main` übertragen. Für Beta- oder Final-Quellstände und Release-Artefakte gelten weiterhin die jeweiligen Branch-Grenzen.
+- Bestehende Architektur, Datenformate, Einstellungen und Benutzerabläufe erhalten, sofern eine Änderung nicht ausdrücklich verlangt oder technisch notwendig ist.
+- Keine unnötigen Refactorings, neuen Abhängigkeiten oder Funktionsentfernungen ohne klaren Auftrag.
+- Keine Projektzustände, Testergebnisse, Builds, Scans, Prüfungen oder offenen Punkte erfinden. Einen Erfolg nur behaupten, wenn die betreffende Prüfung tatsächlich ausgeführt wurde.
+- Fragen nicht automatisch als Änderungsauftrag behandeln. Dateien, Builds, Tests oder Veröffentlichungsaktionen nur ausführen, wenn der Auftrag dies verlangt oder sie für die ausdrücklich beauftragte Änderung notwendig sind.
+- Erklärungen verständlich formulieren und keine besonderen technischen Vorkenntnisse voraussetzen. Keine persönlichen Aussagen über Fähigkeiten, Kenntnisse, Gewohnheiten oder Arbeitsweise des Entwicklers dokumentieren.
+- Bei Git-Projekten dokumentierte Branch-Grenzen beachten. Branches nicht ohne ausdrücklichen Auftrag wechseln oder zusammenführen.
+- Keine Versionen, Buildnummern, Commits, Pushes, Tags, Releases oder Veröffentlichungen ohne ausdrücklichen Auftrag erstellen oder ändern.
+- Keine Regeln zur Vorbereitung oder Fortsetzung eines neuen Chats aufnehmen. Solche Anweisungen gehören ausschließlich in `CHAT_TEMPLATE.md` beziehungsweise in einen separaten Start-Prompt.
 
-## Projektkontext pflegen
+## Datenschutzregel für das öffentliche Repository
 
-Bei relevanten Änderungen an Funktionen, Architektur, Datenformaten, Kompatibilität, Datenschutz, Build-/Release-Abläufen, wichtigen Design- oder Projektentscheidungen, bekannten Problemen oder offenen Aufgaben:
+Dieses Repository und seine Git-Historie sind öffentlich. Jeder eingecheckte Inhalt muss deshalb ohne weitere Bereinigung öffentlich vertretbar sein.
 
-- `PROJECT_CONTEXT.md` und `NEXT_STEPS.md` gegen den tatsächlichen aktuellen Projektstand prüfen und vollständig aktualisieren.
-- Neue oder geänderte Funktionen, Architekturentscheidungen, Datenformate, Kompatibilität, Datenschutz- sowie Build-/Release-Änderungen berücksichtigen.
-- Offene Aufgaben in `NEXT_STEPS.md` pflegen und erledigte Punkte daraus entfernen.
-- Historische Informationen nach den vorhandenen Projektregeln archivieren, niemals ersatzlos löschen.
-- Keine Testergebnisse, Funktionsstände oder sonstigen Informationen dokumentieren, die nicht tatsächlich geprüft beziehungsweise belegt sind.
+Nicht veröffentlicht oder dokumentiert werden dürfen insbesondere:
 
-Reine kleine Codebereinigungen ohne Änderung von Verhalten, Architektur oder Projektstatus müssen die Kontextdateien nicht unnötig verändern.
+- private, personenbezogene oder vertrauliche Daten
+- reale Namen oder private Kontaktdaten; für öffentliche Entwicklerangaben ausschließlich `Schrotty74`
+- Informationen über persönliche Fähigkeiten, Kenntnisse, Gewohnheiten oder Arbeitsweise des Entwicklers
+- lokale Benutzernamen, Home-Verzeichnisse sowie konkrete lokale Benutzer-, Volume- oder Backup-Pfade
+- private Hostnamen, interne Netzwerkadressen oder interne URLs
+- Gerätekennungen, Seriennummern, Hardware-IDs oder vergleichbare Identifikatoren
+- Passwörter, API-Keys, Tokens, Secrets, Zugangsdaten oder private Accountdaten
+- private Signing-Informationen, Zertifikatsgeheimnisse oder andere vertrauliche Release-Zugangsdaten
+- Lizenzschlüssel oder private Lizenzdaten
+- echte Benutzer-, Gesundheits-, Finanz-, Katalog-, Scan-, Mess-, Export- oder sonstige Nutzerdaten
+- echte Backups, Datenbanken oder private Arbeitsdateien
+- Logs, Crashreports oder Diagnoseausgaben mit privaten oder identifizierenden Informationen
+- Screenshots oder Medien mit realen Nutzerdaten oder identifizierenden Informationen
+- Metadaten, aus denen private Informationen rekonstruiert werden können
+- Inhalte aus privaten Chats, E-Mails oder anderen nicht öffentlichen Quellen
 
-Die Anweisung **„Projektkontext aktualisieren“** bedeutet stets, diesen vollständigen Abgleich durchzuführen.
+Beispiele, Testdaten, Demo-Dateien, Screenshots und Dokumentation müssen ausschließlich synthetische, anonymisierte oder eindeutig fiktive Daten verwenden.
 
-## Projektgrenzen
+Pfade in öffentlicher Dokumentation müssen neutral sein, zum Beispiel `/Users/example/...` oder `~/Library/Application Support/AppName/`. Echte lokale Benutzernamen oder persönliche Volume-Namen dürfen nicht verwendet werden.
 
-- ThermalAtlas ist eine reine, lokale Temperaturanzeige. Keine Lüfter-, Energie- oder sonstigen Systemeinstellungen verändern.
-- Sensorzugriffe defensiv kapseln; fehlende oder nicht lesbare Sensoren stets korrekt als `Nicht verfügbar` behandeln.
-- Dev bleibt lokal und ist von Beta und Final getrennt. Keine Commits, Tags, Releases, Pushes oder Veröffentlichungen ohne ausdrücklichen Auftrag.
-- Beta-Quellstände und Beta-Veröffentlichungen gehören auf den Git-Branch `beta`. Finale Quellstände und finale Veröffentlichungen gehören auf `main`. Dev wird niemals gepusht.
-- Für einen Dev-Auftrag weder Datenschutz-/Sicherheitsprüfungen für öffentliche Artefakte ausführen noch README, Handbücher oder Handbuch-PDFs ergänzen oder neu erzeugen. Diese Schritte erfolgen ausschließlich im Rahmen eines ausdrücklich beauftragten Beta- oder Final-Builds, der anschließend auf Git gepusht wird.
-- Keine Drittanbieter-Abhängigkeiten oder globalen Entwicklungswerkzeuge automatisch hinzufügen oder aktualisieren.
-- Bei App-Arbeit Projektmanifest, Build-Skript und relevante Konfigurationen lesen, bevor Abhängigkeiten oder Build-Annahmen getroffen werden.
+Informationen über die lokale Entwicklungsumgebung werden nur dokumentiert, wenn sie technisch für das Projekt erforderlich sind. Persönliche oder gerätespezifische Details werden nach Möglichkeit durch allgemeine technische Anforderungen ersetzt.
+
+Vor Commit, Push oder Veröffentlichung ist zu prüfen, dass keine privaten oder sensiblen Daten enthalten sind. Vor finalen Veröffentlichungen gelten zusätzlich die im Projekt dokumentierten erweiterten Datenschutz- und Release-Prüfungen.
+
+Wenn unklar ist, ob eine Information öffentlich sein darf, wird sie nicht veröffentlicht, bis dies eindeutig geklärt ist.
