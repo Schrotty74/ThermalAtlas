@@ -1,5 +1,7 @@
 # ThermalAtlas – Projektkontext
 
+Die allgemeinen Arbeits-, Git-, Veröffentlichungs- und Repository-Datenschutzregeln stehen verbindlich in `AGENTS.md`. Diese Datei enthält den projektspezifischen technischen und funktionalen Kontext.
+
 ## Ziel und Zweck
 
 ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie zeigt ausschließlich Temperaturen für CPU, GPU, interne SSD und jede erkannte physische externe SSD an. Die App liest Daten nur aus und nimmt keine Änderungen an Lüftern, Energieoptionen oder anderen Systemeinstellungen vor.
@@ -57,7 +59,7 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - SMART-Temperaturen werden nur dann dargestellt, wenn der Wert vorhanden und plausibel ist; die Quelle liefert Kelvin, die Darstellung Celsius.
 - Es werden keine Temperaturverläufe oder Messdaten persistent gespeichert.
 - Theme-Auswahl, Aktualisierungsintervall und die Sprachwahl werden lokal in `UserDefaults` unter `thermalatlas.theme`, `thermalatlas.refreshInterval` beziehungsweise `thermalatlas.language` gespeichert. Englisch ist der Standard; Deutsch kann im Footer-Menü unter `Language` beziehungsweise `Sprache` gewählt werden. Da `UserDefaults` pro Bundle-Identifier getrennt ist, teilen Dev, Beta und Final keine App-Einstellungen oder Caches.
-- Zielplattform sind aktuelle Apple-Silicon-Macs, besonders Mac Studio mit M4 Max. Private SMC-Schlüssel sind nicht stabil garantiert und müssen zur Laufzeit geprüft werden.
+- Zielplattform sind aktuelle Apple-Silicon-Macs. Private SMC-Schlüssel sind nicht stabil garantiert und müssen zur Laufzeit geprüft werden; gerätespezifische Aussagen werden nur dokumentiert, wenn sie für die Kompatibilität technisch relevant und öffentlich vertretbar sind.
 
 ## Build und Release
 
@@ -65,7 +67,7 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - Dev, Beta und Final haben getrennte Bundle-Identifier, App-Namen, Ausgabeverzeichnisse und Swift-Build-Caches unter `.build/dev`, `.build/beta` und `.build/final`.
 - Die Bundle-Identifier sind `io.github.schrotty74.thermalatlas.dev`, `io.github.schrotty74.thermalatlas.beta` und `io.github.schrotty74.thermalatlas`.
 - Das Dev-App-Icon liegt als `Resources/Assets.xcassets/AppIcon.appiconset` vor und wird mit Apples `actool` in den Bundle-Asset-Katalog kompiliert. Die originale Entwurfsvorlage liegt unter `Resources/IconSource/`. Der Dev-Build erzeugt zusätzlich `Contents/PkgInfo`, aktualisiert danach den Bundle-Zeitstempel und registriert genau dieses lokale Dev-Bundle bei LaunchServices, damit Finder Icon-Änderungen übernimmt.
-- Dev, Beta und Final werden als getrennte lokale Artefakte erzeugt. Veröffentlichung, Tags und Releases bleiben separate, ausdrücklich beauftragte Schritte.
+- Dev, Beta und Final werden als getrennte lokale Artefakte erzeugt. Veröffentlichung, Tags und Releases bleiben separate, ausdrücklich beauftragte Schritte gemäß `AGENTS.md`.
 - Der Git-Branch `beta` ist ausschließlich der veröffentlichte Beta-Quellstand; `main` ist ausschließlich der finale Quellstand. Dev wird niemals nach Git gepusht. Ein Beta-Auftrag darf `main` nicht fortschreiben, ein Final-Auftrag darf `beta` nicht fortschreiben.
 - Auf `beta` erzeugt `Scripts/build-release-package.sh` ausschließlich auf ausdrücklichen Auftrag einen signierten Release-Ordner mit DMG, ZIP und SHA-256-Prüfsummen; `Scripts/privacy-check.sh` prüft den zu veröffentlichenden Quellstand auf Zugangsdaten, private Kennungen und lokale Pfade. Vor dem ersten Final-Release müssen diese Skripte auf `main` bereitstehen und dort verifiziert werden. Ein Beta-Release wird mit seinem Commit auf `beta` getaggt und als GitHub-Pre-release veröffentlicht; sein Changelog und seine Release Notes sind Englisch.
 - ThermalAtlas Beta 0.2.0 wurde als GitHub-Pre-Release vom Branch `beta` mit Tag `v0.2.0` veröffentlicht. Das Release enthält eine ad-hoc-signierte DMG mit Applications-Link, eine ZIP-Datei und SHA-256-Prüfsummen für beide Downloads. Die Prüfsummen sowie die Signatur der App im bereitgestellten DMG wurden vor der Veröffentlichung lokal geprüft.
@@ -75,18 +77,18 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - `MANUAL.md` und `MANUAL.de.md` sind gleichwertige öffentliche Handbücher. Die zugehörigen PDFs unter `Documentation/` verwenden ein dunkles, an die App angelehntes Farbdesign und füllen sechs gestaltete A4-Seiten pro Sprache mit der aktuellen Kartenoberfläche, allen vier Themes sowie den Menüs `Themes`, `Scan Refresh`, `Language` und `Manuals`. Das englische Handbuch dokumentiert Englisch als Standard; das deutsche Handbuch übersetzt die englischen Menübegriffe nachvollziehbar. Ihre reguläre Veröffentlichung erfolgt nur im beauftragten Beta-/Final-Releaseablauf mit Git-Push.
 - Jede SEO- oder Discoverability-Änderung an `README.md` wird im selben Auftrag als inhaltlich gleichwertige, natürlich formulierte deutsche Entsprechung in `README.de.md` umgesetzt: H1, Überblick, Funktionen, Screenshots und Alt-Texte, Voraussetzungen, Download/Installation, Gatekeeper, Datenschutz/Datenverarbeitung, Status, Lizenz, Links und Entwicklung bleiben strukturell gleich.
 - `PORTFOLIO_UPDATE.md` dokumentiert die Regeln für die öffentliche Darstellung von ThermalAtlas im Schrotty74-Profil und -Portfolio.
-- Das öffentliche Repository ist `Schrotty74/ThermalAtlas`; veröffentlichte Inhalte dürfen keine lokalen Pfade, privaten Daten oder Build-Artefakte enthalten.
 
-## Datenschutz
+## Projektspezifischer Datenschutz
 
 - Keine Hintergrundnetzwerkkommunikation, Telemetrie, Accounts oder Drittanbieter-SDKs. Die optionalen GitHub-, Homepage- und Handbuch-Menüeinträge übergeben eine öffentliche URL nur nach einer Nutzeraktion an den Standardbrowser.
 - Es werden ausschließlich lokale, lesende Sensor- und Laufwerksabfragen ausgeführt.
 - Private SMC-Zugriffe sind auf lesende Operationen beschränkt.
+- Für alle Repository-Inhalte und öffentlichen Materialien gelten zusätzlich die Datenschutz- und Namensregeln aus `AGENTS.md`.
 
 ## Bekannte Einschränkungen und bestätigte Probleme
 
 - Apple-Silicon-SMC-Sensoren sind private Schnittstellen. macOS-Updates oder Gerätevarianten können Schlüssel verändern oder zeitweise nicht lesbar machen.
 - Die GPU kann trotz Wiederverbindung des SMC-Clients sporadisch `Nicht verfügbar` melden, wenn alle abgefragten GPU-Zonen vorübergehend keine gültige Antwort liefern.
-- Die CPU-Messung hängt von den auf diesem Mac lesbaren SMC-Schlüsseln ab; nicht lesbare Schlüssel werden nicht ersetzt oder geschätzt.
+- Die CPU-Messung hängt von den auf dem jeweiligen Mac lesbaren SMC-Schlüsseln ab; nicht lesbare Schlüssel werden nicht ersetzt oder geschätzt.
 - Externe SSDs und ihre Gehäuse stellen häufig keine SMART-Temperatur bereit. In diesem Fall ist `Nicht verfügbar` das erwartete Ergebnis.
-- Der letzte lokale Lauf von `swift test -c debug` hatte zehn erfolgreiche Tests; der Beta-Build und seine Code-Signatur wurden lokal erfolgreich geprüft. Eine vollständige visuelle Prüfung aller Themes wurde noch nicht dokumentiert.
+- Der letzte dokumentierte Lauf von `swift test -c debug` hatte zehn erfolgreiche Tests; der Beta-Build und seine Code-Signatur wurden lokal erfolgreich geprüft. Eine vollständige visuelle Prüfung aller Themes wurde noch nicht dokumentiert. Vor einer neuen Aussage über den aktuellen Stand müssen die betreffenden Prüfungen erneut ausgeführt werden.
