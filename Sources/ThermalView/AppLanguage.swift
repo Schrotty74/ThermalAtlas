@@ -52,6 +52,7 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var calculatingTitle: String { self == .english ? "Calculating…" : "Wird berechnet …" }
     var sensorDetailsTitle: String { self == .english ? "Sensor Details" : "Sensor-Details" }
     var sourceTitle: String { self == .english ? "Source" : "Quelle" }
+    var chipTitle: String { "Chip" }
     var lastValidValueTitle: String { self == .english ? "Last valid value" : "Letzter gültiger Wert" }
     var lastValidTimeTitle: String { self == .english ? "Last valid time" : "Zeitpunkt des letzten gültigen Werts" }
     var copiedReadingsTitle: String { self == .english ? "Copy Current Readings" : "Aktuelle Messwerte kopieren" }

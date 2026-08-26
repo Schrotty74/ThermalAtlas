@@ -987,6 +987,9 @@ private struct SensorDetailsView: View {
     let palette: ThermalThemePalette
 
     private var title: String { reading.title ?? reading.kind.title(for: language) }
+    private var chipName: String? {
+        AppleSiliconSMCTemperatureBackend.detectedChipNameForDiagnostics()
+    }
     private var lastValidAt: Date? {
         guard reading.temperatureCelsius != nil else { return nil }
         return reading.lastVerifiedAt ?? snapshotUpdatedAt
@@ -998,6 +1001,9 @@ private struct SensorDetailsView: View {
                 .font(.headline)
                 .foregroundStyle(palette.componentColor(for: reading.kind))
             detailRow(language.sourceTitle, reading.kind.sourceDescription(for: language))
+            if let chipName, reading.kind == .cpu || reading.kind == .gpu {
+                detailRow(language.chipTitle, chipName)
+            }
             if let sourceIdentifier = reading.sourceIdentifier {
                 detailRow("ID", sourceIdentifier)
             }
