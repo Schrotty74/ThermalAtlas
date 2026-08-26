@@ -93,6 +93,10 @@ Die CPU- und GPU-Erkennung ist auf M4 Max, M5 und M5 Pro auf echter Hardware bes
 
 ThermalAtlas v1.0.0 ist die erste stabile Veröffentlichung. Künftige stabile Versionen und Vorabversionen werden über die [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) veröffentlicht.
 
+## Community
+
+Fragen, Feedback und Diskussionen sind auf [Discord](https://discord.gg/Zy93AaYFaj) willkommen.
+
 ## Lizenz
 
 ThermalAtlas steht unter der [GNU General Public License v3.0](LICENSE).
