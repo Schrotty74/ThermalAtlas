@@ -14,7 +14,7 @@
 📘 **[User Manual (PDF)](Documentation/ThermalAtlas-User-Manual-EN.pdf)** – interface, buttons, sensors, themes, installation and privacy explained in detail.
 
 > [!IMPORTANT]
-> **No final release is available yet.** `main` is reserved for the future final source status. For the latest features and current prerelease source, open the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta). On GitHub, use the branch menu above the file list and select **beta**.
+> **ThermalAtlas v1.0.0 is the first stable release.** The `main` branch contains the final source status; newer features may appear first on the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
 
 ## Overview
 
@@ -26,28 +26,24 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 
 ## Features
 
-- Defaults to a two-second refresh interval.
-- Lets you choose a local Scan Refresh interval from 1 to 4 seconds in one-second steps.
-- Shows **Not available** rather than estimating missing values.
-- Reads SSD SMART temperatures only when macOS exposes them.
-- Lists each detected physical external SSD separately with its mounted volume name when available, and ignores virtual disk images.
-- Shows the SSD SMART health status reported by macOS alongside the drive name.
-- Shows remaining SSD health when macOS exposes NVMe `PERCENTAGE_USED`; it does not estimate a percentage when that field is unavailable.
-- Uses a defensive, read-only Apple-silicon SMC adapter for CPU and GPU.
-- Provides four native themes, including adaptive Liquid Glass.
-- Groups Themes, Scan Refresh, Language, public links, manuals, Activity Monitor, and Quit in one compact shared menu.
-- Starts in English and lets you switch the visible app interface to German locally.
-- Has no third-party dependencies, network communication, analytics, or accounts.
+- Monitors available CPU, GPU, internal-SSD, and physical external-SSD temperatures without estimating missing readings.
+- Shows SMART status and remaining SSD health whenever macOS supplies those values.
+- Separates fast, read-only CPU/GPU load and used-memory context from temperature monitoring.
+- Keeps local temperature history, provides optional temperature alerts, and exports a snapshot or CSV only on request.
+- Offers Standard and Compact views, selectable visible sensor groups, and menu-bar modes for all values or just the symbol.
+- Includes four native themes and a local English/German interface choice.
+- Uses defensive Apple-silicon sensor access and independent drive refresh cycles, so slow drive queries do not delay CPU/GPU temperatures.
+- Works locally without accounts, telemetry, analytics, third-party dependencies, or hardware control.
+
+See the complete, grouped [feature overview](FEATURES.md).
 
 ## Screenshots and themes
 
-| Classic | Liquid Glass |
+| Adaptive | Liquid Glass |
 | --- | --- |
-| <img src="Resources/Screenshots/classic.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Classic macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> | <img src="Resources/Screenshots/liquid-glass.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Liquid Glass macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> |
+| <img src="Resources/Screenshots/classic.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Adaptive macOS theme showing temperature cards and a separate System Context area"> | <img src="Resources/Screenshots/liquid-glass.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Liquid Glass macOS theme showing temperature cards and a separate System Context area"> |
 | Aurora | Ember |
-| <img src="Resources/Screenshots/aurora.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Aurora macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> | <img src="Resources/Screenshots/ember.png?v=20260822-english-ui" width="330" alt="ThermalAtlas Ember macOS theme showing CPU, GPU, internal SSD, and external SSD temperature cards"> |
-
-
+| <img src="Resources/Screenshots/aurora.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Aurora macOS theme showing temperature cards and a separate System Context area"> | <img src="Resources/Screenshots/ember.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Ember macOS theme showing temperature cards and a separate System Context area"> |
 
 ## Requirements
 
@@ -60,13 +56,13 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 
 ## Download, installation, and usage
 
-Download the available macOS prerelease packages from [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases). Open the DMG and drag ThermalAtlas to the `Applications` alias to install it.
+Download the stable macOS package from [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases). Open the DMG and drag ThermalAtlas to the `Applications` alias to install it.
 
-After opening the app, use the thermometer in the macOS menu bar to view the current temperatures. Open the footer ellipsis for visual themes, Scan Refresh, the optional German interface, manuals, links, Activity Monitor, and Quit. The app displays `Not available` when a sensor, SSD, or external enclosure does not provide a real temperature.
+After opening the app, use the thermometer in the macOS menu bar to view the current temperatures. Open the footer ellipsis for visual themes, Scan Refresh, display options, alerts, export, the optional German interface, manuals, links, Activity Monitor, and Quit. Select a card for its local temperature history; use its info button for sensor details. The app displays `Not available` when a sensor, SSD, or external enclosure does not provide a real temperature.
 
 ### Gatekeeper confirmation
 
-Public prerelease builds are ad-hoc signed and are not notarized with an Apple Developer Program signing identity. macOS Gatekeeper can therefore ask you to confirm the first launch. Only approve the app after downloading it from the official [ThermalAtlas GitHub Release](https://github.com/Schrotty74/ThermalAtlas/releases).
+Public builds are ad-hoc signed and are not notarized with an Apple Developer Program signing identity. macOS Gatekeeper can therefore ask you to confirm the first launch. Only approve the app after downloading it from the official [ThermalAtlas GitHub Release](https://github.com/Schrotty74/ThermalAtlas/releases).
 
 1. In Finder, Control-click (or right-click) `ThermalAtlas.app` and choose **Open**.
 2. Confirm **Open** in the macOS dialog.
@@ -85,13 +81,17 @@ Published builds are ad-hoc signed locally. Building does not publish a release.
 
 ## Privacy, data handling, and security
 
-ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, and SMART temperature data only when macOS provides them. It stores only the selected visual theme, Scan Refresh interval, and display language in local `UserDefaults`; temperature readings are not persisted. The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. Its optional GitHub, Homepage, and manual menu actions open the selected public page in your default browser only after you select them.
+ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, SMART temperature data, CPU/GPU load, used memory, power source/battery, and Low Power Mode only when macOS provides them. It stores selected display preferences, alert thresholds, and local per-minute temperature averages for up to 24 hours in local `UserDefaults`; system-context values are displayed but not stored. The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. A text or CSV export is created only after you explicitly choose it and a local save location. Its optional GitHub, Homepage, and manual menu actions open the selected public page in your default browser only after you select them.
 
 See [Privacy report](PRIVACY.md), [Datenschutzbericht](PRIVACY.de.md), and the [security review](SECURITY.md).
 
+## Hardware compatibility
+
+CPU and GPU recognition is hardware-confirmed on M4 Max, M5, and M5 Pro. The other M1 through M5 variants and their raw sensors are implemented defensively, but still need verification on real hardware. When macOS or a device does not expose a usable sensor value, ThermalAtlas shows `Not available` rather than estimating one.
+
 ## Project status
 
-ThermalAtlas is in active development. Downloadable prerelease builds are published through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
+ThermalAtlas v1.0.0 is the first stable release. Future stable releases and prereleases are published through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
 
 ## Repo activity
 
@@ -104,6 +104,7 @@ ThermalAtlas is licensed under the [GNU General Public License v3.0](LICENSE).
 ## Links
 
 - [User Manual (PDF)](Documentation/ThermalAtlas-User-Manual-EN.pdf)
+- [Feature overview](FEATURES.md)
 - [Releases and downloads](https://github.com/Schrotty74/ThermalAtlas/releases)
 - [Changelog](CHANGELOG.md)
 - [Privacy report](PRIVACY.md)

@@ -1,6 +1,6 @@
-# Chat-Startvorlage – ThermalAtlas
+# Chat-Startvorlage – ThermalAtlas Final
 
-Ich arbeite am Projekt **ThermalAtlas**.
+Ich arbeite am Projekt **ThermalAtlas** auf dem Branch `main`.
 
 Projekt-Root:
 `Repository-Root`
@@ -14,18 +14,17 @@ Bitte lies vor Beginn vollständig:
 2. `PROJECT_CONTEXT.md`
 3. `NEXT_STEPS.md`
 
-Die verbindlichen allgemeinen Arbeits-, Git-, Veröffentlichungs- und Repository-Datenschutzregeln stehen in `AGENTS.md` und gelten vollständig.
+Die verbindlichen allgemeinen Arbeits-, Datenschutz- und Veröffentlichungsregeln sowie die strengeren ThermalAtlas-Branchregeln stehen in `AGENTS.md` und gelten vollständig.
 
-Prüfe vor Aussagen oder Änderungen den tatsächlichen Projektzustand. Lies danach nur die für den Auftrag relevanten Quell-, Build- und Konfigurationsdateien. Den aktuellen Repository-Stand höher gewichten als frühere Chats.
+Prüfe vor Aussagen oder Änderungen den tatsächlichen Stand dieses Final-Branches. Lies danach nur die für den Auftrag relevanten Quell-, Build- und Konfigurationsdateien. Den aktuellen Repository-Stand höher gewichten als frühere Chats.
 
 ThermalAtlas-spezifisch:
 
 - Dev bleibt lokal und getrennt von Beta und Final.
-- Beta wird ausschließlich auf den Git-Branch `beta` gepusht; Final ausschließlich auf `main`. Dev wird niemals gepusht.
-- Für Dev keine Datenschutz-/Sicherheitsprüfung öffentlicher Artefakte sowie keine README-, Handbuch- oder PDF-Pflege. Das erfolgt ausschließlich in einem ausdrücklich beauftragten Beta- oder Final-Build mit anschließendem Git-Push, sofern nicht separat lokale Dokumentationspflege beauftragt wurde.
-- Keine anderen Apps starten oder öffnen, sofern dies nicht ausdrücklich erlaubt wurde.
-- Sensorwerte niemals schätzen oder erfinden; nicht verfügbare Daten klar darstellen.
-- Bei relevanten Änderungen `PROJECT_CONTEXT.md` und `NEXT_STEPS.md` im selben Auftrag auf den tatsächlichen Stand bringen.
+- Beta-Quellstände und Beta-Veröffentlichungen gehören ausschließlich auf `beta`; Final ausschließlich auf `main`. Dev wird niemals gepusht.
+- Sensorwerte niemals schätzen oder erfinden; nicht verfügbare Daten klar als nicht verfügbar behandeln.
+- Bei relevanten Änderungen `PROJECT_CONTEXT.md` und `NEXT_STEPS.md` im selben Auftrag gegen den tatsächlichen Branch-Stand prüfen.
+- Bei einem ausdrücklich beauftragten Beta-/Final-Build die in `AGENTS.md` genannten zweisprachigen Markdown-, Handbuch-, Datenschutz- und Release-Dokumente vollständig abgleichen.
 
 Aktueller Auftrag:
 

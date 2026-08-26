@@ -2,7 +2,7 @@ import Foundation
 
 /// The app language is deliberately independent from the macOS system locale.
 /// English is the stable default; users can opt into German in the footer menu.
-enum AppLanguage: String, CaseIterable, Identifiable {
+enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     case english
     case german
 
@@ -30,7 +30,44 @@ enum AppLanguage: String, CaseIterable, Identifiable {
 
     var themesMenuTitle: String { self == .english ? "Themes" : "Themes" }
     var refreshMenuTitle: String { "Scan Refresh" }
+    var visibleSensorsMenuTitle: String { self == .english ? "Visible Temperatures" : "Sichtbare Temperaturen" }
+    var menuBarDisplayMenuTitle: String { self == .english ? "Menu Bar Display" : "Menüleistenanzeige" }
+    var temperatureAlertsMenuTitle: String { self == .english ? "Temperature Alerts" : "Temperaturwarnungen" }
+    var alertsDisabledTitle: String { self == .english ? "Off" : "Aus" }
+    var alertsEnabledTitle: String { self == .english ? "Enabled (after 1 minute)" : "Aktiv (nach 1 Minute)" }
+    var alertThresholdTitle: String { self == .english ? "Warning Threshold" : "Warnschwelle" }
+    var temperatureHistoryTitle: String { self == .english ? "Temperature History" : "Temperaturverlauf" }
+    var systemContextTitle: String { self == .english ? "System Context" : "Systemkontext" }
+    var systemContextHint: String { self == .english ? "Context only — not temperature sensors" : "Nur Kontext — keine Temperatursensoren" }
+    var cpuLoadTitle: String { self == .english ? "CPU Load" : "CPU-Last" }
+    var gpuLoadTitle: String { self == .english ? "GPU Load" : "GPU-Last" }
+    var memoryUsageTitle: String { self == .english ? "Memory" : "Arbeitsspeicher" }
+    var memoryLoadTitle: String { self == .english ? "Memory status" : "RAM-Status" }
+    var powerSourceTitle: String { self == .english ? "Power" : "Stromversorgung" }
+    var powerAdapterTitle: String { self == .english ? "Power adapter" : "Netzteil" }
+    var batteryTitle: String { self == .english ? "Battery" : "Akku" }
+    var lowPowerModeTitle: String { self == .english ? "Low Power Mode" : "Energiesparmodus" }
+    var enabledTitle: String { self == .english ? "On" : "Ein" }
+    var disabledTitle: String { self == .english ? "Off" : "Aus" }
+    var calculatingTitle: String { self == .english ? "Calculating…" : "Wird berechnet …" }
+    var sensorDetailsTitle: String { self == .english ? "Sensor Details" : "Sensor-Details" }
+    var sourceTitle: String { self == .english ? "Source" : "Quelle" }
+    var chipTitle: String { "Chip" }
+    var lastValidValueTitle: String { self == .english ? "Last valid value" : "Letzter gültiger Wert" }
+    var lastValidTimeTitle: String { self == .english ? "Last valid time" : "Zeitpunkt des letzten gültigen Werts" }
+    var copiedReadingsTitle: String { self == .english ? "Copy Current Readings" : "Aktuelle Messwerte kopieren" }
+    var exportCSVTitle: String { self == .english ? "Export CSV…" : "CSV exportieren…" }
+    var copyDiagnosticReportTitle: String { self == .english ? "Copy Diagnostic Report" : "Diagnosebericht kopieren" }
+    var exportMenuTitle: String { self == .english ? "Export" : "Export" }
+    var collectingHistoryTitle: String { self == .english ? "Collecting local history…" : "Lokaler Verlauf wird gesammelt …" }
+    var historyHint: String { self == .english ? "Tap the card again to close" : "Karte erneut anklicken zum Schließen" }
+    var windowSizeMenuTitle: String { self == .english ? "Window Size" : "Fenstergröße" }
+    var standardWindowSizeTitle: String { self == .english ? "Standard" : "Standard" }
+    var compactWindowSizeTitle: String { self == .english ? "Compact (about 40% smaller)" : "Kompakt (ca. 40 % kleiner)" }
     var languageMenuTitle: String { self == .english ? "Language" : "Sprache" }
+    var startAtLoginMenuTitle: String { self == .english ? "Start at Login" : "Bei Anmeldung starten" }
+    var startAtLoginEnabledTitle: String { self == .english ? "Enabled" : "Aktiv" }
+    var startAtLoginDisabledTitle: String { self == .english ? "Disabled" : "Deaktiviert" }
     var manualsMenuTitle: String { self == .english ? "Manuals" : "Handbücher" }
     var englishManualTitle: String { "English Manual" }
     var germanManualTitle: String { "Deutsches Handbuch" }
@@ -38,7 +75,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     var activityMonitorTitle: String { self == .english ? "Open Activity Monitor" : "Aktivitätsanzeige öffnen" }
     var quitTitle: String { self == .english ? "Quit ThermalAtlas" : "ThermalAtlas beenden" }
     var footerMenuAccessibilityLabel: String { self == .english ? "ThermalAtlas menu" : "ThermalAtlas-Menü" }
-    var footerMenuHelp: String { self == .english ? "Themes, Scan Refresh, language and app actions" : "Themes, Scan Refresh, Sprache und App-Aktionen" }
+    var footerMenuHelp: String { self == .english ? "Themes, size, Scan Refresh, language and app actions" : "Themes, Größe, Scan Refresh, Sprache und App-Aktionen" }
     var healthPrefix: String { self == .english ? "Health" : "Gesundheit" }
     var lastRealGPUValue: String { self == .english ? "Last real GPU reading" : "Letzter echter GPU-Wert" }
     var averageCPUSensors: String { self == .english ? "Average CPU sensors" : "Mittelwert CPU-Sensoren" }

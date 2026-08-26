@@ -8,15 +8,15 @@ ThermalAtlas is a local-only temperature display. It does not collect, transmit,
 
 - Local Apple-silicon SMC temperature values through read-only IOKit calls.
 - Local drive metadata and SMART temperature data through `diskutil info -plist`.
-- The locally selected visual theme, Scan Refresh interval, and display language.
+- Public macOS CPU-tick data, the Apple graphics driver's currently published aggregate GPU utilization, and local virtual-memory statistics for the displayed CPU/GPU-load and memory context, plus the current power source/battery level and Low Power Mode state.
 
 ## Storage
 
-Only the chosen theme, Scan Refresh interval, and display language are stored in local `UserDefaults`. Dev, Beta, and Final have separate bundle identifiers, settings, and caches. Temperature readings are not persisted.
+Local `UserDefaults` stores the selected theme, Scan Refresh interval, display language, visible sensor groups, menu-bar display mode, window size, and temperature-alert settings. ThermalAtlas also stores per-sensor, minute-averaged temperature history for no more than 24 hours so it can draw the in-app chart. Each stored history point contains only a local sensor identifier, timestamp, average temperature, and sample count. CPU/GPU load, memory use, power source/battery, and Low Power Mode are displayed but not stored. Dev, Beta, and Final have separate bundle identifiers, settings, and caches.
 
 ## Network and system changes
 
-The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. It has no fan-control, power-control, or sensor-write paths. Activity Monitor and the optional GitHub, Homepage, and manual links open only after the user clicks the corresponding menu item.
+The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. It has no fan-control, power-control, or sensor-write paths. A text or CSV export is created only after the user chooses it and selects a local destination. Activity Monitor and the optional GitHub, Homepage, and manual links open only after the user clicks the corresponding menu item.
 
 ## Limits
 

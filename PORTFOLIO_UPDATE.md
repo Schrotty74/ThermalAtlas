@@ -13,10 +13,11 @@ portfolio for matching updates.
 1. Keep the English and German portfolio cards and detail pages aligned.
 2. Link only to verified public repository and release URLs.
 3. Use only intentionally public project assets and screenshots.
-4. Apply the repository-wide privacy and publication rules from `AGENTS.md`.
+4. Apply the repository-wide privacy and publication rules from `AGENTS.md` to all portfolio material.
 
 ## Privacy
 
 ThermalAtlas remains a local, read-only temperature monitor. Portfolio text
 must not claim sensor availability, compatibility or release status beyond what
-the public repository documents and what is actually verified. Public screenshots and example data must use only synthetic, anonymized or clearly fictional data where applicable.
+the public repository documents and what is actually verified. Screenshots and
+example data must be synthetic, anonymized or clearly fictional.
