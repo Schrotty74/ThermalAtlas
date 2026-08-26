@@ -2,7 +2,7 @@
 
 **[Deutsch](FEATURES.de.md)**
 
-This page lists the current Beta features in detail. For installation and everyday use, see the [user manual](MANUAL.md).
+This page lists the stable features in detail. For installation and everyday use, see the [user manual](MANUAL.md).
 
 ## Temperature monitoring
 

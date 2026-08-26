@@ -120,7 +120,7 @@ def build(language, output):
 
     # 2 Readings
     base(c, 1, "Messwerte" if de else "Readings", t["readings"], t["interface"], 2)
-    image(c, ASSETS / "ManualScreenshots" / "compact-view.png", 48, 180, 220, 490)
+    image(c, ASSETS / "Screenshots" / "classic.png", 48, 180, 220, 490)
     image(c, ASSETS / "ManualScreenshots" / "system-context-load.png", 290, 555, 260, 105)
     panel(c, 290, 415, 260, 110, VIOLET, "CPU / GPU",
           "Mittelwert der aktuell lesbaren passenden Sensoren." if de else "Average of matching sensors that are readable right now.")

@@ -2,7 +2,7 @@
 
 [English](FEATURES.md)
 
-Diese Seite beschreibt die aktuellen Beta-Funktionen ausführlich. Installation und tägliche Nutzung erklärt das [Benutzerhandbuch](MANUAL.de.md).
+Diese Seite beschreibt die stabilen Funktionen ausführlich. Installation und tägliche Nutzung erklärt das [Benutzerhandbuch](MANUAL.de.md).
 
 ## Temperaturüberwachung
 

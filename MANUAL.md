@@ -255,7 +255,7 @@ Download an available macOS package only from the official [ThermalAtlas Release
 
 ### Gatekeeper on first launch
 
-Public prerelease builds are currently ad-hoc signed and are not notarized with an Apple Developer Program identity. macOS may therefore show a warning on first launch.
+Public builds are currently ad-hoc signed and are not notarized with an Apple Developer Program identity. macOS may therefore show a warning on first launch.
 
 1. In Finder, right-click or Control-click `ThermalAtlas.app`.
 2. Choose **Open**.
@@ -275,7 +275,7 @@ ThermalAtlas is privacy-friendly and local by design:
 - no analytics services
 - no cloud synchronization
 - no advertising SDKs
-- no persistent storage of temperature readings
+- no temperature storage beyond the bounded local history described below
 - no network feature required for temperature monitoring
 - no third-party dependencies
 
@@ -295,7 +295,7 @@ ThermalAtlas is architecturally compact: a menu bar app, one sensor snapshot at 
 - Apple silicon
 - For local builds: Xcode Command Line Tools including Swift and `actool`
 
-ThermalAtlas is in active development. Public prerelease builds are published through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
+ThermalAtlas v1.0.0 is the first stable release. Future stable releases and prereleases are published through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
 
 ---
 

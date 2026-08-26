@@ -272,7 +272,7 @@ Lade ein verfügbares macOS-Paket ausschließlich über die offiziellen [Thermal
 
 ### Gatekeeper beim ersten Start
 
-Öffentliche Vorab-Builds sind derzeit ad-hoc signiert und nicht mit einer Apple-Developer-Program-Identität notarisiert. Deshalb kann macOS beim ersten Start eine Warnung anzeigen.
+Öffentliche Builds sind derzeit ad-hoc signiert und nicht mit einer Apple-Developer-Program-Identität notarisiert. Deshalb kann macOS beim ersten Start eine Warnung anzeigen.
 
 1. Im Finder per Rechtsklick bzw. Control-Klick auf `ThermalAtlas.app` klicken.
 2. **Öffnen** wählen.
@@ -292,7 +292,7 @@ ThermalAtlas ist datenschutzfreundlich und lokal ausgerichtet:
 - keine Analyse-Dienste
 - keine Cloud-Synchronisation
 - keine Werbe-SDKs
-- keine dauerhafte Speicherung der Temperaturmesswerte
+- keine Speicherung von Temperaturwerten über den unten beschriebenen begrenzten lokalen Verlauf hinaus
 - keine Netzwerkfunktion für die Temperaturanzeige
 - keine Drittanbieter-Abhängigkeiten
 
@@ -312,7 +312,7 @@ ThermalAtlas ist architektonisch kompakt aufgebaut: eine Menüleisten-App, ein S
 - Apple Silicon
 - Für eigene Builds: Xcode Command Line Tools mit Swift und `actool`
 
-ThermalAtlas befindet sich in aktiver Entwicklung. Öffentliche Vorab-Builds werden über [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) veröffentlicht.
+ThermalAtlas v1.0.0 ist die erste stabile Veröffentlichung. Künftige stabile Versionen und Vorabversionen werden über [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) veröffentlicht.
 
 ---
 
