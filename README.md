@@ -86,6 +86,10 @@ CPU and GPU recognition is hardware-confirmed on M4 Max, M5, and M5 Pro. The oth
 
 ThermalAtlas is in active development. Downloadable prerelease builds are published through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
 
+## Community
+
+Questions, feedback and discussions are welcome on [Discord](https://discord.gg/Zy93AaYFaj).
+
 ## Repo activity
 
 ![Alt](https://repobeats.axiom.co/api/embed/d6af5f522976c979d056c181fc9c59f85da59e78.svg "Repobeats analytics image")
