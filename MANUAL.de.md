@@ -80,6 +80,16 @@ Unter den Temperaturkarten zeigt ThermalAtlas CPU- und GPU-Last, den belegten Ar
   <img src="Resources/ManualScreenshots/system-context-load.png" width="620" alt="ThermalAtlas-Systemkontext mit CPU-Last, GPU-Last, Arbeitsspeicher, Stromquelle und Energiesparmodus">
 </p>
 
+### Systeminformationen
+
+Klicke auf das Thermometer oben rechts im ThermalAtlas-Fenster, um die **Systeminformationen** zu öffnen. Dieses eigene lokale Fenster zeigt Mac-Modell, Apple-Chip, CPU- und GPU-Kerne, eingebauten Arbeitsspeicher, internen Speicher und macOS-Version. In der Kernübersicht steht P für Performance-Kerne und E für Effizienz-Kerne.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/system-information.png" width="620" alt="ThermalAtlas-Systeminformationen mit Mac-Modell, Apple-Chip, CPU- und GPU-Kernen, Arbeitsspeicher, internem Speicher und macOS-Version">
+</p>
+
+Die Daten werden nur beim Öffnen dieses Fensters gelesen. ThermalAtlas erfasst oder zeigt keine Seriennummern, UUIDs oder anderen Hardware-Kennungen. Mit **Close** beziehungsweise dem macOS-Schließen-Button wird das Fenster geschlossen.
+
 ---
 
 ## 3. Menüleisten-Anzeige
