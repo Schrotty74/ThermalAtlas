@@ -51,6 +51,16 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var disabledTitle: String { self == .english ? "Off" : "Aus" }
     var calculatingTitle: String { self == .english ? "Calculating…" : "Wird berechnet …" }
     var sensorDetailsTitle: String { self == .english ? "Sensor Details" : "Sensor-Details" }
+    var systemInformationTitle: String { self == .english ? "System Information" : "Systeminformationen" }
+    var systemInformationLoadingTitle: String { self == .english ? "Reading this Mac…" : "Dieser Mac wird gelesen …" }
+    var macModelTitle: String { "Mac" }
+    var cpuCoresTitle: String { self == .english ? "CPU Cores" : "CPU-Kerne" }
+    var gpuCoresTitle: String { self == .english ? "GPU Cores" : "GPU-Kerne" }
+    var memoryTitle: String { self == .english ? "Memory" : "Arbeitsspeicher" }
+    var storageTitle: String { self == .english ? "Internal Storage" : "Interner Speicher" }
+    var operatingSystemTitle: String { "macOS" }
+    var systemInformationButtonLabel: String { self == .english ? "Show system information" : "Systeminformationen anzeigen" }
+    var closeTitle: String { self == .english ? "Close" : "Schließen" }
     var sourceTitle: String { self == .english ? "Source" : "Quelle" }
     var chipTitle: String { "Chip" }
     var lastValidValueTitle: String { self == .english ? "Last valid value" : "Letzter gültiger Wert" }
@@ -81,6 +91,17 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var averageCPUSensors: String { self == .english ? "Average CPU sensors" : "Mittelwert CPU-Sensoren" }
     var averageGPUSensors: String { self == .english ? "Average GPU sensors" : "Mittelwert GPU-Sensoren" }
     var notAvailable: String { self == .english ? "Not available" : "Nicht verfügbar" }
+
+    func cpuCoreDescription(total: Int?, performance: Int?, efficiency: Int?) -> String {
+        guard let total else { return notAvailable }
+        guard let performance, let efficiency else { return self == .english ? "\(total) cores" : "\(total) Kerne" }
+        return self == .english ? "\(total) cores (\(performance) performance, \(efficiency) efficiency)" : "\(total) Kerne (\(performance) Performance, \(efficiency) Effizienz)"
+    }
+
+    func gpuCoreDescription(_ count: Int?) -> String {
+        guard let count else { return notAvailable }
+        return self == .english ? "\(count) cores" : "\(count) Kerne"
+    }
 
     func highestTemperatureAccessibilityLabel(_ temperature: Int?) -> String {
         guard let temperature else { return "ThermalAtlas" }
