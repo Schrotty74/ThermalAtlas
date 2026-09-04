@@ -31,7 +31,7 @@ This page lists the stable features in detail. For installation and everyday use
 
 - Opens from the header thermometer in a separate local window.
 - Shows the Mac model, Apple chip, CPU and GPU core counts, memory, internal storage, and macOS version.
-- Reads only those displayed fields. Serial numbers, UUIDs, and other hardware identifiers are neither collected nor shown.
+- The visible snapshot does not show or retain serial numbers or UUIDs. The current broad hardware-profile query is scheduled for replacement; see `NEXT_STEPS.md`.
 
 ## History, alerts, and export
 

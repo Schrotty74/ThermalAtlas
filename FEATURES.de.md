@@ -31,7 +31,7 @@ Diese Seite beschreibt die stabilen Funktionen ausführlich. Installation und t�
 
 - Öffnen sich über das Thermometer im App-Kopf in einem eigenen lokalen Fenster.
 - Zeigen Mac-Modell, Apple-Chip, CPU- und GPU-Kerne, Arbeitsspeicher, internen Speicher und macOS-Version.
-- Lesen nur diese angezeigten Felder. Seriennummern, UUIDs und andere Hardware-Kennungen werden weder erfasst noch dargestellt.
+- Der sichtbare Snapshot zeigt oder speichert keine Seriennummern oder UUIDs. Die aktuelle breite Hardware-Profilabfrage soll ersetzt werden; siehe `NEXT_STEPS.md`.
 
 ## Verlauf, Warnungen und Export
 
