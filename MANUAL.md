@@ -80,6 +80,16 @@ Below the temperature cards, ThermalAtlas shows CPU and GPU load, used memory in
   <img src="Resources/ManualScreenshots/system-context-load.png" width="620" alt="ThermalAtlas System Context with CPU load, GPU load, memory use, power source and Low Power Mode">
 </p>
 
+### System Information
+
+Select the thermometer in the upper-right corner of the ThermalAtlas window to open **System Information**. This separate local window shows the Mac model, Apple chip, CPU and GPU core counts, installed memory, internal storage, and macOS version. The core summary uses P for performance cores and E for efficiency cores.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/system-information.png" width="620" alt="ThermalAtlas System Information window with Mac model, Apple chip, CPU and GPU cores, memory, internal storage and macOS version">
+</p>
+
+The information is read only when you open this window. ThermalAtlas does not collect or display serial numbers, UUIDs, or other hardware identifiers. Use **Close** or the macOS window close button to dismiss it.
+
 ---
 
 ## 3. Menu bar display

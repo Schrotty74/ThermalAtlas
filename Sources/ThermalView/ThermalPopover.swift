@@ -75,10 +75,15 @@ struct ThermalPopover: View {
                             .lineLimit(1)
                     }
                     Spacer()
-                    Image(systemName: "thermometer.medium")
-                        .font(compactPopover ? .title3.weight(.medium) : .title2.weight(.medium))
-                        .foregroundStyle(palette.gpu)
-                        .symbolRenderingMode(.hierarchical)
+                    Button { SystemInformationWindow.show(language: selectedLanguage, theme: selectedTheme) } label: {
+                        Image(systemName: "thermometer.medium")
+                            .font(compactPopover ? .title3.weight(.medium) : .title2.weight(.medium))
+                            .foregroundStyle(palette.gpu)
+                            .symbolRenderingMode(.hierarchical)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(selectedLanguage.systemInformationButtonLabel)
+                    .help(selectedLanguage.systemInformationButtonLabel)
                 }
                 ThermalSensorCards(
                     service: service,
@@ -433,6 +438,268 @@ struct ThermalPopover: View {
         )
     }
 
+}
+
+private struct SystemInformationWindowContent: View {
+    let language: AppLanguage
+    let theme: ThermalTheme
+    let close: () -> Void
+    @State private var systemInformation: SystemInformationSnapshot?
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var palette: ThermalThemePalette { theme.palette }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            header
+            if let systemInformation {
+                machineCard(systemInformation)
+                hardwareCards(systemInformation)
+                operatingSystemCard(systemInformation)
+            } else {
+                HStack(spacing: 10) {
+                    ProgressView()
+                    Text(language.systemInformationLoadingTitle)
+                }
+                .foregroundStyle(palette.secondary)
+                .frame(maxWidth: .infinity, minHeight: 180, alignment: .center)
+            }
+
+            HStack {
+                Spacer()
+                Button(language.closeTitle, action: close)
+                    .tint(palette.gpu)
+                    .keyboardShortcut(.defaultAction)
+            }
+        }
+        .padding(24)
+        .frame(width: 470, alignment: .leading)
+        .foregroundStyle(palette.title)
+        .background { windowBackground }
+        .task {
+            guard systemInformation == nil else { return }
+            systemInformation = await Task.detached(priority: .userInitiated) {
+                SystemInformationReader.read()
+            }.value
+        }
+    }
+
+    @ViewBuilder
+    private var windowBackground: some View {
+        if theme.usesFullWindowGlass {
+            ThermalMilkGlassBackdrop(
+                isAnimated: !reduceTransparency,
+                allowsTransparency: !reduceTransparency,
+                colorScheme: colorScheme
+            )
+        } else if theme == .classic {
+            Color(nsColor: .windowBackgroundColor)
+        } else {
+            palette.windowBackground
+                .overlay {
+                    LinearGradient(
+                        colors: [palette.gpu.opacity(0.22), .clear, palette.cpu.opacity(0.14)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                }
+        }
+    }
+
+    @ViewBuilder
+    private var header: some View {
+        HStack(spacing: 13) {
+            Image(systemName: "info.circle.fill")
+                .font(.title2.weight(.semibold))
+                .foregroundStyle(palette.gpu)
+                .frame(width: 40, height: 40)
+                .background(palette.gpu.opacity(0.16), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            VStack(alignment: .leading, spacing: 2) {
+                Text(language.systemInformationTitle)
+                    .font(.title3.weight(.semibold))
+                Text("ThermalAtlas")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(palette.secondary)
+            }
+            Spacer()
+        }
+    }
+
+    @ViewBuilder
+    private func machineCard(_ information: SystemInformationSnapshot) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: "desktopcomputer")
+                .font(.title2.weight(.medium))
+                .foregroundStyle(palette.gpu)
+                .frame(width: 46, height: 46)
+                .background(palette.gpu.opacity(0.15), in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+            VStack(alignment: .leading, spacing: 4) {
+                Text(language.macModelTitle)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(palette.secondary)
+                Text(information.macModel)
+                    .font(.body.weight(.semibold))
+                    .textSelection(.enabled)
+                Label(information.chip, systemImage: "cpu")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(palette.cpu)
+                    .textSelection(.enabled)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(15)
+        .systemInformationCardSurface(palette: palette, theme: theme)
+    }
+
+    @ViewBuilder
+    private func hardwareCards(_ information: SystemInformationSnapshot) -> some View {
+        LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
+            informationCard(
+                title: language.cpuCoresTitle,
+                value: compactCPUCoreDescription(information),
+                symbol: "cpu",
+                color: palette.cpu
+            )
+            informationCard(
+                title: language.gpuCoresTitle,
+                value: language.gpuCoreDescription(information.gpuCoreCount),
+                symbol: "rectangle.3.group.fill",
+                color: palette.gpu
+            )
+            informationCard(
+                title: language.memoryTitle,
+                value: information.memory,
+                symbol: "memorychip.fill",
+                color: palette.internalSSD
+            )
+            informationCard(
+                title: language.storageTitle,
+                value: information.storage,
+                symbol: "internaldrive.fill",
+                color: palette.externalSSD
+            )
+        }
+    }
+
+    @ViewBuilder
+    private func operatingSystemCard(_ information: SystemInformationSnapshot) -> some View {
+        HStack(spacing: 11) {
+            Spacer(minLength: 0)
+            Image(systemName: "apple.logo")
+                .font(.title3.weight(.medium))
+                .foregroundStyle(palette.title)
+                .frame(width: 34, height: 34)
+                .background(palette.title.opacity(0.10), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            VStack(alignment: .leading, spacing: 2) {
+                Text(language.operatingSystemTitle)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(palette.secondary)
+                Text(information.operatingSystem)
+                    .font(.subheadline.weight(.medium))
+                    .textSelection(.enabled)
+                    .lineLimit(2)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(12)
+        .systemInformationCardSurface(palette: palette, theme: theme)
+    }
+
+    @ViewBuilder
+    private func informationCard(title: String, value: String, symbol: String, color: Color) -> some View {
+        HStack(spacing: 9) {
+            Spacer(minLength: 0)
+            Image(systemName: symbol)
+                .font(.headline.weight(.medium))
+                .foregroundStyle(color)
+                .frame(width: 28, height: 28)
+                .background(color.opacity(0.15), in: Circle())
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(palette.secondary)
+                    .lineLimit(1)
+                Text(value)
+                    .font(.caption.weight(.semibold))
+                    .textSelection(.enabled)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+            }
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, minHeight: 62, maxHeight: 62, alignment: .center)
+        .padding(.horizontal, 10)
+        .systemInformationCardSurface(palette: palette, theme: theme, cornerRadius: 31)
+    }
+
+    private func compactCPUCoreDescription(_ information: SystemInformationSnapshot) -> String {
+        guard let total = information.cpuCoreCount else { return language.notAvailable }
+        guard let performance = information.performanceCoreCount, let efficiency = information.efficiencyCoreCount else {
+            return language == .english ? "\(total) cores" : "\(total) Kerne"
+        }
+        return language == .english
+            ? "\(total) cores · \(performance)P · \(efficiency)E"
+            : "\(total) Kerne · \(performance)P · \(efficiency)E"
+    }
+}
+
+private extension View {
+    func systemInformationCardSurface(
+        palette: ThermalThemePalette,
+        theme: ThermalTheme,
+        cornerRadius: CGFloat = 14
+    ) -> some View {
+        background {
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .fill(theme == .classic ? Color(nsColor: .controlBackgroundColor).opacity(0.72) : palette.cardBase)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .stroke(palette.gpu.opacity(theme.usesFullWindowGlass ? 0.30 : palette.cardStrokeOpacity), lineWidth: 1)
+        }
+    }
+}
+
+/// Presents system information in its own AppKit window. A separate panel is
+/// necessary here because a sheet attached to a window-style `MenuBarExtra`
+/// can remain cached by macOS after the menu window is reopened.
+@MainActor
+private enum SystemInformationWindow {
+    private static var panel: NSPanel?
+
+    static func show(language: AppLanguage, theme: ThermalTheme) {
+        if let panel {
+            panel.title = language.systemInformationTitle
+            panel.contentView = hostingView(language: language, theme: theme)
+            panel.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+
+        let panel = NSPanel(
+            contentRect: NSRect(x: 0, y: 0, width: 470, height: 470),
+            styleMask: [.titled, .closable, .utilityWindow],
+            backing: .buffered,
+            defer: false
+        )
+        panel.title = language.systemInformationTitle
+        panel.isReleasedWhenClosed = false
+        panel.contentView = hostingView(language: language, theme: theme)
+        panel.center()
+        self.panel = panel
+        panel.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    static func close() {
+        panel?.close()
+        panel = nil
+    }
+
+    private static func hostingView(language: AppLanguage, theme: ThermalTheme) -> NSHostingView<SystemInformationWindowContent> {
+        NSHostingView(rootView: SystemInformationWindowContent(language: language, theme: theme, close: close))
+    }
 }
 
 /// Keeps the window-style menu extra close to its status item instead of

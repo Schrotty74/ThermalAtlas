@@ -31,6 +31,7 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 - Separates fast, read-only CPU/GPU load and used-memory context from temperature monitoring.
 - Keeps local temperature history, provides optional temperature alerts, and exports a snapshot or CSV only on request.
 - Offers Standard and Compact views, selectable visible sensor groups, and menu-bar modes for all values or just the symbol.
+- Opens a local System Information window from the header thermometer and offers optional Start at Login registration.
 - Includes four native themes and a local English/German interface choice.
 - Uses defensive Apple-silicon sensor access and independent drive refresh cycles, so slow drive queries do not delay CPU/GPU temperatures.
 - Works locally without accounts, telemetry, analytics, third-party dependencies, or hardware control.
@@ -58,7 +59,7 @@ See the complete, grouped [feature overview](FEATURES.md).
 
 Download the stable macOS package from [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases). Open the DMG and drag ThermalAtlas to the `Applications` alias to install it.
 
-After opening the app, use the thermometer in the macOS menu bar to view the current temperatures. Open the footer ellipsis for visual themes, Scan Refresh, display options, alerts, export, the optional German interface, manuals, links, Activity Monitor, and Quit. Select a card for its local temperature history; use its info button for sensor details. The app displays `Not available` when a sensor, SSD, or external enclosure does not provide a real temperature.
+After opening the app, use the thermometer in the macOS menu bar to view the current temperatures. Select the header thermometer for local System Information: Mac model, chip, CPU/GPU core counts, memory, internal storage, and macOS version; serial numbers and hardware IDs are not read or shown. Open the footer ellipsis for visual themes, Scan Refresh, display options, alerts, Start at Login, export, the optional German interface, manuals, links, Activity Monitor, and Quit. Select a card for its local temperature history; use its info button for sensor details. The app displays `Not available` when a sensor, SSD, or external enclosure does not provide a real temperature.
 
 ### Gatekeeper confirmation
 
@@ -81,7 +82,7 @@ Published builds are ad-hoc signed locally. Building does not publish a release.
 
 ## Privacy, data handling, and security
 
-ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, SMART temperature data, CPU/GPU load, used memory, power source/battery, and Low Power Mode only when macOS provides them. It stores selected display preferences, alert thresholds, and local per-minute temperature averages for up to 24 hours in local `UserDefaults`; system-context values are displayed but not stored. The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. A text or CSV export is created only after you explicitly choose it and a local save location. Its optional GitHub, Homepage, and manual menu actions open the selected public page in your default browser only after you select them.
+ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, SMART temperature data, CPU/GPU load, used memory, power source/battery, and Low Power Mode only when macOS provides them. System Information reads only the Mac model, chip, CPU/GPU core counts, memory, storage, and macOS version; it excludes serial numbers and hardware IDs. It stores selected display preferences, alert thresholds, and local per-minute temperature averages for up to 24 hours in local `UserDefaults`; system-context values are displayed but not stored. The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. A diagnostic report or CSV export is created only after you explicitly choose it. Its optional GitHub, Homepage, and manual menu actions open the selected public page in your default browser only after you select them.
 
 See [Privacy report](PRIVACY.md), [Datenschutzbericht](PRIVACY.de.md), and the [security review](SECURITY.md).
 
@@ -91,7 +92,7 @@ CPU and GPU recognition is hardware-confirmed on M4 Max, M5, and M5 Pro. The oth
 
 ## Project status
 
-ThermalAtlas v1.0.0 is the first stable release. Future stable releases and prereleases are published through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
+ThermalAtlas v1.1.0 is the current stable release. Future stable releases and prereleases are published through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
 
 ## Community
 

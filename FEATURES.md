@@ -27,6 +27,12 @@ This page lists the stable features in detail. For installation and everyday use
 - Updates CPU/GPU load and used memory every 0.5 seconds, independently from the selected temperature interval.
 - Treats these values as read-only context, never as temperature measurements or system controls.
 
+## System Information
+
+- Opens from the header thermometer in a separate local window.
+- Shows the Mac model, Apple chip, CPU and GPU core counts, memory, internal storage, and macOS version.
+- Reads only those displayed fields. Serial numbers, UUIDs, and other hardware identifiers are neither collected nor shown.
+
 ## History, alerts, and export
 
 - Opens a local 1-, 6-, or 24-hour temperature history from every temperature card.

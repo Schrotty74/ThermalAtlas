@@ -31,6 +31,7 @@ Weder Administrator- noch Root-Rechte sind nötig. ThermalAtlas verfolgt einen r
 - Trennt schnellen, rein lesenden Systemkontext für CPU-/GPU-Last und belegten Arbeitsspeicher von der Temperaturüberwachung.
 - Führt lokale Temperaturverläufe, bietet optionale Temperaturwarnungen und exportiert Snapshot oder CSV nur auf Wunsch.
 - Bietet Standard- und Kompaktansicht, wählbare sichtbare Sensorgruppen sowie Menüleistenmodi für alle Werte oder nur das Symbol.
+- Öffnet über das Thermometer im Kopf lokale Systeminformationen und bietet optional **Bei Anmeldung starten**.
 - Enthält vier native Themes und eine lokale Sprachwahl zwischen Englisch und Deutsch.
 - Nutzt defensiven Apple-Silicon-Sensorzugriff und getrennte Laufwerkszyklen, damit langsame Laufwerksabfragen CPU-/GPU-Temperaturen nicht verzögern.
 - Funktioniert lokal ohne Konten, Telemetrie, Analysedienste, Drittanbieter-Abhängigkeiten oder Hardwaresteuerung.
@@ -58,7 +59,7 @@ Die vollständige, gegliederte [Funktionsübersicht](FEATURES.de.md) enthält al
 
 Lade das stabile macOS-Paket über die [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) herunter. Öffne das DMG und ziehe ThermalAtlas zur Installation auf den `Applications`-Alias.
 
-Nach dem Öffnen der App zeigt das Thermometer in der macOS-Menüleiste die aktuellen Temperaturen an. Über den Dreipunkt-Button im Footer stehen Themes, Scan Refresh, Anzeigeoptionen, Warnungen, Export, die optionale deutsche Oberfläche, Handbücher, Links, Aktivitätsanzeige und Beenden bereit. Ein Klick auf eine Karte öffnet ihren lokalen Temperaturverlauf; das Info-Symbol zeigt die Sensor-Details. Wenn ein Sensor, eine SSD oder ein externes Gehäuse keinen echten Temperaturwert bereitstellt, zeigt die App `Nicht verfügbar`.
+Nach dem Öffnen der App zeigt das Thermometer in der macOS-Menüleiste die aktuellen Temperaturen an. Das Thermometer im App-Kopf öffnet lokale Systeminformationen: Mac-Modell, Chip, CPU-/GPU-Kerne, Arbeitsspeicher, interner Speicher und macOS-Version; Seriennummern und Hardware-IDs werden nicht gelesen oder angezeigt. Über den Dreipunkt-Button im Footer stehen Themes, Scan Refresh, Anzeigeoptionen, Warnungen, Bei Anmeldung starten, Export, die optionale deutsche Oberfläche, Handbücher, Links, Aktivitätsanzeige und Beenden bereit. Ein Klick auf eine Karte öffnet ihren lokalen Temperaturverlauf; das Info-Symbol zeigt die Sensor-Details. Wenn ein Sensor, eine SSD oder ein externes Gehäuse keinen echten Temperaturwert bereitstellt, zeigt die App `Nicht verfügbar`.
 
 ### Gatekeeper-Bestätigung
 
@@ -81,7 +82,7 @@ Veröffentlichte Builds werden lokal ad-hoc signiert. Ein Build veröffentlicht 
 
 ## Datenschutz, Datenverarbeitung und Sicherheit
 
-ThermalAtlas liest lokale Apple-Silicon-SMC-Temperaturen, lokale Laufwerksmetadaten, SMART-Temperaturen, CPU-/GPU-Last, belegten Arbeitsspeicher, Stromquelle/Akku und Energiesparmodus nur dann, wenn macOS sie bereitstellt. Lokal gespeichert werden Anzeigeneinstellungen, Warnschwellen und lokale Temperatur-Minutenmittelwerte für höchstens 24 Stunden in `UserDefaults`; Systemkontextwerte werden angezeigt, aber nicht gespeichert. Die App enthält keine Hintergrundnetzwerkfunktionen, Telemetrie, Analyse-Dienste, Konten, Cloud-Synchronisation, Werbe-SDKs oder Drittanbieter-Abhängigkeiten. Ein Text- oder CSV-Export entsteht nur nach einer ausdrücklichen Auswahl und an einem lokal gewählten Speicherort. Die optionalen Menüeinträge GitHub, Homepage und Handbücher öffnen die gewählte öffentliche Seite nur nach einem Klick im Standardbrowser.
+ThermalAtlas liest lokale Apple-Silicon-SMC-Temperaturen, lokale Laufwerksmetadaten, SMART-Temperaturen, CPU-/GPU-Last, belegten Arbeitsspeicher, Stromquelle/Akku und Energiesparmodus nur dann, wenn macOS sie bereitstellt. Die Systeminformationen lesen nur Mac-Modell, Chip, CPU-/GPU-Kerne, Arbeitsspeicher, Speicher und macOS-Version; Seriennummern und Hardware-IDs bleiben ausgeschlossen. Lokal gespeichert werden Anzeigeneinstellungen, Warnschwellen und lokale Temperatur-Minutenmittelwerte für höchstens 24 Stunden in `UserDefaults`; Systemkontextwerte werden angezeigt, aber nicht gespeichert. Die App enthält keine Hintergrundnetzwerkfunktionen, Telemetrie, Analyse-Dienste, Konten, Cloud-Synchronisation, Werbe-SDKs oder Drittanbieter-Abhängigkeiten. Ein Diagnosebericht oder CSV-Export entsteht nur nach einer ausdrücklichen Auswahl. Die optionalen Menüeinträge GitHub, Homepage und Handbücher öffnen die gewählte öffentliche Seite nur nach einem Klick im Standardbrowser.
 
 Siehe [Datenschutzbericht](PRIVACY.de.md), [Privacy report](PRIVACY.md) und die [Sicherheitsprüfung](SECURITY.md).
 
@@ -91,7 +92,7 @@ Die CPU- und GPU-Erkennung ist auf M4 Max, M5 und M5 Pro auf echter Hardware bes
 
 ## Projektstatus
 
-ThermalAtlas v1.0.0 ist die erste stabile Veröffentlichung. Künftige stabile Versionen und Vorabversionen werden über die [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) veröffentlicht.
+ThermalAtlas v1.1.0 ist die aktuelle stabile Veröffentlichung. Künftige stabile Versionen und Vorabversionen werden über die [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) veröffentlicht.
 
 ## Community
 

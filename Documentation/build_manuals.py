@@ -193,6 +193,19 @@ def build(language, output):
     panel(c, 55, 125, W - 110, 105, VIOLET,
           "Mehr Informationen" if de else "More information",
           "README, Datenschutzbericht und Sicherheitsprüfung im offiziellen ThermalAtlas-Repository ergänzen dieses Handbuch." if de else "The README, privacy report and security review in the official ThermalAtlas repository complement this manual.")
+    c.showPage()
+
+    # 8 System information
+    base(c, 7, "Systeminformationen" if de else "System Information",
+         "Dieser Mac auf einen Blick" if de else "This Mac at a glance",
+         "Die Angaben bleiben lokal und werden nur beim Öffnen gelesen." if de else "The details stay local and are read only when opened.", 8)
+    image(c, ASSETS / "ManualScreenshots" / "system-information.png", 82, 225, W - 164, 470)
+    panel(c, 55, 125, W - 110, 72, CYAN,
+          "Thermometer im Kopf" if de else "Header thermometer",
+          "Es öffnet Mac-Modell, Chip, CPU-/GPU-Kerne, Arbeitsspeicher, internen Speicher und macOS-Version." if de else "It opens the Mac model, chip, CPU/GPU cores, memory, internal storage and macOS version.")
+    panel(c, 55, 48, W - 110, 55, GREEN,
+          "Privat" if de else "Private",
+          "Keine Seriennummern, UUIDs oder anderen Hardware-Kennungen." if de else "No serial numbers, UUIDs or other hardware identifiers.")
     c.save()
 
 

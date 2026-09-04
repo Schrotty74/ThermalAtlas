@@ -2,17 +2,27 @@
 
 All notable user-visible changes are documented here in English. Development builds remain local; public prereleases are announced through GitHub Releases.
 
+## 1.1.0
+
+### Added
+
+- A local **System Information** window opened from the header thermometer. It shows the Mac model, Apple chip, CPU/GPU core counts, memory, internal storage, and macOS version without collecting serial numbers, UUIDs, or other hardware identifiers.
+- Current public manuals now include a System Information example and explain the locally read fields.
+
+### Fixed
+
+- The ThermalAtlas window keeps its intended menu-bar position when it opens, when a temperature-history card opens or closes, and when the window is opened again.
+
+### Documentation
+
+- Updated English and German home pages, feature overviews, privacy reports, manuals, and PDFs for System Information and the current local-only data handling.
+
 ## 1.0.0
 
 ### Stable release
 
-- First stable ThermalAtlas release, consolidating the tested Beta work from 0.2.0 through 0.5.0.
-- Local, read-only CPU, GPU, internal-SSD and physical external-SSD temperature monitoring, including SMART status and remaining SSD health when macOS provides them.
-- Defensive Apple-silicon CPU/GPU sensor support for M1 through M5, with safe `Not available` fallbacks instead of estimated readings.
-- Separate read-only System Context for CPU/GPU load, used memory, power source or battery, and Low Power Mode.
-- Local 1-, 6- and 24-hour temperature history, per-sensor alert thresholds, and user-initiated snapshot, diagnostic-report and CSV export.
-- Standard and Compact popover layouts, configurable visible sensor groups, colour-coded All Values menu-bar mode, Symbol Only mode, Start at Login, and English/German interface selection.
-- Adaptive, Liquid Glass, Aurora and Ember themes, alongside current English and German manuals, privacy documentation and release packages.
+- First stable ThermalAtlas release, based on the tested 0.5.0 Beta feature set.
+- Includes local CPU, GPU, internal-SSD and physical external-SSD monitoring; read-only System Context; local history, alerts and user-initiated export; four themes; and English/German documentation.
 
 ## 0.5.0
 

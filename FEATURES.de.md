@@ -27,6 +27,12 @@ Diese Seite beschreibt die stabilen Funktionen ausführlich. Installation und t�
 - Aktualisiert CPU-/GPU-Last und belegten Speicher alle 0,5 Sekunden, unabhängig vom gewählten Temperaturintervall.
 - Behandelt diese Werte als rein lesenden Kontext, niemals als Temperaturmessungen oder Systemsteuerung.
 
+## Systeminformationen
+
+- Öffnen sich über das Thermometer im App-Kopf in einem eigenen lokalen Fenster.
+- Zeigen Mac-Modell, Apple-Chip, CPU- und GPU-Kerne, Arbeitsspeicher, internen Speicher und macOS-Version.
+- Lesen nur diese angezeigten Felder. Seriennummern, UUIDs und andere Hardware-Kennungen werden weder erfasst noch dargestellt.
+
 ## Verlauf, Warnungen und Export
 
 - Öffnet von jeder Temperaturkarte einen lokalen Verlauf für 1, 6 oder 24 Stunden.
