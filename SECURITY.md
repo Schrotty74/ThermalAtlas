@@ -2,6 +2,15 @@
 
 [Deutsch](SECURITY.de.md)
 
+## Supported Versions
+
+| Version | Supported |
+| --- | --- |
+| 1.1.x | Yes |
+| 1.0.x and earlier | No |
+
+The current stable release is 1.1.0.
+
 ## Security Model
 
 ThermalAtlas is a read-only Apple-silicon monitoring app. It reads available SMC temperature values, drive/SMART information and local system context without providing fan, SMC, power or hardware-control write operations. It requires no administrator or root access and has no telemetry, analytics, accounts or background network communication.
