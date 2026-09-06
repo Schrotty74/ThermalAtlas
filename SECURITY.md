@@ -1,32 +1,19 @@
-# Security Review
+# Security Policy
+
+[Deutsch](SECURITY.de.md)
+
+## Security Model
+
+ThermalAtlas is a read-only Apple-silicon monitoring app. It reads available SMC temperature values, drive/SMART information and local system context without providing fan, SMC, power or hardware-control write operations. It requires no administrator or root access and has no telemetry, analytics, accounts or background network communication.
+
+Apple-silicon SMC access uses private macOS interfaces. Missing keys and IOKit failures are treated as unavailable measurements. Compatibility may change with macOS updates.
+
+## Reporting a Vulnerability
+
+Please do not publish sensitive vulnerability details in a public GitHub issue. Contact the repository owner privately. Include the ThermalAtlas and macOS versions, Mac model/chip where relevant, reproduction steps and sanitized logs or screenshots. Do not include serial numbers, UUIDs or other unnecessary device identifiers.
 
 ## Scope
 
-This review covers the Swift source, build scripts, public documentation, and
-tracked icon assets in this repository. Generated bundles and Swift build
-caches are excluded through `.gitignore` and are not published.
+Relevant reports include read-only SMC/IOKit sensor access, drive and SMART queries, system-information collection, local temperature history, alerts, CSV/diagnostic exports, Start at Login behavior, local preferences and any unintended ability to modify hardware or system state.
 
-## Review result
-
-No credentials, tokens, local file-system paths, telemetry endpoints, network
-clients, or bundled private data are intentionally present in the public source.
-
-The app's hardware access is restricted to:
-
-- Read-only IOKit calls for Apple-silicon SMC temperature keys.
-- `diskutil info -plist` with internally discovered disk identifiers.
-- Public Mach CPU-tick and virtual-memory snapshots plus read-only IOKit power-source and Apple GPU-driver utilization data for the separately labelled System Context.
-
-There are no SMC write commands, fan-control APIs, power-control APIs, shell
-commands constructed from user input, network requests, or third-party packages.
-
-## Known security boundary
-
-Apple-silicon SMC access uses private macOS interfaces. The adapter treats
-missing keys and IOKit failures as unavailable measurements and contains no
-write path. Private interface compatibility can change with macOS updates.
-
-## Reporting
-
-Please report a potential vulnerability privately through the repository owner
-before opening a public issue.
+Thank you for helping keep ThermalAtlas and its users secure.
