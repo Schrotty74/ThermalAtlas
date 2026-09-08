@@ -2,7 +2,7 @@
 
 [![Swift 6](https://img.shields.io/badge/Swift-6.0-F05138?logo=swift&logoColor=white)](Package.swift)
 [![macOS 14+](https://img.shields.io/badge/macOS-14%2B-000000?logo=apple&logoColor=white)](#voraussetzungen)
-[![Lizenz GPL-3.0](https://img.shields.io/badge/Lizenz-GPL--3.0-3DA639?logo=gnu&logoColor=white)](LICENSE)
+[![Lizenz GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-3DA639?logo=gnu&logoColor=white)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/Schrotty74/ThermalAtlas?display_name=tag&include_prereleases&sort=semver&label=release)](https://github.com/Schrotty74/ThermalAtlas/releases)
 [![Downloads](https://img.shields.io/github/downloads/Schrotty74/ThermalAtlas/total?label=downloads)](https://github.com/Schrotty74/ThermalAtlas/releases)
 [![Datenschutz: lokal](https://img.shields.io/badge/Datenschutz-Lokal-2EA043?logo=shield&logoColor=white)](PRIVACY.de.md)
@@ -63,11 +63,16 @@ Nach dem Öffnen der App zeigt das Thermometer in der macOS-Menüleiste die aktu
 
 ### Gatekeeper-Bestätigung
 
-Öffentliche Builds sind ad-hoc signiert und nicht mit einer Apple-Developer-Program-Signatur notarisiert. macOS Gatekeeper kann deshalb beim ersten Start eine Bestätigung verlangen. Bestätige die App nur, wenn du sie aus dem offiziellen [ThermalAtlas-GitHub-Release](https://github.com/Schrotty74/ThermalAtlas/releases) geladen hast.
+Öffentliche Builds sind ad-hoc signiert und nicht mit einer Apple-Developer-Program-Signatur notarisiert. macOS Gatekeeper kann deshalb den ersten Start blockieren. Bestätige die App nur, wenn du sie aus dem offiziellen [ThermalAtlas-GitHub-Release](https://github.com/Schrotty74/ThermalAtlas/releases) geladen hast.
 
-1. Klicke im Finder bei gedrückter Control-Taste (oder per Rechtsklick) auf `ThermalAtlas.app` und wähle **Öffnen**.
-2. Bestätige **Öffnen** im macOS-Dialog.
-3. Falls macOS die App weiterhin blockiert, öffne **Systemeinstellungen → Datenschutz & Sicherheit**, wähle bei ThermalAtlas **Dennoch öffnen** und bestätige den nächsten Dialog.
+Wenn Gatekeeper ThermalAtlas auf einer aktuellen macOS-Version blockiert:
+
+1. `ThermalAtlas.app` einmal normal zu öffnen versuchen, damit macOS den blockierten Start registriert.
+2. **Systemeinstellungen → Datenschutz & Sicherheit** öffnen und zum Bereich **Sicherheit** scrollen.
+3. Bei ThermalAtlas auf **Dennoch öffnen** klicken.
+4. Die Warnung mit **Öffnen** bestätigen und bei Bedarf authentifizieren.
+
+Die Option **Dennoch öffnen** wird nach einem blockierten Startversuch nur für begrenzte Zeit angezeigt. Dadurch wird nur für diese konkrete App eine Ausnahme angelegt; Gatekeeper wird nicht systemweit deaktiviert.
 
 ## Veröffentlichte Build-Kanäle
 
