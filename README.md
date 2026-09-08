@@ -63,11 +63,16 @@ After opening the app, use the thermometer in the macOS menu bar to view the cur
 
 ### Gatekeeper confirmation
 
-Public builds are ad-hoc signed and are not notarized with an Apple Developer Program signing identity. macOS Gatekeeper can therefore ask you to confirm the first launch. Only approve the app after downloading it from the official [ThermalAtlas GitHub Release](https://github.com/Schrotty74/ThermalAtlas/releases).
+Public builds are ad-hoc signed and are not notarized with an Apple Developer Program signing identity. macOS Gatekeeper can therefore block the first launch. Only approve the app after downloading it from the official [ThermalAtlas GitHub Release](https://github.com/Schrotty74/ThermalAtlas/releases).
 
-1. In Finder, Control-click (or right-click) `ThermalAtlas.app` and choose **Open**.
-2. Confirm **Open** in the macOS dialog.
-3. If macOS still blocks the app, open **System Settings → Privacy & Security**, then choose **Open Anyway** for ThermalAtlas and confirm the next dialog.
+On current macOS versions, if Gatekeeper blocks ThermalAtlas:
+
+1. Try to open `ThermalAtlas.app` normally once so macOS registers the blocked launch.
+2. Open **System Settings → Privacy & Security** and scroll down to **Security**.
+3. Click **Open Anyway** for ThermalAtlas.
+4. Confirm the warning by clicking **Open** and authenticate if macOS asks you to.
+
+The **Open Anyway** option is only shown for a limited time after the blocked launch attempt. This creates an exception for that specific app and does not disable Gatekeeper system-wide.
 
 ## Published build channels
 
