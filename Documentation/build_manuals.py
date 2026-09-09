@@ -206,6 +206,21 @@ def build(language, output):
     panel(c, 55, 48, W - 110, 55, GREEN,
           "Privat" if de else "Private",
           "Keine Seriennummern, UUIDs oder anderen Hardware-Kennungen." if de else "No serial numbers, UUIDs or other hardware identifiers.")
+    c.showPage()
+
+    # 9 Gatekeeper
+    base(c, 8, "Installation" if de else "Installation",
+         "Sicher öffnen" if de else "Open safely",
+         "Freigabe nur für die offizielle App." if de else "Approve only the official app.", 9)
+    panel(c, 55, 515, W - 110, 145, CYAN,
+          "Gatekeeper" if de else "Gatekeeper",
+          "Öffentliche Builds sind ad-hoc signiert und nicht notarisiert. macOS kann den ersten Start deshalb blockieren." if de else "Public builds are ad-hoc signed and not notarized. macOS can therefore block the first launch.")
+    panel(c, 55, 280, W - 110, 195, VIOLET,
+          "So öffnest du ThermalAtlas" if de else "How to open ThermalAtlas",
+          "1. ThermalAtlas.app einmal normal öffnen. macOS blockiert den Start. 2. Systemeinstellungen > Datenschutz & Sicherheit öffnen. 3. Zum Bereich Sicherheit scrollen und bei ThermalAtlas Dennoch öffnen wählen. 4. Die Warnung mit Öffnen bestätigen und bei Bedarf authentifizieren." if de else "1. Open ThermalAtlas.app normally once. macOS blocks the launch. 2. Open System Settings > Privacy & Security. 3. Scroll to Security and choose Open Anyway for ThermalAtlas. 4. Confirm the warning with Open and authenticate if macOS asks you to.")
+    panel(c, 55, 115, W - 110, 125, GREEN,
+          "Nur diese App" if de else "Only this app",
+          "Dennoch öffnen erscheint nur für begrenzte Zeit nach dem blockierten Startversuch. Dadurch wird nur für ThermalAtlas eine Ausnahme angelegt; Gatekeeper wird nicht systemweit deaktiviert. Die Freigabe nur für eine App aus dem offiziellen ThermalAtlas-GitHub-Release verwenden." if de else "Open Anyway is shown only for a limited time after the blocked launch attempt. This creates an exception only for ThermalAtlas and does not disable Gatekeeper system-wide. Use it only for an app obtained from the official ThermalAtlas GitHub release.")
     c.save()
 
 
