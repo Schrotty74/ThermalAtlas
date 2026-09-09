@@ -282,14 +282,14 @@ Lade ein verfügbares macOS-Paket ausschließlich über die offiziellen [Thermal
 
 ### Gatekeeper beim ersten Start
 
-Öffentliche Builds sind derzeit ad-hoc signiert und nicht mit einer Apple-Developer-Program-Identität notarisiert. Deshalb kann macOS beim ersten Start eine Warnung anzeigen.
+Öffentliche Builds sind derzeit ad-hoc signiert und nicht mit einer Apple-Developer-Program-Identität notarisiert. Deshalb kann macOS den ersten Start blockieren.
 
-1. Im Finder per Rechtsklick bzw. Control-Klick auf `ThermalAtlas.app` klicken.
-2. **Öffnen** wählen.
-3. **Öffnen** im macOS-Dialog bestätigen.
-4. Falls macOS die App weiterhin blockiert: **Systemeinstellungen -> Datenschutz & Sicherheit -> Dennoch öffnen**.
+1. `ThermalAtlas.app` einmal normal öffnen. macOS blockiert den Start.
+2. **Systemeinstellungen → Datenschutz & Sicherheit** öffnen.
+3. Zum Bereich **Sicherheit** scrollen und bei ThermalAtlas **Dennoch öffnen** wählen.
+4. Die Warnung mit **Öffnen** bestätigen und bei Bedarf authentifizieren.
 
-Bestätige eine solche Ausnahme nur für eine App, die du aus dem offiziellen ThermalAtlas-Repository geladen hast.
+**Dennoch öffnen** erscheint nur für begrenzte Zeit nach dem blockierten Startversuch. Dadurch wird nur für ThermalAtlas eine Ausnahme angelegt; Gatekeeper wird nicht systemweit deaktiviert. Verwende die Freigabe nur für eine App aus dem offiziellen ThermalAtlas-GitHub-Release.
 
 ---
 
