@@ -2,8 +2,9 @@
 
 ## Repository
 
-- Repository-Root: `ThermalView`.
-- Öffentliches Repository: https://github.com/Schrotty74/ThermalAtlas
+- Öffentliches Repository: `Schrotty74/ThermalAtlas`
+- Produktname: `ThermalAtlas`
+- Swift-Package und Quellordner: `ThermalView`
 
 ## Ziel und Zweck
 
