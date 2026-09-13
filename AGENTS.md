@@ -1,9 +1,5 @@
 # AGENTS.md
 
-Vor jeder Projektarbeit zuerst `PROJECT_CONTEXT.md` und `NEXT_STEPS.md` lesen.
-
-## Verbindliche Arbeitsregeln
-
 Vor jeder weiteren Projektarbeit `PROJECT_CONTEXT.md` und `NEXT_STEPS.md` vollständig lesen.
 
 ## Verbindliche Arbeitsregeln
