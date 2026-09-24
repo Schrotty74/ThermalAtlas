@@ -42,6 +42,10 @@ See the complete, grouped [feature overview](FEATURES.md).
 | Aurora | Ember |
 | <img src="Resources/Screenshots/aurora.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Aurora macOS theme showing temperature cards and a separate System Context area"> | <img src="Resources/Screenshots/ember.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Ember macOS theme showing temperature cards and a separate System Context area"> |
 
+| Compact view |
+| --- |
+| <img src="Resources/Screenshots/compact.png" width="260" alt="ThermalAtlas compact view with temperature cards and a System Context area"> |
+
 ## Requirements
 
 - macOS 14 or later on Apple silicon
