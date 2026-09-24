@@ -46,6 +46,10 @@ Die vollständige, gegliederte [Funktionsübersicht](FEATURES.de.md) enthält al
 | Aurora | Ember |
 | <img src="Resources/Screenshots/aurora.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Aurora-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> | <img src="Resources/Screenshots/ember.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Ember-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> |
 
+| Kompaktansicht |
+| --- |
+| <img src="Resources/Screenshots/compact.png" width="260" alt="ThermalAtlas-Kompaktansicht mit Temperaturkarten und separatem Systemkontext"> |
+
 ## Voraussetzungen
 
 - macOS 14 oder neuer
