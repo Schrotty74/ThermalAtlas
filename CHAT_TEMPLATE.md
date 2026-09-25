@@ -21,7 +21,7 @@ Prüfe vor Aussagen oder Änderungen den tatsächlichen Stand dieses Beta-Branch
 ThermalAtlas-spezifisch:
 
 - Dev bleibt lokal und getrennt von Beta und Final.
-- Beta-Quellstände und Beta-Veröffentlichungen gehören ausschließlich auf `beta`; Final ausschließlich auf `main`.
+- Beta-Quellstände und Beta-Veröffentlichungen gehören ausschließlich auf `beta`; Final ausschließlich auf `main`. Dev wird niemals gepusht.
 - Sensorwerte niemals schätzen oder erfinden; nicht verfügbare Daten klar als nicht verfügbar behandeln.
 - Bei relevanten Änderungen `PROJECT_CONTEXT.md` und `NEXT_STEPS.md` im selben Auftrag gegen den tatsächlichen Branch-Stand prüfen.
 - Bei einem ausdrücklich beauftragten Beta-/Final-Build die in `AGENTS.md` genannten zweisprachigen Markdown-, Handbuch-, Datenschutz- und Release-Dokumente vollständig abgleichen.

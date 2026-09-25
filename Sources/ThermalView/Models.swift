@@ -109,6 +109,8 @@ struct TemperatureReading: Identifiable, Sendable {
     let sourceIdentifier: String?
     let title: String?
     let temperatureCelsius: Double?
+    let hotspotTemperatureCelsius: Double?
+    let validSensorCount: Int?
     let detail: String?
     let smartStatus: SMARTStatus?
     let smartHealthPercentage: Int?
@@ -123,6 +125,8 @@ struct TemperatureReading: Identifiable, Sendable {
         sourceIdentifier: String? = nil,
         title: String? = nil,
         temperatureCelsius: Double?,
+        hotspotTemperatureCelsius: Double? = nil,
+        validSensorCount: Int? = nil,
         detail: String?,
         smartStatus: SMARTStatus? = nil,
         smartHealthPercentage: Int? = nil,
@@ -136,6 +140,8 @@ struct TemperatureReading: Identifiable, Sendable {
         self.sourceIdentifier = sourceIdentifier
         self.title = title
         self.temperatureCelsius = temperatureCelsius
+        self.hotspotTemperatureCelsius = hotspotTemperatureCelsius
+        self.validSensorCount = validSensorCount
         self.detail = detail
         self.smartStatus = smartStatus
         self.smartHealthPercentage = smartHealthPercentage
@@ -148,10 +154,18 @@ struct TemperatureReading: Identifiable, Sendable {
 
     var id: String { sourceIdentifier ?? kind.rawValue }
 
+    /// CPU and GPU alerts use their measured hotspot when available. SSDs and
+    /// readings without a hotspot retain their primary temperature.
+    var alertTemperatureCelsius: Double? {
+        guard kind == .cpu || kind == .gpu else { return temperatureCelsius }
+        return hotspotTemperatureCelsius ?? temperatureCelsius
+    }
+
     func cached() -> TemperatureReading {
         TemperatureReading(
             kind: kind, sourceIdentifier: sourceIdentifier, title: title,
-            temperatureCelsius: temperatureCelsius, detail: detail,
+            temperatureCelsius: temperatureCelsius, hotspotTemperatureCelsius: hotspotTemperatureCelsius,
+            validSensorCount: validSensorCount, detail: detail,
             smartStatus: smartStatus, smartHealthPercentage: smartHealthPercentage,
             unavailableReason: unavailableReason, measuredAt: measuredAt,
             isFreshMeasurement: false, isLastVerifiedValue: isLastVerifiedValue,
@@ -162,7 +176,8 @@ struct TemperatureReading: Identifiable, Sendable {
     func replacingSMARTMetadata(from previous: TemperatureReading) -> TemperatureReading {
         TemperatureReading(
             kind: kind, sourceIdentifier: sourceIdentifier, title: title,
-            temperatureCelsius: temperatureCelsius, detail: detail,
+            temperatureCelsius: temperatureCelsius, hotspotTemperatureCelsius: hotspotTemperatureCelsius,
+            validSensorCount: validSensorCount, detail: detail,
             smartStatus: previous.smartStatus, smartHealthPercentage: previous.smartHealthPercentage,
             unavailableReason: unavailableReason, measuredAt: measuredAt,
             isFreshMeasurement: isFreshMeasurement, isLastVerifiedValue: isLastVerifiedValue,

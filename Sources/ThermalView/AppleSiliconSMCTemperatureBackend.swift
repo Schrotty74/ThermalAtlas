@@ -14,6 +14,8 @@ struct AppleSiliconSMCTemperatureBackend {
 
     struct Result {
         let celsius: Double?
+        let hotspotCelsius: Double?
+        let validSensorCount: Int?
         let detail: String?
         let unavailableReason: String
     }
@@ -45,6 +47,8 @@ struct AppleSiliconSMCTemperatureBackend {
         let chipName = Self.detectedChipName() ?? "unbekannter Chip"
         return Result(
             celsius: nil,
+            hotspotCelsius: nil,
+            validSensorCount: nil,
             detail: nil,
             unavailableReason: "Keine unterstützte Apple-Silicon-Sensorzuordnung für \(component) (\(chipName))"
         )
@@ -69,6 +73,10 @@ struct AppleSiliconSMCTemperatureBackend {
 
     static func detectedChipNameForDiagnostics() -> String? {
         detectedChipName()
+    }
+
+    static func isValidSMCTemperature(_ value: Double) -> Bool {
+        value.isFinite && (15...125).contains(value)
     }
 
     private static func detectedChipName() -> String? {
@@ -96,10 +104,13 @@ struct AppleSiliconSMCTemperatureBackend {
                 keys: keys,
                 retryEmptyBatchAfterReconnect: retryEmptyBatchAfterReconnect
             )
-            if let average = TemperatureAggregation.arithmeticMean(sample.values) {
+            if let average = TemperatureAggregation.arithmeticMean(sample.values),
+               let hotspot = TemperatureAggregation.maximum(sample.values) {
                 return Result(
                     celsius: average,
-                    detail: "Apple-Silicon \(label) · Mittelwert aus \(sample.values.count) Sensoren",
+                    hotspotCelsius: hotspot,
+                    validSensorCount: sample.values.count,
+                    detail: "Apple-Silicon \(label) · Durchschnitt \(Int(average.rounded())) °C · Hotspot \(Int(hotspot.rounded())) °C · \(sample.values.count) Sensoren",
                     unavailableReason: ""
                 )
             }
@@ -107,7 +118,7 @@ struct AppleSiliconSMCTemperatureBackend {
         }
 
         let reason = SMCConnection.shared.lastFailureDescription ?? "SMC-Sensorzugriff nicht verfügbar"
-        return Result(celsius: nil, detail: nil, unavailableReason: "\(unavailablePrefix) (\(reason))")
+        return Result(celsius: nil, hotspotCelsius: nil, validSensorCount: nil, detail: nil, unavailableReason: "\(unavailablePrefix) (\(reason))")
     }
 
     // The private keys below are grouped by Apple-silicon generation. Each
@@ -222,7 +233,7 @@ private final class SMCReader: @unchecked Sendable {
             value = Double(float)
         default: value = nil
         }
-        guard let value, value.isFinite, (15...125).contains(value) else { return nil }
+        guard let value, AppleSiliconSMCTemperatureBackend.isValidSMCTemperature(value) else { return nil }
         return value
     }
 

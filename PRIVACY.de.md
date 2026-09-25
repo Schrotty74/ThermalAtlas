@@ -9,10 +9,11 @@ ThermalAtlas ist eine ausschließlich lokale Temperaturanzeige. Die App erhebt, 
 - Lokale Apple-Silicon-SMC-Temperaturwerte über rein lesende IOKit-Aufrufe.
 - Lokale Laufwerksmetadaten und SMART-Temperaturen über `diskutil info -plist`.
 - Öffentliche macOS-CPU-Tick-Daten, die aktuell vom Apple-Grafiktreiber veröffentlichte GPU-Gesamtauslastung und lokale virtuelle Speicherstatistiken für den angezeigten CPU-/GPU-Last- und Speicherkontext sowie aktuelle Stromquelle/Akkustand und Energiesparmodus.
+- Beim Öffnen der Systeminformationen liest die App die angezeigten Werte für Mac-Modell, Chip, CPU-/GPU-Kerne, Arbeitsspeicher, Kapazität des internen Speichers, macOS-Version und den thermischen macOS-Zustand über gezielte lokale Systemabfragen. Seriennummern und UUIDs werden nicht abgefragt, angezeigt oder gespeichert.
 
 ## Speicherung
 
-Lokale `UserDefaults` speichern das gewählte Theme, Scan-Refresh-Intervall, die Anzeigesprache, sichtbare Sensorgruppen, den Menüleistenmodus, die Fenstergröße und Temperaturwarn-Einstellungen. Zusätzlich speichert ThermalAtlas je Sensor minutenweise gemittelte Temperaturverläufe für höchstens 24 Stunden, damit das Diagramm in der App dargestellt werden kann. Jeder gespeicherte Verlaufspunkt enthält nur eine lokale Sensor-ID, Zeitstempel, Temperaturmittelwert und Anzahl der Messungen. CPU-/GPU-Last, RAM-Auslastung, Stromquelle/Akku und Energiesparmodus werden angezeigt, aber nicht gespeichert. Dev, Beta und Final besitzen getrennte Bundle-Kennungen, Einstellungen und Caches.
+Lokale `UserDefaults` speichern das gewählte Theme, Scan-Refresh-Intervall, die Anzeigesprache, sichtbare Sensorgruppen, den Menüleistenmodus, die Fenstergröße, die Auswahl „Immer im Vordergrund“ und Temperaturwarn-Einstellungen. Die optionale Registrierung **Bei Anmeldung starten** verwaltet macOS über `SMAppService`; sie wird nicht in `UserDefaults` gespeichert. Zusätzlich speichert ThermalAtlas je Sensor minutenweise gemittelte Temperaturverläufe für höchstens 24 Stunden, damit das Diagramm in der App dargestellt werden kann. Jeder gespeicherte Verlaufspunkt enthält nur eine lokale Sensor-ID, Zeitstempel, Temperaturmittelwert und Anzahl der Messungen. CPU-/GPU-Last, RAM-Nutzung, Stromquelle/Akku, Energiesparmodus und Systeminformationen werden angezeigt, aber nicht gespeichert. Dev, Beta und Final besitzen getrennte Bundle-Kennungen, Einstellungen und Caches.
 
 ## Netzwerk und Systemänderungen
 

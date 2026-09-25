@@ -123,7 +123,7 @@ def build(language, output):
     image(c, ASSETS / "Screenshots" / "classic.png", 48, 180, 220, 490)
     image(c, ASSETS / "ManualScreenshots" / "system-context-load.png", 290, 555, 260, 105)
     panel(c, 290, 415, 260, 110, VIOLET, "CPU / GPU",
-          "Mittelwert der aktuell lesbaren passenden Sensoren." if de else "Average of matching sensors that are readable right now.")
+          "Die Karten zeigen den Durchschnitt. Das Info-Symbol zeigt Hotspot und Sensoranzahl; der Hotspot steuert Warnungen." if de else "Cards show the average. The info symbol shows the Hotspot and sensor count; alerts use the Hotspot.")
     panel(c, 290, 275, 260, 110, GREEN, "SSD / SMART",
           "Temperatur, SMART-Status und Gesundheit erscheinen nur bei echten macOS-Daten." if de else "Temperature, SMART status and health appear only when macOS supplies real data.")
     panel(c, 290, 120, 260, 125, CYAN, "Systemkontext" if de else "System Context",
@@ -139,8 +139,8 @@ def build(language, output):
     image(c, ASSETS / "ManualScreenshots" / "shared-menu.png", 70, 105, 250, 345)
     panel(c, 345, 310, 200, 140, VIOLET, "Themes / Scan Refresh",
           "Darstellung und Aktualisierungsintervall ändern nur die Oberfläche beziehungsweise die Häufigkeit der lesenden Abfragen." if de else "Appearance and refresh interval change only the interface or the frequency of read-only checks.")
-    panel(c, 345, 145, 200, 135, GREEN, "Alerts / Start at Login",
-          "Warnungen, Start bei Anmeldung, Diagnosebericht, Export, Sprache, Handbücher, öffentliche Links, Aktivitätsanzeige und Beenden bleiben zusammen im Footer-Menü." if de else "Alerts, Start at Login, diagnostic report, export, language, manuals, public links, Activity Monitor and quit remain together in the footer menu.")
+    panel(c, 345, 145, 200, 135, GREEN, "Export / Fenster",
+          "Unter Export folgen Immer im Vordergrund und Start bei Anmeldung. Immer im Vordergrund hält das Fenster über anderen Apps sichtbar." if de else "Below Export are Always on Top and Start at Login. Always on Top keeps the window visible above other apps.")
     c.showPage()
 
     # 4 New options
@@ -149,10 +149,12 @@ def build(language, output):
     image(c, ASSETS / "ManualScreenshots" / "window-size-menu.png", 70, 560, 455, 110)
     panel(c, 70, 425, 455, 100, VIOLET, t["size"],
           "Standard zeigt die großzügige Kartenansicht. Kompakt ist rund 40 % schmaler und nutzt dichtere Karten, kleinere Abstände und kleinere Schrift." if de else "Standard keeps the generous card layout. Compact is about 40% narrower and uses denser cards, smaller spacing and smaller type.")
-    image(c, ASSETS / "ManualScreenshots" / "visible-temperatures-menu.png", 70, 140, 210, 230)
-    image(c, ASSETS / "ManualScreenshots" / "menu-bar-display-menu.png", 310, 300, 215, 68)
-    panel(c, 310, 140, 215, 135, GREEN, "Menüleistenanzeige" if de else "Menu Bar Display",
-          "Alle Werte zeigt die gewählten Gruppen. Nur Symbol spart Platz und lässt die Auswahl im Fenster unverändert." if de else "All Values shows the selected groups. Symbol Only saves space and leaves the window selection unchanged.")
+    image(c, ASSETS / "ManualScreenshots" / "compact-history.png", 70, 110, 180, 280)
+    panel(c, 280, 255, 245, 135, GREEN, "Kompakt & Verlauf" if de else "Compact & history",
+          "Die kompakte Ansicht behält den Temperaturverlauf mit 1, 6 und 24 Stunden bei." if de else "The compact view retains the 1-, 6- and 24-hour temperature history.")
+    image(c, ASSETS / "ManualScreenshots" / "menu-bar-display-menu.png", 310, 150, 215, 68)
+    panel(c, 280, 75, 245, 60, CYAN, None,
+          "Menüleistenmodus und sichtbare Temperaturgruppen werden ebenfalls lokal gespeichert." if de else "Menu bar mode and visible temperature groups are also stored locally.")
     c.showPage()
 
     # 5 History and alerts
@@ -186,7 +188,7 @@ def build(language, output):
           "Keine Konten, keine Telemetrie, keine Analyse-Dienste und keine Cloud-Synchronisierung. Der Verlauf bleibt lokal und ist auf 24 Stunden begrenzt." if de else "No accounts, telemetry, analytics services or cloud synchronization. History stays local and is limited to 24 hours.")
     panel(c, 55, 415, W - 110, 105, CYAN,
           "Gespeicherte Auswahl" if de else "Stored choices",
-          "Theme, Aktualisierungsintervall, Sprache, sichtbare Temperaturgruppen, Menüleistenmodus, Fenstergröße, Warnschwellen und Minutenmittelwerte bleiben ausschließlich lokal." if de else "Theme, refresh interval, language, visible temperature groups, menu bar mode, window size, warning thresholds and minute averages remain only locally.")
+          "Theme, Aktualisierungsintervall, Sprache, sichtbare Temperaturgruppen, Menüleistenmodus, Fenstergröße, Immer im Vordergrund, Warnschwellen und Minutenmittelwerte bleiben ausschließlich lokal." if de else "Theme, refresh interval, language, visible temperature groups, menu bar mode, window size, Always on Top, warning thresholds and minute averages remain only locally.")
     panel(c, 55, 270, W - 110, 105, ORANGE,
           "Sicherer Umgang" if de else "Safe operation",
           "ThermalAtlas liest Temperaturen, Laufwerksinformationen und Systemkontext. Die App verändert keine Lüfter-, Energie- oder sonstigen Systemeinstellungen." if de else "ThermalAtlas reads temperatures, drive information and system context. It changes no fan, power or other system settings.")
@@ -202,7 +204,7 @@ def build(language, output):
     image(c, ASSETS / "ManualScreenshots" / "system-information.png", 82, 225, W - 164, 470)
     panel(c, 55, 125, W - 110, 72, CYAN,
           "Thermometer im Kopf" if de else "Header thermometer",
-          "Es öffnet Mac-Modell, Chip, CPU-/GPU-Kerne, Arbeitsspeicher, internen Speicher und macOS-Version." if de else "It opens the Mac model, chip, CPU/GPU cores, memory, internal storage and macOS version.")
+          "Oben stehen Mac und thermischer Zustand. Darunter: Kerne, Speicher sowie macOS-Version und Buildnummer." if de else "Mac and Thermal State appear on top. Below are core counts, memory, storage, and the macOS version and build number.")
     panel(c, 55, 48, W - 110, 55, GREEN,
           "Privat" if de else "Private",
           "Keine Seriennummern, UUIDs oder anderen Hardware-Kennungen." if de else "No serial numbers, UUIDs or other hardware identifiers.")

@@ -26,12 +26,12 @@ enum MenuBarTemperatureStatus: Sendable, Equatable {
 
     static func from(readings: [TemperatureReading], configuration: TemperatureAlertConfiguration) -> Self {
         for reading in readings {
-            guard let temperature = reading.temperatureCelsius,
+            guard let temperature = reading.alertTemperatureCelsius,
                   temperature >= configuration.threshold(for: reading.kind) else { continue }
             return .warning
         }
         for reading in readings {
-            guard let temperature = reading.temperatureCelsius,
+            guard let temperature = reading.alertTemperatureCelsius,
                   temperature >= configuration.threshold(for: reading.kind) - 10 else { continue }
             return .warm
         }
@@ -94,7 +94,7 @@ struct TemperatureAlertEngine {
             let identifier = reading.id
             guard reading.isFreshMeasurement else { continue }
             guard !reading.isLastVerifiedValue,
-                  let temperature = reading.temperatureCelsius,
+                  let temperature = reading.alertTemperatureCelsius,
                   temperature >= configuration.threshold(for: reading.kind) else {
                 episodes.removeValue(forKey: identifier)
                 continue
@@ -123,7 +123,7 @@ enum TemperatureAlertNotifier {
     static func send(_ alert: TemperatureAlert, language: AppLanguage) async {
         let content = UNMutableNotificationContent()
         let title = alert.reading.title ?? alert.reading.kind.title(for: language)
-        let value = Int(alert.reading.temperatureCelsius?.rounded() ?? alert.threshold)
+        let value = Int(alert.reading.alertTemperatureCelsius?.rounded() ?? alert.threshold)
         if language == .german {
             content.title = "Temperaturwarnung: \(title)"
             content.body = "Seit mindestens einer Minute bei oder über \(Int(alert.threshold)) °C (aktuell \(value) °C)."

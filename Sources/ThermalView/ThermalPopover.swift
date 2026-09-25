@@ -35,10 +35,6 @@ struct MenuBarLabel: View {
     }
 }
 
-/// `MenuBarExtra` renders only the first direct child in its status item on
-/// this macOS version. Draw all symbols and values into one image so the native
-/// status item receives a single, compact label while keeping sensor groups
-/// visually distinct.
 struct ThermalPopover: View {
     let service: SensorService
     @Binding var selectedTheme: ThermalTheme
@@ -47,6 +43,7 @@ struct ThermalPopover: View {
     @Binding var visibleSensorKinds: Set<SensorKind>
     @Binding var menuBarDisplayMode: MenuBarDisplayMode
     @Binding var compactPopover: Bool
+    @Binding var alwaysOnTop: Bool
     @Binding var alertsEnabled: Bool
     @Binding var cpuAlertThreshold: Double
     @Binding var gpuAlertThreshold: Double
@@ -75,10 +72,15 @@ struct ThermalPopover: View {
                             .lineLimit(1)
                     }
                     Spacer()
-                    Image(systemName: "thermometer.medium")
-                        .font(compactPopover ? .title3.weight(.medium) : .title2.weight(.medium))
-                        .foregroundStyle(palette.gpu)
-                        .symbolRenderingMode(.hierarchical)
+                    Button { SystemInformationWindow.show(language: selectedLanguage, theme: selectedTheme) } label: {
+                        Image(systemName: "thermometer.medium")
+                            .font(compactPopover ? .title3.weight(.medium) : .title2.weight(.medium))
+                            .foregroundStyle(palette.gpu)
+                            .symbolRenderingMode(.hierarchical)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(selectedLanguage.systemInformationButtonLabel)
+                    .help(selectedLanguage.systemInformationButtonLabel)
                 }
                 ThermalSensorCards(
                     service: service,
@@ -113,11 +115,12 @@ struct ThermalPopover: View {
                 .stroke(selectedTheme.usesFullWindowGlass ? Color.white.opacity(0.34) : palette.gpu.opacity(0.16), lineWidth: 1)
         }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.35), value: selectedTheme)
-        .background(PopoverWindowPositioner(upwardOffset: 32))
+        .background(ThermalWindowConfigurator())
         .onAppear {
             refreshInterval = selectedRefreshInterval.rawValue
             service.setRefreshInterval(refreshInterval)
             service.setAlertConfiguration(alertConfiguration)
+            PopoverWindowCoordinator.setAlwaysOnTop(alwaysOnTop)
         }
         .onChange(of: refreshInterval) { _, newValue in
             let normalizedInterval = RefreshIntervalOption.normalized(newValue).rawValue
@@ -125,6 +128,12 @@ struct ThermalPopover: View {
                 refreshInterval = normalizedInterval
             }
             service.setRefreshInterval(normalizedInterval)
+        }
+        .onChange(of: compactPopover) { _, isCompact in
+            PopoverWindowCoordinator.adjustForCompactMode(isCompact)
+        }
+        .onChange(of: alwaysOnTop) { _, isEnabled in
+            PopoverWindowCoordinator.setAlwaysOnTop(isEnabled)
         }
         .onChange(of: alertConfiguration) { _, configuration in
             service.setAlertConfiguration(configuration)
@@ -206,9 +215,10 @@ struct ThermalPopover: View {
             visibleTemperaturesMenu
             menuBarDisplayMenu
             temperatureAlertsMenu
-            startAtLoginMenu
             languageMenu
             exportMenu
+            alwaysOnTopMenuItem
+            startAtLoginMenu
             Divider()
             Button(action: openGitHub) { Label("GitHub", systemImage: "chevron.left.forwardslash.chevron.right") }
             Button(action: openHomepage) { Label("Homepage", systemImage: "globe") }
@@ -287,6 +297,16 @@ struct ThermalPopover: View {
             }
             .menuActionDismissBehavior(.enabled)
         }
+    }
+
+    private var alwaysOnTopMenuItem: some View {
+        Button { alwaysOnTop.toggle() } label: {
+            Label(
+                selectedLanguage.alwaysOnTopTitle,
+                systemImage: alwaysOnTop ? "checkmark" : "pin"
+            )
+        }
+        .menuActionDismissBehavior(.enabled)
     }
 
     private var visibleTemperaturesMenu: some View {
@@ -435,49 +455,325 @@ struct ThermalPopover: View {
 
 }
 
-/// Keeps the window-style menu extra close to its status item instead of
-/// leaving the large default vertical gap used by macOS for this style.
-private struct PopoverWindowPositioner: NSViewRepresentable {
-    let upwardOffset: CGFloat
+private struct SystemInformationWindowContent: View {
+    let language: AppLanguage
+    let theme: ThermalTheme
+    let close: () -> Void
+    @State private var systemInformation: SystemInformationSnapshot?
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.colorScheme) private var colorScheme
 
-    func makeNSView(context: Context) -> PositioningView {
-        PositioningView(upwardOffset: upwardOffset)
+    private var palette: ThermalThemePalette { theme.palette }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            header
+            if let systemInformation {
+                overviewCards(systemInformation)
+                hardwareCards(systemInformation)
+                operatingSystemCard(systemInformation)
+            } else {
+                HStack(spacing: 10) {
+                    ProgressView()
+                    Text(language.systemInformationLoadingTitle)
+                }
+                .foregroundStyle(palette.secondary)
+                .frame(maxWidth: .infinity, minHeight: 180, alignment: .center)
+            }
+
+            HStack {
+                Spacer()
+                Button(language.closeTitle, action: close)
+                    .tint(palette.gpu)
+                    .keyboardShortcut(.defaultAction)
+            }
+        }
+        .padding(24)
+        .frame(width: 470, alignment: .leading)
+        .foregroundStyle(palette.title)
+        .background { windowBackground }
+        .task {
+            guard systemInformation == nil else { return }
+            systemInformation = await Task.detached(priority: .userInitiated) {
+                SystemInformationReader.read()
+            }.value
+        }
     }
 
-    func updateNSView(_ nsView: PositioningView, context: Context) {
-        nsView.upwardOffset = upwardOffset
-        nsView.positionIfNeeded()
+    @ViewBuilder
+    private var windowBackground: some View {
+        if theme.usesFullWindowGlass {
+            ThermalMilkGlassBackdrop(
+                isAnimated: !reduceTransparency,
+                allowsTransparency: !reduceTransparency,
+                colorScheme: colorScheme
+            )
+        } else if theme == .classic {
+            Color(nsColor: .windowBackgroundColor)
+        } else {
+            palette.windowBackground
+                .overlay {
+                    LinearGradient(
+                        colors: [palette.gpu.opacity(0.22), .clear, palette.cpu.opacity(0.14)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                }
+        }
     }
 
-    final class PositioningView: NSView {
-        var upwardOffset: CGFloat
-        private var appliedInitialOffset = false
+    @ViewBuilder
+    private var header: some View {
+        HStack(spacing: 13) {
+            Image(systemName: "info.circle.fill")
+                .font(.title2.weight(.semibold))
+                .foregroundStyle(palette.gpu)
+                .frame(width: 40, height: 40)
+                .background(palette.gpu.opacity(0.16), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            VStack(alignment: .leading, spacing: 2) {
+                Text(language.systemInformationTitle)
+                    .font(.title3.weight(.semibold))
+                Text("ThermalAtlas")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(palette.secondary)
+            }
+            Spacer()
+        }
+    }
 
-        init(upwardOffset: CGFloat) {
-            self.upwardOffset = upwardOffset
-            super.init(frame: .zero)
+    @ViewBuilder
+    private func overviewCards(_ information: SystemInformationSnapshot) -> some View {
+        LazyVGrid(columns: informationColumns, spacing: 8) {
+            machineCard(information)
+            thermalStateCard(information)
+        }
+    }
+
+    private var informationColumns: [GridItem] {
+        [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)]
+    }
+
+    @ViewBuilder
+    private func machineCard(_ information: SystemInformationSnapshot) -> some View {
+        HStack(spacing: 9) {
+            Spacer(minLength: 0)
+            Image(systemName: "desktopcomputer")
+                .font(.headline.weight(.medium))
+                .foregroundStyle(palette.gpu)
+                .frame(width: 28, height: 28)
+                .background(palette.gpu.opacity(0.15), in: Circle())
+            VStack(alignment: .leading, spacing: 1) {
+                Text(language.macModelTitle)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(palette.secondary)
+                Text(information.macModel)
+                    .font(.caption.weight(.semibold))
+                    .textSelection(.enabled)
+                Text(information.chip)
+                    .font(.caption2.weight(.medium))
+                    .foregroundStyle(palette.cpu)
+                    .textSelection(.enabled)
+            }
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, minHeight: 62, maxHeight: 62, alignment: .center)
+        .padding(.horizontal, 10)
+        .systemInformationCardSurface(palette: palette, theme: theme, cornerRadius: 31)
+    }
+
+    @ViewBuilder
+    private func hardwareCards(_ information: SystemInformationSnapshot) -> some View {
+        LazyVGrid(columns: informationColumns, spacing: 8) {
+            informationCard(
+                title: language.cpuCoresTitle,
+                value: compactCPUCoreDescription(information),
+                symbol: "cpu",
+                color: palette.cpu
+            )
+            informationCard(
+                title: language.gpuCoresTitle,
+                value: language.gpuCoreDescription(information.gpuCoreCount),
+                symbol: "rectangle.3.group.fill",
+                color: palette.gpu
+            )
+            informationCard(
+                title: language.memoryTitle,
+                value: information.memory,
+                symbol: "memorychip.fill",
+                color: palette.internalSSD
+            )
+            informationCard(
+                title: language.storageTitle,
+                value: information.storage,
+                symbol: "internaldrive.fill",
+                color: palette.externalSSD
+            )
+        }
+    }
+
+    @ViewBuilder
+    private func thermalStateCard(_ information: SystemInformationSnapshot) -> some View {
+        informationCard(
+            title: language.thermalStateTitle,
+            value: language.thermalStateDescription(information.thermalState),
+            symbol: "thermometer.medium",
+            color: palette.cpu
+        )
+    }
+
+    @ViewBuilder
+    private func operatingSystemCard(_ information: SystemInformationSnapshot) -> some View {
+        HStack(spacing: 11) {
+            Spacer(minLength: 0)
+            Image(systemName: "apple.logo")
+                .font(.title3.weight(.medium))
+                .foregroundStyle(palette.title)
+                .frame(width: 34, height: 34)
+                .background(palette.title.opacity(0.10), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            VStack(alignment: .leading, spacing: 2) {
+                Text(language.operatingSystemTitle)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(palette.secondary)
+                Text(information.operatingSystem)
+                    .font(.subheadline.weight(.medium))
+                    .textSelection(.enabled)
+                    .lineLimit(2)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(12)
+        .systemInformationCardSurface(palette: palette, theme: theme)
+    }
+
+    @ViewBuilder
+    private func informationCard(title: String, value: String, symbol: String, color: Color) -> some View {
+        HStack(spacing: 9) {
+            Spacer(minLength: 0)
+            Image(systemName: symbol)
+                .font(.headline.weight(.medium))
+                .foregroundStyle(color)
+                .frame(width: 28, height: 28)
+                .background(color.opacity(0.15), in: Circle())
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(palette.secondary)
+                    .lineLimit(1)
+                Text(value)
+                    .font(.caption.weight(.semibold))
+                    .textSelection(.enabled)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+            }
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, minHeight: 62, maxHeight: 62, alignment: .center)
+        .padding(.horizontal, 10)
+        .systemInformationCardSurface(palette: palette, theme: theme, cornerRadius: 31)
+    }
+
+    private func compactCPUCoreDescription(_ information: SystemInformationSnapshot) -> String {
+        guard let total = information.cpuCoreCount else { return language.notAvailable }
+        guard let performance = information.performanceCoreCount, let efficiency = information.efficiencyCoreCount else {
+            return language == .english ? "\(total) cores" : "\(total) Kerne"
+        }
+        return language == .english
+            ? "\(total) cores · \(performance)P · \(efficiency)E"
+            : "\(total) Kerne · \(performance)P · \(efficiency)E"
+    }
+}
+
+private extension View {
+    func systemInformationCardSurface(
+        palette: ThermalThemePalette,
+        theme: ThermalTheme,
+        cornerRadius: CGFloat = 14
+    ) -> some View {
+        background {
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .fill(theme == .classic ? Color(nsColor: .controlBackgroundColor).opacity(0.72) : palette.cardBase)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .stroke(palette.gpu.opacity(theme.usesFullWindowGlass ? 0.30 : palette.cardStrokeOpacity), lineWidth: 1)
+        }
+    }
+}
+
+/// Presents system information in its own AppKit window. A separate panel is
+/// necessary here because a sheet attached to a window-style `MenuBarExtra`
+/// can remain cached by macOS after the menu window is reopened.
+@MainActor
+private enum SystemInformationWindow {
+    private static var panel: NSPanel?
+
+    static func show(language: AppLanguage, theme: ThermalTheme) {
+        if let panel {
+            panel.title = language.systemInformationTitle
+            panel.contentView = hostingView(language: language, theme: theme)
+            panel.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+
+        let panel = NSPanel(
+            contentRect: NSRect(x: 0, y: 0, width: 470, height: 470),
+            styleMask: [.titled, .closable, .utilityWindow],
+            backing: .buffered,
+            defer: false
+        )
+        panel.title = language.systemInformationTitle
+        panel.isReleasedWhenClosed = false
+        panel.contentView = hostingView(language: language, theme: theme)
+        panel.center()
+        self.panel = panel
+        panel.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    static func close() {
+        panel?.close()
+        panel = nil
+    }
+
+    private static func hostingView(language: AppLanguage, theme: ThermalTheme) -> NSHostingView<SystemInformationWindowContent> {
+        NSHostingView(rootView: SystemInformationWindowContent(language: language, theme: theme, close: close))
+    }
+}
+
+/// Connects the SwiftUI content to the independent AppKit window that owns its
+/// frame and size. It deliberately does not restore or move the window: macOS
+/// preserves an independent panel's position through minimize and restore.
+private struct ThermalWindowConfigurator: NSViewRepresentable {
+    func makeNSView(context: Context) -> ConfigurationView {
+        ConfigurationView(frame: .zero)
+    }
+
+    func updateNSView(_ nsView: ConfigurationView, context: Context) {
+        nsView.configureWindow()
+    }
+
+    @MainActor
+    final class ConfigurationView: NSView {
+        override init(frame frameRect: NSRect) {
+            super.init(frame: frameRect)
         }
 
         required init?(coder: NSCoder) { nil }
 
         override func viewDidMoveToWindow() {
             super.viewDidMoveToWindow()
-            appliedInitialOffset = false
-            positionIfNeeded()
+            configureWindow()
         }
 
-        func positionIfNeeded() {
+        func configureWindow() {
             DispatchQueue.main.async { [weak self] in
                 guard let self, let window = self.window else { return }
                 PopoverWindowCoordinator.window = window
-
-                guard !appliedInitialOffset, let screen = window.screen else { return }
-                let highestOriginY = screen.visibleFrame.maxY - window.frame.height
-                let raisedOriginY = min(window.frame.origin.y + upwardOffset, highestOriginY)
-                if raisedOriginY > window.frame.origin.y {
-                    window.setFrameOrigin(NSPoint(x: window.frame.origin.x, y: raisedOriginY))
-                }
-                appliedInitialOffset = true
+                window.isMovable = true
+                window.isMovableByWindowBackground = true
             }
         }
     }
@@ -487,7 +783,7 @@ private struct PopoverWindowPositioner: NSViewRepresentable {
 /// menu-bar window does not automatically adopt an asynchronously expanded
 /// card, so resize the actual AppKit window at the same interaction boundary.
 @MainActor
-private enum PopoverWindowCoordinator {
+enum PopoverWindowCoordinator {
     weak static var window: NSWindow?
 
     static func adjustForHistory(isOpening: Bool, compact: Bool) {
@@ -502,6 +798,31 @@ private enum PopoverWindowCoordinator {
             height: newHeight
         )
         window.setFrame(newFrame, display: true, animate: true)
+    }
+
+    static func adjustForCompactMode(_ isCompact: Bool) {
+        DispatchQueue.main.async {
+            guard let window else { return }
+            window.contentView?.layoutSubtreeIfNeeded()
+            let currentFrame = window.frame
+            let fittedContentSize = window.contentView?.fittingSize
+                ?? window.contentRect(forFrameRect: currentFrame).size
+            let contentSize = NSSize(
+                width: isCompact ? 230 : 370,
+                height: max(1, fittedContentSize.height)
+            )
+            var newFrame = window.frameRect(forContentRect: NSRect(origin: .zero, size: contentSize))
+            newFrame.origin = NSPoint(x: currentFrame.origin.x, y: currentFrame.maxY - newFrame.height)
+            window.setFrame(newFrame, display: true, animate: true)
+        }
+    }
+
+    static func setAlwaysOnTop(_ isEnabled: Bool) {
+        guard let window else { return }
+        window.level = isEnabled ? .floating : .normal
+        if isEnabled {
+            window.orderFrontRegardless()
+        }
     }
 }
 
@@ -1007,9 +1328,17 @@ private struct SensorDetailsView: View {
             if let sourceIdentifier = reading.sourceIdentifier {
                 detailRow("ID", sourceIdentifier)
             }
-            detailRow(language.lastValidValueTitle, temperatureText)
+            if reading.kind == .cpu || reading.kind == .gpu {
+                detailRow(language.averageTemperatureTitle, temperatureText)
+                detailRow(language.hotspotTemperatureTitle, hotspotText)
+                if let validSensorCount = reading.validSensorCount {
+                    detailRow(language.validSensorCountTitle, language.sensorCountDescription(validSensorCount))
+                }
+            } else {
+                detailRow(language.lastValidValueTitle, temperatureText)
+            }
             detailRow(language.lastValidTimeTitle, timeText)
-            if let detail = reading.detail {
+            if let detail = reading.detail, reading.kind != .cpu && reading.kind != .gpu {
                 detailRow(language == .english ? "Reading" : "Messwert", detail)
             }
         }
@@ -1020,6 +1349,11 @@ private struct SensorDetailsView: View {
     private var temperatureText: String {
         guard let temperature = reading.temperatureCelsius else { return language.notAvailable }
         return "\(temperature.formatted(.number.precision(.fractionLength(1)))) °C"
+    }
+
+    private var hotspotText: String {
+        guard let hotspot = reading.hotspotTemperatureCelsius else { return language.notAvailable }
+        return "\(hotspot.formatted(.number.precision(.fractionLength(1)))) °C"
     }
 
     private var timeText: String {

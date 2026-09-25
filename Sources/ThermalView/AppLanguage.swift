@@ -51,10 +51,37 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var disabledTitle: String { self == .english ? "Off" : "Aus" }
     var calculatingTitle: String { self == .english ? "Calculating…" : "Wird berechnet …" }
     var sensorDetailsTitle: String { self == .english ? "Sensor Details" : "Sensor-Details" }
+    var systemInformationTitle: String { self == .english ? "System Information" : "Systeminformationen" }
+    var systemInformationLoadingTitle: String { self == .english ? "Reading this Mac…" : "Dieser Mac wird gelesen …" }
+    var macModelTitle: String { "Mac" }
+    var cpuCoresTitle: String { self == .english ? "CPU Cores" : "CPU-Kerne" }
+    var gpuCoresTitle: String { self == .english ? "GPU Cores" : "GPU-Kerne" }
+    var memoryTitle: String { self == .english ? "Memory" : "Arbeitsspeicher" }
+    var storageTitle: String { self == .english ? "Internal Storage" : "Interner Speicher" }
+    var operatingSystemTitle: String { "macOS" }
+    var thermalStateTitle: String { self == .english ? "Thermal State" : "Thermischer Zustand" }
+    func thermalStateDescription(_ state: ProcessInfo.ThermalState) -> String {
+        switch (state, self) {
+        case (.nominal, .english): "Normal"
+        case (.nominal, .german): "Normal"
+        case (.fair, .english): "Elevated"
+        case (.fair, .german): "Erhöht"
+        case (.serious, .english): "High"
+        case (.serious, .german): "Hoch"
+        case (.critical, .english): "Critical"
+        case (.critical, .german): "Kritisch"
+        @unknown default: notAvailable
+        }
+    }
+    var systemInformationButtonLabel: String { self == .english ? "Show system information" : "Systeminformationen anzeigen" }
+    var closeTitle: String { self == .english ? "Close" : "Schließen" }
     var sourceTitle: String { self == .english ? "Source" : "Quelle" }
     var chipTitle: String { "Chip" }
     var lastValidValueTitle: String { self == .english ? "Last valid value" : "Letzter gültiger Wert" }
     var lastValidTimeTitle: String { self == .english ? "Last valid time" : "Zeitpunkt des letzten gültigen Werts" }
+    var averageTemperatureTitle: String { self == .english ? "Average" : "Durchschnitt" }
+    var hotspotTemperatureTitle: String { "Hotspot" }
+    var validSensorCountTitle: String { self == .english ? "Valid sensors" : "Gültige Sensoren" }
     var copiedReadingsTitle: String { self == .english ? "Copy Current Readings" : "Aktuelle Messwerte kopieren" }
     var exportCSVTitle: String { self == .english ? "Export CSV…" : "CSV exportieren…" }
     var copyDiagnosticReportTitle: String { self == .english ? "Copy Diagnostic Report" : "Diagnosebericht kopieren" }
@@ -64,6 +91,7 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var windowSizeMenuTitle: String { self == .english ? "Window Size" : "Fenstergröße" }
     var standardWindowSizeTitle: String { self == .english ? "Standard" : "Standard" }
     var compactWindowSizeTitle: String { self == .english ? "Compact (about 40% smaller)" : "Kompakt (ca. 40 % kleiner)" }
+    var alwaysOnTopTitle: String { self == .english ? "Always on Top" : "Immer im Vordergrund" }
     var languageMenuTitle: String { self == .english ? "Language" : "Sprache" }
     var startAtLoginMenuTitle: String { self == .english ? "Start at Login" : "Bei Anmeldung starten" }
     var startAtLoginEnabledTitle: String { self == .english ? "Enabled" : "Aktiv" }
@@ -81,6 +109,21 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var averageCPUSensors: String { self == .english ? "Average CPU sensors" : "Mittelwert CPU-Sensoren" }
     var averageGPUSensors: String { self == .english ? "Average GPU sensors" : "Mittelwert GPU-Sensoren" }
     var notAvailable: String { self == .english ? "Not available" : "Nicht verfügbar" }
+
+    func sensorCountDescription(_ count: Int) -> String {
+        self == .english ? "\(count) sensors" : "\(count) Sensoren"
+    }
+
+    func cpuCoreDescription(total: Int?, performance: Int?, efficiency: Int?) -> String {
+        guard let total else { return notAvailable }
+        guard let performance, let efficiency else { return self == .english ? "\(total) cores" : "\(total) Kerne" }
+        return self == .english ? "\(total) cores (\(performance) performance, \(efficiency) efficiency)" : "\(total) Kerne (\(performance) Performance, \(efficiency) Effizienz)"
+    }
+
+    func gpuCoreDescription(_ count: Int?) -> String {
+        guard let count else { return notAvailable }
+        return self == .english ? "\(count) cores" : "\(count) Kerne"
+    }
 
     func highestTemperatureAccessibilityLabel(_ temperature: Int?) -> String {
         guard let temperature else { return "ThermalAtlas" }

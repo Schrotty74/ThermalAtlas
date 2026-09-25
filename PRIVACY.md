@@ -9,10 +9,11 @@ ThermalAtlas is a local-only temperature display. It does not collect, transmit,
 - Local Apple-silicon SMC temperature values through read-only IOKit calls.
 - Local drive metadata and SMART temperature data through `diskutil info -plist`.
 - Public macOS CPU-tick data, the Apple graphics driver's currently published aggregate GPU utilization, and local virtual-memory statistics for the displayed CPU/GPU-load and memory context, plus the current power source/battery level and Low Power Mode state.
+- When you open System Information, the app reads the displayed Mac model, chip, CPU/GPU core counts, memory, internal-storage capacity, macOS version, and macOS Thermal State through targeted local system queries. It does not query, display, or retain serial numbers or UUIDs.
 
 ## Storage
 
-Local `UserDefaults` stores the selected theme, Scan Refresh interval, display language, visible sensor groups, menu-bar display mode, window size, and temperature-alert settings. ThermalAtlas also stores per-sensor, minute-averaged temperature history for no more than 24 hours so it can draw the in-app chart. Each stored history point contains only a local sensor identifier, timestamp, average temperature, and sample count. CPU/GPU load, memory use, power source/battery, and Low Power Mode are displayed but not stored. Dev, Beta, and Final have separate bundle identifiers, settings, and caches.
+Local `UserDefaults` stores the selected theme, Scan Refresh interval, display language, visible sensor groups, menu-bar display mode, window size, always-on-top choice, and temperature-alert settings. The optional Start at Login registration is managed by macOS through `SMAppService`, not stored in `UserDefaults`. ThermalAtlas also stores per-sensor, minute-averaged temperature history for no more than 24 hours so it can draw the in-app chart. Each stored history point contains only a local sensor identifier, timestamp, average temperature, and sample count. CPU/GPU load, memory use, power source/battery, Low Power Mode, and System Information are displayed but not stored. Dev, Beta, and Final have separate bundle identifiers, settings, and caches.
 
 ## Network and system changes
 

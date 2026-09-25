@@ -38,7 +38,7 @@ final class SensorService {
         TemperatureReading(kind: .externalSSD, temperatureCelsius: nil, detail: nil, unavailableReason: .checking)
     ]
     @ObservationIgnored private var diskTopologyNotifier: DiskTopologyNotifier?
-    private var lastVerifiedGPU: (temperature: Double, measuredAt: Date)?
+    private var lastVerifiedGPU: (temperature: Double, hotspot: Double?, validSensorCount: Int?, measuredAt: Date)?
     private var alertConfiguration = TemperatureAlertConfiguration(
         isEnabled: false,
         cpuThreshold: TemperatureAlertSettings.defaultThreshold(for: .cpu),
@@ -262,7 +262,7 @@ final class SensorService {
             guard reading.kind == .gpu else { return reading }
 
             if let temperature = reading.temperatureCelsius {
-                lastVerifiedGPU = (temperature, now)
+                lastVerifiedGPU = (temperature, reading.hotspotTemperatureCelsius, reading.validSensorCount, now)
                 return reading
             }
 
@@ -275,6 +275,8 @@ final class SensorService {
             return TemperatureReading(
                 kind: .gpu,
                 temperatureCelsius: lastVerifiedGPU.temperature,
+                hotspotTemperatureCelsius: lastVerifiedGPU.hotspot,
+                validSensorCount: lastVerifiedGPU.validSensorCount,
                 detail: "Last verified GPU reading is \(seconds) seconds old",
                 unavailableReason: nil,
                 measuredAt: lastVerifiedGPU.measuredAt,
@@ -318,6 +320,8 @@ private enum SensorProbe {
             return TemperatureReading(
                 kind: kind,
                 temperatureCelsius: result.celsius,
+                hotspotTemperatureCelsius: result.hotspotCelsius,
+                validSensorCount: result.validSensorCount,
                 detail: result.detail,
                 unavailableReason: result.celsius == nil ? .gpuSensorUnavailable : nil,
                 measuredAt: measuredAt
@@ -328,6 +332,8 @@ private enum SensorProbe {
         return TemperatureReading(
             kind: kind,
             temperatureCelsius: result.celsius,
+            hotspotTemperatureCelsius: result.hotspotCelsius,
+            validSensorCount: result.validSensorCount,
             detail: result.detail,
             unavailableReason: result.celsius == nil ? .cpuSensorUnavailable : nil,
             measuredAt: measuredAt

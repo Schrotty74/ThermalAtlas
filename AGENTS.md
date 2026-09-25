@@ -1,4 +1,4 @@
-# ThermalAtlas – Arbeitsregeln
+# AGENTS.md
 
 Vor jeder weiteren Projektarbeit `PROJECT_CONTEXT.md` und `NEXT_STEPS.md` vollständig lesen.
 
@@ -43,11 +43,11 @@ Die Anweisung **„Projektkontext aktualisieren“** bedeutet stets, diesen voll
 - Keine Versionen, Buildnummern, Commits, Tags, Releases, Pushes oder Veröffentlichungen ohne ausdrücklichen Auftrag erstellen oder ändern.
 - Für einen Dev-Auftrag weder Datenschutz-/Sicherheitsprüfungen für öffentliche Artefakte ausführen noch README, Handbücher oder Handbuch-PDFs ergänzen oder neu erzeugen. Diese Schritte erfolgen ausschließlich im Rahmen eines ausdrücklich beauftragten Beta- oder Final-Builds, der anschließend auf Git gepusht wird.
 - Bei jedem ausdrücklich beauftragten Beta- oder Final-Build vor Commit, Tag und Veröffentlichung alle betroffenen Markdown-Dokumente gegen den tatsächlichen Stand aktualisieren: insbesondere `README.md` und `README.de.md`, `FEATURES.md` und `FEATURES.de.md`, `MANUAL.md` und `MANUAL.de.md`, `PRIVACY.md` und `PRIVACY.de.md`, `CHANGELOG.md`, `PROJECT_CONTEXT.md` sowie `NEXT_STEPS.md`. Englische und deutsche Gegenstücke bleiben inhaltlich gleichwertig. Der englische Changelog ist vor der Veröffentlichung zu ergänzen und seine Abschnitte werden als GitHub-Release-Notes verwendet; automatisch generierte Release-Notes reichen nicht aus.
+- Bei jeder Erstellung oder inhaltlichen Änderung eines Handbuchs den verfügbaren Skill `humanizer` auf alle neuen oder geänderten nutzersichtbaren Handbuchtexte anwenden, auch ohne Beta- oder Final-Build. Technische Angaben, Fakten, Zahlen, Links, Befehle und beide Sprachfassungen bleiben dabei inhaltlich unverändert.
 - Keine Drittanbieter-Abhängigkeiten oder globalen Entwicklungswerkzeuge automatisch hinzufügen oder aktualisieren.
 - Bei App-Arbeit Projektmanifest, Build-Skript und relevante Konfigurationen lesen, bevor Abhängigkeiten oder Build-Annahmen getroffen werden.
 
 ## Datenschutzregel für das öffentliche Repository
-
 Dieses Repository und seine Git-Historie sind öffentlich. Jeder eingecheckte Inhalt muss deshalb ohne weitere Bereinigung öffentlich vertretbar sein.
 
 Nicht veröffentlicht oder dokumentiert werden dürfen insbesondere:
@@ -70,7 +70,7 @@ Nicht veröffentlicht oder dokumentiert werden dürfen insbesondere:
 
 Beispiele, Testdaten, Demo-Dateien, Screenshots und Dokumentation müssen ausschließlich synthetische, anonymisierte oder eindeutig fiktive Daten verwenden.
 
-Pfade in öffentlicher Dokumentation müssen neutral sein, zum Beispiel `/Users/example/...` oder `~/Library/Application Support/AppName/`. Echte lokale Benutzernamen oder persönliche Volume-Namen dürfen nicht verwendet werden.
+Pfade in öffentlicher Dokumentation müssen neutral sein, zum Beispiel `~/Library/Application Support/AppName/`. Echte lokale Benutzernamen oder persönliche Volume-Namen dürfen nicht verwendet werden.
 
 Informationen über die lokale Entwicklungsumgebung werden nur dokumentiert, wenn sie technisch für das Projekt erforderlich sind. Persönliche oder gerätespezifische Details werden nach Möglichkeit durch allgemeine technische Anforderungen ersetzt.
 

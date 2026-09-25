@@ -2,7 +2,7 @@
 
 **[Deutsch](FEATURES.de.md)**
 
-This page lists the stable features in detail. For installation and everyday use, see the [user manual](MANUAL.md).
+This page lists the features in this build. For installation and everyday use, see the [user manual](MANUAL.md).
 
 ## Temperature monitoring
 
@@ -11,6 +11,7 @@ This page lists the stable features in detail. For installation and everyday use
 - Uses a defensive, read-only SMC adapter. Missing or implausible readings are displayed as `Not available`.
 - Lets you select a temperature refresh interval of 1, 2, 3, or 4 seconds; the default is two seconds.
 - Shows source, latest valid reading, and update time in Sensor Details.
+- Shows the measured CPU/GPU Hotspot and valid sensor count in Sensor Details. Cards, menu bar, and history keep showing the average.
 
 ## Drives and SMART
 
@@ -27,23 +28,31 @@ This page lists the stable features in detail. For installation and everyday use
 - Updates CPU/GPU load and used memory every 0.5 seconds, independently from the selected temperature interval.
 - Treats these values as read-only context, never as temperature measurements or system controls.
 
+## System Information
+
+- Opens from the header thermometer in a separate local window.
+- Shows the Mac model and Apple chip beside the macOS Thermal State, followed by CPU and GPU core counts, memory, internal storage, and the macOS version with build number.
+- Labels the Thermal State as macOS's overall assessment, not an additional temperature sensor.
+- Reads only the displayed local values and does not query, display, or retain serial numbers or UUIDs.
+
 ## History, alerts, and export
 
 - Opens a local 1-, 6-, or 24-hour temperature history from every temperature card.
 - Stores only local per-minute averages for up to 24 hours; temporarily retained GPU readings are not recorded as new measurements.
-- Provides separate CPU, GPU, internal-SSD, and external-SSD alert thresholds. A notification needs at least 60 seconds above the threshold and is sent again only after cooling down.
+- Provides separate CPU, GPU, internal-SSD, and external-SSD alert thresholds. CPU/GPU alerts use the measured Hotspot; SSD alerts use the displayed temperature. A notification needs at least 60 seconds above the threshold and is sent again only after cooling down.
 - Exports a copyable current snapshot, a copyable diagnostic report with the Mac model, macOS version, chip name and sensor states, or local history plus a current snapshot as CSV; CSV is created only after you choose an export location.
 
 ## Interface and display
 
-- Offers Standard and Compact popover sizes; Compact is about 40% narrower while keeping controls readable.
+- Offers Standard and Compact window sizes; Compact is about 40% narrower while keeping controls readable.
 - Lets you select the CPU, GPU, internal-SSD, and external-SSD groups visible in both the popover and menu bar.
 - Offers menu-bar modes for **All Values** or **Symbol Only**.
 - Colours CPU, GPU and SSD values distinctly in the all-values menu-bar mode and adds a high-contrast status frame: green normally, yellow near a threshold, red at a selected warning threshold.
 - Includes four native themes: Adaptive, Liquid Glass, Aurora, and Ember.
 - Starts in English and offers a local German interface choice.
 - Offers an optional macOS **Start at Login** registration.
-- Groups appearance, refresh, display, alerts, Start at Login, language, export, manuals, links, Activity Monitor, and Quit in one footer menu.
+- Can keep its window above other apps with the optional **Always on Top** setting.
+- Groups appearance, refresh, display, alerts, language, export, Always on Top, Start at Login, manuals, links, Activity Monitor, and Quit in one footer menu.
 
 ## Privacy and safety
 

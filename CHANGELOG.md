@@ -2,6 +2,45 @@
 
 All notable user-visible changes are documented here in English. Development builds remain local; public prereleases are announced through GitHub Releases.
 
+## 1.2.0-beta.1
+
+### Added
+
+- Sensor Details now shows the measured Hotspot and valid sensor count for CPU and GPU. The cards, menu bar, and history continue to show the average. CPU/GPU warning thresholds use the Hotspot; SSD warnings still use the displayed SSD temperature.
+- System Information now shows the macOS Thermal State beside the Mac model. It is an overall system assessment, not another temperature sensor.
+- An optional Always on Top setting keeps the main window visible above other apps and when using the macOS menu bar.
+
+### Changed
+
+- The main window can be moved freely, retains its position after minimize and reopen, and has standard macOS window controls. Its width adjusts when switching between Standard and Compact.
+- System Information reads only the displayed local values through targeted system queries instead of processing a complete hardware profile. Its Mac and Thermal State tiles now share the top row.
+
+### Documentation
+
+- Updated the English and German manuals and PDFs with the current System Information screenshot, Thermal State, Hotspot details, and window controls.
+
+## 1.1.0
+
+### Added
+
+- A local **System Information** window opened from the header thermometer. It shows the Mac model, Apple chip, CPU/GPU core counts, memory, internal storage, and macOS version without collecting serial numbers, UUIDs, or other hardware identifiers.
+- Current public manuals now include a System Information example and explain the locally read fields.
+
+### Fixed
+
+- The ThermalAtlas window keeps its intended menu-bar position when it opens, when a temperature-history card opens or closes, and when the window is opened again.
+
+### Documentation
+
+- Updated English and German home pages, feature overviews, privacy reports, manuals, and PDFs for System Information and the current local-only data handling.
+
+## 1.0.0
+
+### Stable release
+
+- First stable ThermalAtlas release, based on the tested 0.5.0 Beta feature set.
+- Includes local CPU, GPU, internal-SSD and physical external-SSD monitoring; read-only System Context; local history, alerts and user-initiated export; four themes; and English/German documentation.
+
 ## 0.5.0
 
 ### Added

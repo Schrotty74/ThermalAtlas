@@ -8,13 +8,61 @@ final class TemperatureAggregationTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(TemperatureAggregation.arithmeticMean(zones)), 36.425, accuracy: 0.000_001)
     }
 
+    func testCPUAndGPUAggregationKeepsAveragePrimaryAndExposesHotspot() throws {
+        let values = [80.0, 80, 80, 80, 90]
+
+        XCTAssertEqual(try XCTUnwrap(TemperatureAggregation.arithmeticMean(values)), 82, accuracy: 0.000_001)
+        XCTAssertEqual(try XCTUnwrap(TemperatureAggregation.maximum(values)), 90, accuracy: 0.000_001)
+    }
+
+    func testLargeSensorBatchKeepsAverageSeparateFromHotspot() throws {
+        let values = Array(repeating: 80.0, count: 35) + [90]
+
+        XCTAssertEqual(try XCTUnwrap(TemperatureAggregation.arithmeticMean(values)), 80.277_777_777_777_78, accuracy: 0.000_001)
+        XCTAssertEqual(try XCTUnwrap(TemperatureAggregation.maximum(values)), 90, accuracy: 0.000_001)
+    }
+
+    func testSingleSensorUsesTheSameValueForAverageAndHotspot() throws {
+        let values = [71.5]
+
+        XCTAssertEqual(try XCTUnwrap(TemperatureAggregation.arithmeticMean(values)), 71.5, accuracy: 0.000_001)
+        XCTAssertEqual(try XCTUnwrap(TemperatureAggregation.maximum(values)), 71.5, accuracy: 0.000_001)
+    }
+
+    func testInvalidSMCTemperaturesCannotReachAverageOrHotspotAggregation() throws {
+        let rawValues = [80.0, 10, 126, .infinity, .nan]
+        let validValues = rawValues.filter(AppleSiliconSMCTemperatureBackend.isValidSMCTemperature)
+
+        XCTAssertEqual(validValues, [80])
+        XCTAssertEqual(try XCTUnwrap(TemperatureAggregation.arithmeticMean(validValues)), 80, accuracy: 0.000_001)
+        XCTAssertEqual(try XCTUnwrap(TemperatureAggregation.maximum(validValues)), 80, accuracy: 0.000_001)
+    }
+
     func testMedianRemainsAvailableForSensorDeduplication() throws {
         XCTAssertEqual(try XCTUnwrap(TemperatureAggregation.median([33, 36.7, 36.8, 37])), 36.75, accuracy: 0.000_001)
     }
 
     func testEmptySensorGroupHasNoAggregate() {
         XCTAssertNil(TemperatureAggregation.arithmeticMean([]))
+        XCTAssertNil(TemperatureAggregation.maximum([]))
         XCTAssertNil(TemperatureAggregation.median([]))
+    }
+
+    func testHotspotStaysSeparateFromPrimaryTemperatureAndSurvivesCaching() throws {
+        let reading = TemperatureReading(
+            kind: .gpu,
+            temperatureCelsius: 82,
+            hotspotTemperatureCelsius: 90,
+            validSensorCount: 5,
+            detail: nil,
+            unavailableReason: nil
+        )
+
+        XCTAssertEqual(reading.temperatureCelsius, 82)
+        XCTAssertEqual(reading.hotspotTemperatureCelsius, 90)
+        XCTAssertEqual(reading.alertTemperatureCelsius, 90)
+        XCTAssertEqual(try XCTUnwrap(reading.cached().hotspotTemperatureCelsius), 90, accuracy: 0.000_001)
+        XCTAssertEqual(reading.cached().validSensorCount, 5)
     }
 
     func testAppleSiliconSensorKeysSelectEverySupportedMFamily() throws {
@@ -118,6 +166,17 @@ final class TemperatureAggregationTests: XCTestCase {
         XCTAssertEqual(AppLanguage.german.systemContextTitle, "Systemkontext")
     }
 
+    func testThermalStateLabelsMatchMacOSStatesInBothLanguages() {
+        XCTAssertEqual(AppLanguage.english.thermalStateDescription(.nominal), "Normal")
+        XCTAssertEqual(AppLanguage.english.thermalStateDescription(.fair), "Elevated")
+        XCTAssertEqual(AppLanguage.english.thermalStateDescription(.serious), "High")
+        XCTAssertEqual(AppLanguage.english.thermalStateDescription(.critical), "Critical")
+        XCTAssertEqual(AppLanguage.german.thermalStateDescription(.nominal), "Normal")
+        XCTAssertEqual(AppLanguage.german.thermalStateDescription(.fair), "Erhöht")
+        XCTAssertEqual(AppLanguage.german.thermalStateDescription(.serious), "Hoch")
+        XCTAssertEqual(AppLanguage.german.thermalStateDescription(.critical), "Kritisch")
+    }
+
     func testSystemContextKeepsPowerStateSeparateFromSensorKinds() {
         XCTAssertFalse(SensorKind.allCases.map(\.rawValue).contains("power"))
         XCTAssertEqual(SystemContext.PowerSource.battery(percentage: 73), .battery(percentage: 73))
@@ -155,6 +214,19 @@ final class TemperatureAggregationTests: XCTestCase {
             ),
             .warning
         )
+        XCTAssertEqual(
+            MenuBarTemperatureStatus.from(
+                readings: [TemperatureReading(
+                    kind: .cpu,
+                    temperatureCelsius: 82,
+                    hotspotTemperatureCelsius: 96,
+                    detail: nil,
+                    unavailableReason: nil
+                )],
+                configuration: configuration
+            ),
+            .warning
+        )
     }
 
     func testTemperatureAlertOnlyFiresAfterOneMinuteAndResetsAfterRecovery() {
@@ -181,6 +253,29 @@ final class TemperatureAggregationTests: XCTestCase {
         XCTAssertEqual(engine.evaluate(readings: [reading], configuration: configuration, now: base.addingTimeInterval(182)).count, 1)
     }
 
+    func testTemperatureAlertUsesHotspotWhenAverageIsBelowThreshold() {
+        var engine = TemperatureAlertEngine()
+        let configuration = TemperatureAlertConfiguration(
+            isEnabled: true,
+            cpuThreshold: 95,
+            gpuThreshold: 95,
+            internalSSDThreshold: 70,
+            externalSSDThreshold: 70,
+            language: .english
+        )
+        let reading = TemperatureReading(
+            kind: .cpu,
+            temperatureCelsius: 82,
+            hotspotTemperatureCelsius: 96,
+            detail: nil,
+            unavailableReason: nil
+        )
+        let base = Date(timeIntervalSinceReferenceDate: 11_000)
+
+        XCTAssertTrue(engine.evaluate(readings: [reading], configuration: configuration, now: base).isEmpty)
+        XCTAssertEqual(engine.evaluate(readings: [reading], configuration: configuration, now: base.addingTimeInterval(60)).count, 1)
+    }
+
     @MainActor
     func testCachedDiskReadingDoesNotCreateExtraHistorySamples() throws {
         let suiteName = "ThermalAtlasTests.\(UUID().uuidString)"
@@ -197,6 +292,26 @@ final class TemperatureAggregationTests: XCTestCase {
         history.record(ThermalSnapshot(readings: [fresh.cached()], updatedAt: measuredAt.addingTimeInterval(30)))
 
         XCTAssertEqual(history.points(for: fresh.id, range: .oneHour, now: measuredAt).first?.sampleCount, 1)
+    }
+
+    @MainActor
+    func testHistoryStoresThePrimaryAverageInsteadOfTheHotspot() throws {
+        let suiteName = "ThermalAtlasTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let history = TemperatureHistoryStore(defaults: defaults, storageKey: "history")
+        let measuredAt = Date(timeIntervalSinceReferenceDate: 45_000)
+        let cpu = TemperatureReading(
+            kind: .cpu,
+            temperatureCelsius: 82,
+            hotspotTemperatureCelsius: 90,
+            detail: nil,
+            unavailableReason: nil,
+            measuredAt: measuredAt
+        )
+
+        history.record(ThermalSnapshot(readings: [cpu], updatedAt: measuredAt))
+        XCTAssertEqual(try XCTUnwrap(history.points(for: cpu.id, range: .oneHour, now: measuredAt).first?.averageTemperature), 82, accuracy: 0.000_001)
     }
 
     func testCachedReadingDoesNotAdvanceTemperatureAlertEpisode() {
