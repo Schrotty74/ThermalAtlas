@@ -88,6 +88,13 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var exportMenuTitle: String { self == .english ? "Export" : "Export" }
     var collectingHistoryTitle: String { self == .english ? "Collecting local history…" : "Lokaler Verlauf wird gesammelt …" }
     var historyHint: String { self == .english ? "Tap the card again to close" : "Karte erneut anklicken zum Schließen" }
+    var sensorHistoryAccessibilityHint: String {
+        self == .english
+            ? "Activates or closes the temperature history"
+            : "Öffnet oder schließt den Temperaturverlauf"
+    }
+    var sensorHistoryShownAccessibilityValue: String { self == .english ? "History shown" : "Verlauf angezeigt" }
+    var sensorHistoryHiddenAccessibilityValue: String { self == .english ? "History hidden" : "Verlauf ausgeblendet" }
     var windowSizeMenuTitle: String { self == .english ? "Window Size" : "Fenstergröße" }
     var standardWindowSizeTitle: String { self == .english ? "Standard" : "Standard" }
     var compactWindowSizeTitle: String { self == .english ? "Compact (about 40% smaller)" : "Kompakt (ca. 40 % kleiner)" }

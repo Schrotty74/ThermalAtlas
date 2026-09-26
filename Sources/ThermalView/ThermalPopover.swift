@@ -78,7 +78,10 @@ struct ThermalPopover: View {
                             .foregroundStyle(palette.gpu)
                             .symbolRenderingMode(.hierarchical)
                     }
-                    .buttonStyle(.plain)
+                    .thermalGlassButtonStyle(
+                        isEnabled: selectedTheme.usesFullWindowGlass,
+                        tint: palette.gpu
+                    )
                     .accessibilityLabel(selectedLanguage.systemInformationButtonLabel)
                     .help(selectedLanguage.systemInformationButtonLabel)
                 }
@@ -1030,12 +1033,13 @@ private struct SensorCard: View {
     @State private var showsDetails = false
     @State private var historyRange: TemperatureHistoryRange = .oneHour
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
 
     private var palette: ThermalThemePalette { selectedTheme.palette }
     private var componentColor: Color { palette.componentColor(for: reading.kind) }
 
-    var body: some View {
+    private var cardContent: some View {
         VStack(alignment: .leading, spacing: compact ? 7 : 10) {
             HStack(spacing: compact ? 8 : 12) {
             Image(systemName: reading.kind.symbol)
@@ -1092,28 +1096,33 @@ private struct SensorCard: View {
                 )
             }
         }
-        .padding(.horizontal, compact ? 9 : 13).padding(.vertical, compact ? 8 : 12)
-        .background {
-            cardBackground
-        }
-        .overlay {
-            RoundedRectangle(cornerRadius: compact ? 12 : 16, style: .continuous)
-                .stroke(componentColor.opacity(palette.cardStrokeOpacity), lineWidth: 1)
-        }
-        .shadow(color: componentColor.opacity(0.09), radius: compact ? 6 : 10, y: compact ? 2 : 4)
-        .opacity(hasAppeared ? 1 : 0)
-        .offset(y: hasAppeared ? 0 : 7)
-        .task {
-            guard !hasAppeared else { return }
-            withAnimation(.easeOut(duration: 0.35)) { hasAppeared = true }
-        }
-        .animation(.easeInOut(duration: 0.3), value: reading.temperatureCelsius)
-        .contentShape(RoundedRectangle(cornerRadius: compact ? 12 : 16, style: .continuous))
-        .onTapGesture {
-            let isOpening = !showsHistory
-            withAnimation(.easeInOut(duration: 0.2)) { showsHistory.toggle() }
-            PopoverWindowCoordinator.adjustForHistory(isOpening: isOpening, compact: compact)
-        }
+    }
+
+    var body: some View {
+        styledCard
+            .opacity(hasAppeared ? 1 : 0)
+            .offset(y: hasAppeared ? 0 : 7)
+            .task { revealCard() }
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.3), value: reading.temperatureCelsius)
+            .contentShape(RoundedRectangle(cornerRadius: compact ? 12 : 16, style: .continuous))
+            .onTapGesture(perform: toggleHistory)
+            .accessibilityLabel(reading.title ?? reading.kind.title(for: language))
+            .accessibilityValue(showsHistory ? language.sensorHistoryShownAccessibilityValue : language.sensorHistoryHiddenAccessibilityValue)
+            .accessibilityHint(language.sensorHistoryAccessibilityHint)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction { toggleHistory() }
+    }
+
+    private var styledCard: some View {
+        cardContent
+            .padding(.horizontal, compact ? 9 : 13)
+            .padding(.vertical, compact ? 8 : 12)
+            .background { cardBackground }
+            .overlay {
+                RoundedRectangle(cornerRadius: compact ? 12 : 16, style: .continuous)
+                    .stroke(componentColor.opacity(palette.cardStrokeOpacity), lineWidth: 1)
+            }
+            .shadow(color: componentColor.opacity(0.09), radius: compact ? 6 : 10, y: compact ? 2 : 4)
     }
 
     @ViewBuilder
@@ -1171,6 +1180,25 @@ private struct SensorCard: View {
         }
     }
 
+    private func toggleHistory() {
+        let isOpening = !showsHistory
+        if reduceMotion {
+            showsHistory.toggle()
+        } else {
+            withAnimation(.easeInOut(duration: 0.2)) { showsHistory.toggle() }
+        }
+        PopoverWindowCoordinator.adjustForHistory(isOpening: isOpening, compact: compact)
+    }
+
+    private func revealCard() {
+        guard !hasAppeared else { return }
+        if reduceMotion {
+            hasAppeared = true
+        } else {
+            withAnimation(.easeOut(duration: 0.35)) { hasAppeared = true }
+        }
+    }
+
     private var statusAndDetails: some View {
         HStack(spacing: compact ? 3 : 5) {
             Circle().fill(statusColor).frame(width: compact ? 4 : 6, height: compact ? 4 : 6)
@@ -1210,6 +1238,17 @@ private struct SensorCard: View {
         case ..<55: return Color.green
         case ..<75: return Color.orange
         default: return Color.red
+        }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func thermalGlassButtonStyle(isEnabled: Bool, tint: Color) -> some View {
+        if isEnabled, #available(macOS 27.0, *) {
+            buttonStyle(.glass(.regular.tint(tint).interactive()))
+        } else {
+            buttonStyle(.plain)
         }
     }
 }

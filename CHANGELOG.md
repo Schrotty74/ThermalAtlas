@@ -2,6 +2,14 @@
 
 All notable user-visible changes are documented here in English. Development builds remain local; public prereleases are announced through GitHub Releases.
 
+## 1.2.0-beta.2
+
+### Improved
+
+- Temperature cards tell VoiceOver whether their history is open and how to toggle it, in English and German.
+- Card entrance, number changes, and history expansion respect the macOS Reduce Motion setting.
+- On macOS 27, the System Information button uses the interactive system glass style in the Liquid Glass theme. Earlier macOS versions retain the plain button.
+
 ## 1.2.0-beta.1
 
 ### Added

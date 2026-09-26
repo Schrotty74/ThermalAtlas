@@ -314,7 +314,7 @@ ThermalAtlas is architecturally compact: a menu bar app, one sensor snapshot at 
 - Apple silicon
 - For local builds: Xcode Command Line Tools including Swift and `actool`
 
-ThermalAtlas v1.1.0 is the current stable release. Beta 1.2.0-beta.1 is available through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
+ThermalAtlas v1.1.0 is the current stable release. Beta 1.2.0-beta.2 is available through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
 
 ---
 

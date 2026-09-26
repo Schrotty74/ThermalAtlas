@@ -49,6 +49,7 @@ This page lists the features in this build. For installation and everyday use, s
 - Offers menu-bar modes for **All Values** or **Symbol Only**.
 - Colours CPU, GPU and SSD values distinctly in the all-values menu-bar mode and adds a high-contrast status frame: green normally, yellow near a threshold, red at a selected warning threshold.
 - Includes four native themes: Adaptive, Liquid Glass, Aurora, and Ember.
+- Temperature cards expose their history state to VoiceOver and respect the macOS Reduce Motion setting.
 - Starts in English and offers a local German interface choice.
 - Offers an optional macOS **Start at Login** registration.
 - Can keep its window above other apps with the optional **Always on Top** setting.

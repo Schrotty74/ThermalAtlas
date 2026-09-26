@@ -49,6 +49,7 @@ Diese Seite beschreibt die Funktionen dieses Builds ausführlich. Installation u
 - Bietet Menüleistenmodi für **Alle Werte** oder **Nur Symbol**.
 - Trennt CPU-, GPU- und SSD-Werte im Modus **Alle Werte** farblich und ergänzt eine kontrastreiche Statusfläche: grün im Normalbereich, gelb nahe einer Schwelle und rot ab der gewählten Warnschwelle.
 - Enthält vier native Themes: Adaptiv, Liquid Glass, Aurora und Ember.
+- Temperaturkarten geben ihren Verlaufsstatus an VoiceOver aus und beachten die macOS-Einstellung „Bewegung reduzieren“.
 - Startet auf Englisch und bietet eine lokale deutsche Oberfläche.
 - Bietet eine optionale macOS-Registrierung für **Bei Anmeldung starten**.
 - Kann das Fenster mit der optionalen Einstellung **Immer im Vordergrund** über anderen Apps halten.

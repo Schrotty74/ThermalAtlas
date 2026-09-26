@@ -14,7 +14,7 @@
 📘 **[User Manual (PDF)](Documentation/ThermalAtlas-User-Manual-EN.pdf)** – interface, buttons, sensors, themes, installation and privacy explained in detail.
 
 > [!IMPORTANT]
-> **ThermalAtlas v1.1.0 is the current stable release.** The `main` branch contains the final source. New features in Beta 1.2.0-beta.1 are available on the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
+> **ThermalAtlas v1.1.0 is the current stable release.** The `main` branch contains the final source. New features in Beta 1.2.0-beta.2 are available on the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
 
 ## Overview
 
