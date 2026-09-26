@@ -161,8 +161,8 @@ def build(language, output):
     base(c, 4, "Verlauf" if de else "History", "Temperaturverlauf & Warnungen" if de else "Temperature history & alerts",
          "Lokale Minutenmittelwerte und zurückhaltende macOS-Mitteilungen." if de else "Local minute averages and restrained macOS notifications.", 5)
     image(c, ASSETS / "ManualScreenshots" / "temperature-history-card.png", 70, 385, 455, 285)
-    panel(c, 70, 295, 455, 65, CYAN, t["history"],
-          "1, 6 oder 24 Stunden; die gestrichelte Linie markiert die lokale Warnschwelle. Erst zwei Minuten liefern eine sichtbare Kurve." if de else "1, 6 or 24 hours; the dashed line marks the local warning threshold. A visible curve starts after two minutes.")
+    panel(c, 70, 272, 455, 100, CYAN, t["history"],
+          "1, 6 oder 24 Stunden; gestrichelte Linie: Warnschwelle. Die Kurve braucht zwei Minuten. VoiceOver meldet den Verlaufsstatus; Bewegung reduzieren schaltet Kartenanimationen ab." if de else "1, 6 or 24 hours; dashed line: warning threshold. The curve needs two minutes. VoiceOver announces history status; Reduce Motion disables card animations.")
     image(c, ASSETS / "ManualScreenshots" / "temperature-alerts-menu.png", 70, 78, 185, 190)
     image(c, ASSETS / "ManualScreenshots" / "temperature-alert-thresholds.png", 275, 78, 110, 155)
     image(c, ASSETS / "ManualScreenshots" / "export-menu.png", 400, 210, 125, 40)
@@ -202,9 +202,9 @@ def build(language, output):
          "Dieser Mac auf einen Blick" if de else "This Mac at a glance",
          "Die Angaben bleiben lokal und werden nur beim Öffnen gelesen." if de else "The details stay local and are read only when opened.", 8)
     image(c, ASSETS / "ManualScreenshots" / "system-information.png", 82, 225, W - 164, 470)
-    panel(c, 55, 125, W - 110, 72, CYAN,
+    panel(c, 55, 105, W - 110, 95, CYAN,
           "Thermometer im Kopf" if de else "Header thermometer",
-          "Oben stehen Mac und thermischer Zustand. Darunter: Kerne, Speicher sowie macOS-Version und Buildnummer." if de else "Mac and Thermal State appear on top. Below are core counts, memory, storage, and the macOS version and build number.")
+          "Öffnet Mac, thermischen Zustand, Kerne, Speicher und macOS-Version. Liquid Glass nutzt ab macOS 27 einen interaktiven Glass-Button, davor einen schlichten Button." if de else "Opens Mac, Thermal State, cores, storage and macOS version. Liquid Glass uses an interactive glass button on macOS 27 or later, and a plain button earlier.")
     panel(c, 55, 48, W - 110, 55, GREEN,
           "Privat" if de else "Private",
           "Keine Seriennummern, UUIDs oder anderen Hardware-Kennungen." if de else "No serial numbers, UUIDs or other hardware identifiers.")

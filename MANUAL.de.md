@@ -92,6 +92,8 @@ Klicke auf das Thermometer oben rechts im ThermalAtlas-Fenster, um die **Systemi
 
 Die Daten werden nur beim Öffnen dieses Fensters gelesen. ThermalAtlas fragt weder Seriennummern noch UUIDs ab und zeigt sie auch nicht an. Mit **Close** beziehungsweise dem macOS-Schließen-Button wird das Fenster geschlossen.
 
+Im Theme Liquid Glass erscheint das Thermometer oben rechts ab macOS 27 als interaktiver System-Glass-Button. Auf älteren macOS-Versionen öffnet der schlicht dargestellte Button dasselbe Fenster.
+
 ---
 
 ## 3. Menüleisten-Anzeige
@@ -179,6 +181,8 @@ Unter **Menu Bar Display** legst du fest, wie viel Platz ThermalAtlas in der mac
 ### Temperature History (Temperaturverlauf)
 
 Klicke eine Temperaturkarte an, um ihren lokalen **Temperaturverlauf** zu öffnen. Wähle **1 Hour**, **6 Hours** oder **24 Hours**; die orange gestrichelte Linie markiert die für diese Sensorgruppe gewählte Warnschwelle. ThermalAtlas speichert nur Minutenmittelwerte echter, lesbarer Werte und bewahrt höchstens 24 Stunden auf. Direkt nach dem Start braucht das Diagramm zwei unterschiedliche Minuten, bevor es eine Linie zeichnen kann. Ein nur kurz überbrückter GPU-Wert ist klar markiert und wird nicht als neue Messung aufgezeichnet.
+
+Bei eingeschaltetem VoiceOver wird jede Temperaturkarte als bedienbarer Button erkannt. VoiceOver sagt an, ob der Verlauf angezeigt oder ausgeblendet ist, und erklärt, dass sich der Verlauf über die Karte öffnen oder schließen lässt. Das gilt auch in der Kompaktansicht. Ist in den macOS-Bedienungshilfen **Bewegung reduzieren** aktiviert, erscheinen die Karten ohne Einblendanimation, Temperaturzahlen wechseln ohne Animation und der Verlauf klappt ohne Animation auf oder zu. Messwerte und Verlauf bleiben verfügbar.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/temperature-history-card.png" width="430" alt="ThermalAtlas-SSD-Karte mit lokalem Einstunden-Temperaturverlauf und Warnschwellenlinie">

@@ -92,6 +92,8 @@ Select the thermometer in the upper-right corner of the ThermalAtlas window to o
 
 The information is read only when you open this window. ThermalAtlas does not query or display serial numbers or UUIDs. Use **Close** or the macOS window close button to dismiss it.
 
+In the Liquid Glass theme on macOS 27 or later, the header thermometer uses an interactive system glass button. It opens the same System Information window on older macOS versions, where the button keeps its plain appearance.
+
 ---
 
 ## 3. Menu bar display
@@ -179,6 +181,8 @@ Choose **Menu Bar Display** to decide how much space ThermalAtlas uses in the ma
 ### Temperature History
 
 Click a temperature card to open its local **Temperature History**. Choose **1 Hour**, **6 Hours** or **24 Hours**; the orange dashed line marks that sensor group's selected warning threshold. ThermalAtlas stores minute averages for real, readable values only and keeps at most 24 hours. Right after launch, the chart needs two separate minutes before it can draw a line. A temporarily retained GPU value is clearly marked and is not recorded as a new measurement.
+
+With VoiceOver enabled, each temperature card is identified as a button. VoiceOver announces whether its history is shown or hidden and explains that activating the card opens or closes the history. This also works in Compact view. When **Reduce Motion** is enabled in macOS Accessibility settings, the cards appear without an entrance animation, temperature numbers change without animation, and the history opens or closes without animation. The readings and history remain available.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/temperature-history-card.png" width="430" alt="ThermalAtlas SSD card with a one-hour local temperature history and warning threshold line">
