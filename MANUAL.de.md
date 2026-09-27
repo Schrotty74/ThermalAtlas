@@ -38,7 +38,7 @@ Die App ist bewusst auf die Anzeige konzentriert. Sie verändert **keine Lüfter
 
 ## 2. Die App-Oberfläche
 
-Die Screenshots in diesem Handbuch zeigen die aktuelle ThermalAtlas-Oberfläche. Die angezeigten SSD-Namen, Temperaturen und Gesundheitswerte sind Beispiele vom aufgenommenen Mac; Anzahl und Namen externer SSD-Karten unterscheiden sich je nach angeschlossener Hardware.
+Die Screenshots in diesem Handbuch verwenden Beispielnamen und Beispielwerte. Anzahl und Namen externer SSD-Karten unterscheiden sich je nach angeschlossener Hardware.
 
 <p align="center">
   <img src="Resources/Screenshots/classic.png" width="430" alt="ThermalAtlas Adaptiv mit CPU, GPU, interner SSD und zwei externen SSD-Karten">
@@ -76,10 +76,10 @@ Die Farben dienen nur als schnelle Orientierung. ThermalAtlas verändert aufgrun
 Unten im Fenster steht die Uhrzeit des zuletzt übernommenen Sensor-Snapshots.
 
 **Systemkontext**
-Unter den Temperaturkarten zeigt ThermalAtlas CPU- und GPU-Last, den belegten Arbeitsspeicher im Verhältnis zum eingebauten RAM, Stromquelle oder Akku und Energiesparmodus. Der Bereich ist ausdrücklich als Kontext und nicht als Temperatursensor gekennzeichnet. Diese Werte aktualisieren sich unabhängig alle 0,5 Sekunden; die CPU-Last wird aus zwei aufeinanderfolgenden System-Snapshots berechnet und erscheint deshalb nach der zweiten Kontext-Aktualisierung. Diese rein lesenden Werte verändern niemals macOS-Energieeinstellungen und werden nicht gespeichert.
+Unter den Temperaturkarten zeigt ThermalAtlas die CPU-Last, die Drehzahl jedes lesbaren Lüfters in RPM, den belegten Arbeitsspeicher im Verhältnis zum eingebauten RAM, Stromquelle oder Akku und Energiesparmodus. Der Bereich ist ausdrücklich als Kontext und nicht als Temperatursensor gekennzeichnet. Diese Werte aktualisieren sich unabhängig alle 0,5 Sekunden; die CPU-Last wird aus zwei aufeinanderfolgenden System-Snapshots berechnet und erscheint deshalb nach der zweiten Kontext-Aktualisierung. Die Lüfterdrehzahlen werden, soweit verfügbar, aus dem SMC gelesen. ThermalAtlas steuert die Lüfter nicht und speichert diese Kontextwerte nicht. Die GPU-Temperatur bleibt eine eigene Messung; GPU-Last wird nicht mehr angezeigt.
 
 <p align="center">
-  <img src="Resources/ManualScreenshots/system-context-load.png" width="620" alt="ThermalAtlas-Systemkontext mit CPU-Last, GPU-Last, Arbeitsspeicher, Stromquelle und Energiesparmodus">
+  <img src="Resources/ManualScreenshots/system-context-fans.png" width="620" alt="ThermalAtlas-Systemkontext mit CPU-Last, zwei Lüfterdrehzahlen, Arbeitsspeicher, Stromquelle und Energiesparmodus">
 </p>
 
 ### Systeminformationen
@@ -153,7 +153,6 @@ Wähle **Window Size** und danach **Standard** oder **Compact (about 40% smaller
 
 <p align="center">
   <img src="Resources/ManualScreenshots/compact-view.png" width="300" alt="Kompaktansicht von ThermalAtlas mit Temperaturkarten und Systemkontext">
-  <img src="Resources/ManualScreenshots/compact-history.png" width="300" alt="Kompaktansicht von ThermalAtlas mit geöffnetem CPU-Temperaturverlauf">
 </p>
 
 Auch in der kompakten Ansicht bleibt der Temperaturverlauf verfügbar, wenn du eine Karte auswählst.
@@ -336,7 +335,7 @@ ThermalAtlas ist architektonisch kompakt aufgebaut: eine Menüleisten-App, ein S
 - Apple Silicon
 - Für eigene Builds: Xcode Command Line Tools mit Swift und `actool`
 
-ThermalAtlas v1.1.0 ist die aktuelle stabile Veröffentlichung. Beta 1.2.0-beta.2 ist über die [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) erhältlich.
+ThermalAtlas v1.1.0 ist die aktuelle stabile Veröffentlichung. Beta 1.2.0-beta.3 ist über die [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) erhältlich.
 
 ---
 

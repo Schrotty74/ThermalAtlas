@@ -38,7 +38,7 @@ The app is deliberately focused on monitoring. It changes **no fan control, perf
 
 ## 2. The app interface
 
-The screenshots in this manual show the current ThermalAtlas interface. The displayed SSD names, temperatures and health figures are examples from the captured Mac; the number and names of external SSD cards vary by connected hardware.
+The screenshots in this manual use sample names and values. The number and names of external SSD cards vary by connected hardware.
 
 <p align="center">
   <img src="Resources/Screenshots/classic.png" width="430" alt="ThermalAtlas Adaptive interface with CPU, GPU, internal SSD and two external SSD cards">
@@ -76,10 +76,10 @@ The colors are a quick visual guide only. ThermalAtlas does not change anything 
 The bottom of the window shows the time of the latest accepted sensor snapshot.
 
 **System context**
-Below the temperature cards, ThermalAtlas shows CPU and GPU load, used memory in relation to installed RAM, power source or battery, and Low Power Mode. It is explicitly marked as context rather than a temperature sensor. These values update independently every 0.5 seconds; CPU load is calculated from two successive system snapshots, so it appears after the second context update. These read-only values never change macOS energy settings and are not stored.
+Below the temperature cards, ThermalAtlas shows CPU load, the speed of each readable fan in RPM, used memory in relation to installed RAM, power source or battery, and Low Power Mode. It is explicitly marked as context rather than a temperature sensor. These values update independently every 0.5 seconds; CPU load is calculated from two successive system snapshots, so it appears after the second context update. Fan speeds are read from the SMC when available. ThermalAtlas does not control the fans, and these context values are not stored. GPU temperature remains a separate reading; GPU load is no longer shown.
 
 <p align="center">
-  <img src="Resources/ManualScreenshots/system-context-load.png" width="620" alt="ThermalAtlas System Context with CPU load, GPU load, memory use, power source and Low Power Mode">
+  <img src="Resources/ManualScreenshots/system-context-fans.png" width="620" alt="ThermalAtlas System Context with CPU load, two fan speeds, memory use, power source and Low Power Mode">
 </p>
 
 ### System Information
@@ -153,7 +153,6 @@ Choose **Window Size** and then **Standard** or **Compact (about 40% smaller)**.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/compact-view.png" width="300" alt="ThermalAtlas compact view with temperature cards and System Context">
-  <img src="Resources/ManualScreenshots/compact-history.png" width="300" alt="ThermalAtlas compact view with an expanded CPU temperature history">
 </p>
 
 Compact mode also keeps the temperature-history chart available when you select a card.
@@ -318,7 +317,7 @@ ThermalAtlas is architecturally compact: a menu bar app, one sensor snapshot at 
 - Apple silicon
 - For local builds: Xcode Command Line Tools including Swift and `actool`
 
-ThermalAtlas v1.1.0 is the current stable release. Beta 1.2.0-beta.2 is available through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
+ThermalAtlas v1.1.0 is the current stable release. Beta 1.2.0-beta.3 is available through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
 
 ---
 

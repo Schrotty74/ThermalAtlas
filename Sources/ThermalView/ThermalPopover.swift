@@ -914,12 +914,25 @@ private struct ThermalSystemContext: View {
                     symbol: "chart.bar.fill",
                     tint: palette.cpu
                 )
-                contextItem(
-                    title: language.gpuLoadTitle,
-                    value: gpuUsageText,
-                    symbol: "rectangle.3.group.fill",
-                    tint: palette.gpu
-                )
+                if context.fanSpeeds.isEmpty {
+                    contextItem(
+                        title: language.fanSpeedTitle,
+                        value: language.notAvailable,
+                        symbol: "fanblades.fill",
+                        tint: palette.secondary
+                    )
+                } else {
+                    ForEach(context.fanSpeeds, id: \.index) { fan in
+                        contextItem(
+                            title: context.fanSpeeds.count == 1
+                                ? language.fanSpeedTitle
+                                : "\(language.fanSpeedTitle) \(fan.index + 1)",
+                            value: "\(fan.rpm.formatted(.number.locale(language.locale))) RPM",
+                            symbol: "fanblades.fill",
+                            tint: palette.secondary
+                        )
+                    }
+                }
                 contextItem(
                     title: memoryTitle,
                     value: memoryUsageText,
@@ -966,11 +979,6 @@ private struct ThermalSystemContext: View {
 
     private var cpuUsageText: String {
         guard let usage = context.cpuUsagePercent else { return language.calculatingTitle }
-        return usage.formatted(.number.precision(.fractionLength(0))) + " %"
-    }
-
-    private var gpuUsageText: String {
-        guard let usage = context.gpuUsagePercent else { return language.notAvailable }
         return usage.formatted(.number.precision(.fractionLength(0))) + " %"
     }
 

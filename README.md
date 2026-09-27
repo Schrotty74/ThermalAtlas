@@ -14,7 +14,7 @@
 📘 **[User Manual (PDF)](Documentation/ThermalAtlas-User-Manual-EN.pdf)** – interface, buttons, sensors, themes, installation and privacy explained in detail.
 
 > [!IMPORTANT]
-> **ThermalAtlas v1.1.0 is the current stable release.** The `main` branch contains the final source. New features in Beta 1.2.0-beta.2 are available on the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
+> **ThermalAtlas v1.1.0 is the current stable release.** The `main` branch contains the final source. New features in Beta 1.2.0-beta.3 are available on the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
 
 ## Overview
 
@@ -29,7 +29,7 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 - Monitors available CPU, GPU, internal-SSD, and physical external-SSD temperatures without estimating missing readings.
 - Keeps CPU/GPU averages on the cards, menu bar, and history; Sensor Details shows the measured Hotspot and valid sensor count. CPU/GPU alerts use the Hotspot.
 - Shows SMART status and remaining SSD health whenever macOS supplies those values.
-- Separates fast, read-only CPU/GPU load and used-memory context from temperature monitoring.
+- Separates fast, read-only CPU load, fan speeds and used-memory context from temperature monitoring.
 - Keeps local temperature history, provides optional temperature alerts, and exports a snapshot or CSV only on request.
 - Offers Standard and Compact views, selectable visible sensor groups, and menu-bar modes for all values or just the symbol.
 - Opens local System Information with the macOS Thermal State from the header thermometer; offers Always on Top and optional Start at Login registration.
@@ -92,7 +92,7 @@ Published builds are ad-hoc signed locally. Building does not publish a release.
 
 ## Privacy, data handling, and security
 
-ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, SMART temperature data, CPU/GPU load, used memory, power source/battery, and Low Power Mode only when macOS provides them. System Information reads its displayed values and Thermal State through targeted local queries; serial numbers and UUIDs are not queried. It stores selected display preferences, including Always on Top, alert thresholds, and local per-minute temperature averages for up to 24 hours in local `UserDefaults`; system-context and System Information values are displayed but not stored. The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. A diagnostic report or CSV export is created only after you explicitly choose it. Its optional GitHub, Homepage, and manual menu actions open the selected public page in your default browser only after you select them.
+ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, SMART temperature data, CPU load, fan speeds, used memory, power source/battery, and Low Power Mode only when macOS provides them. System Information reads its displayed values and Thermal State through targeted local queries; serial numbers and UUIDs are not queried. It stores selected display preferences, including Always on Top, alert thresholds, and local per-minute temperature averages for up to 24 hours in local `UserDefaults`; system-context and System Information values are displayed but not stored. The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. A diagnostic report or CSV export is created only after you explicitly choose it. Its optional GitHub, Homepage, and manual menu actions open the selected public page in your default browser only after you select them.
 
 See [Privacy report](PRIVACY.md), [Datenschutzbericht](PRIVACY.de.md), and the [security review](SECURITY.md).
 

@@ -24,8 +24,8 @@ Diese Seite beschreibt die Funktionen dieses Builds ausführlich. Installation u
 
 ## Systemkontext
 
-- Zeigt getrennt CPU- und GPU-Gesamtlast, belegten Arbeitsspeicher im Verhältnis zum installierten RAM mit dem Status Normal, Erhöht oder Hoch, Stromquelle/Akku und Energiesparmodus.
-- Aktualisiert CPU-/GPU-Last und belegten Speicher alle 0,5 Sekunden, unabhängig vom gewählten Temperaturintervall.
+- Zeigt getrennt CPU-Gesamtlast, die Drehzahl jedes lesbaren Lüfters, belegten Arbeitsspeicher im Verhältnis zum installierten RAM mit dem Status Normal, Erhöht oder Hoch, Stromquelle/Akku und Energiesparmodus.
+- Aktualisiert CPU-Last, Lüfterdrehzahlen und belegten Speicher alle 0,5 Sekunden, unabhängig vom gewählten Temperaturintervall.
 - Behandelt diese Werte als rein lesenden Kontext, niemals als Temperaturmessungen oder Systemsteuerung.
 
 ## Systeminformationen

@@ -2,6 +2,17 @@
 
 All notable user-visible changes are documented here in English. Development builds remain local; public prereleases are announced through GitHub Releases.
 
+## 1.2.0-beta.3
+
+### Changed
+
+- System Context now shows the RPM of each readable fan. ThermalAtlas reads the speeds without controlling the fans.
+- Removed the GPU-load percentage after comparisons showed that it did not reliably reflect GPU activity. GPU temperature remains available.
+
+### Documentation
+
+- Updated the English and German manuals and PDFs for fan speeds, and replaced the four theme screenshots with examples using sample data.
+
 ## 1.2.0-beta.2
 
 ### Improved

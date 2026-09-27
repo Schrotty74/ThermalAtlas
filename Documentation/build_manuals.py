@@ -121,13 +121,13 @@ def build(language, output):
     # 2 Readings
     base(c, 1, "Messwerte" if de else "Readings", t["readings"], t["interface"], 2)
     image(c, ASSETS / "Screenshots" / "classic.png", 48, 180, 220, 490)
-    image(c, ASSETS / "ManualScreenshots" / "system-context-load.png", 290, 555, 260, 105)
+    image(c, ASSETS / "ManualScreenshots" / "system-context-fans.png", 290, 555, 260, 105)
     panel(c, 290, 415, 260, 110, VIOLET, "CPU / GPU",
           "Die Karten zeigen den Durchschnitt. Das Info-Symbol zeigt Hotspot und Sensoranzahl; der Hotspot steuert Warnungen." if de else "Cards show the average. The info symbol shows the Hotspot and sensor count; alerts use the Hotspot.")
     panel(c, 290, 275, 260, 110, GREEN, "SSD / SMART",
           "Temperatur, SMART-Status und Gesundheit erscheinen nur bei echten macOS-Daten." if de else "Temperature, SMART status and health appear only when macOS supplies real data.")
     panel(c, 290, 120, 260, 125, CYAN, "Systemkontext" if de else "System Context",
-          "CPU- und GPU-Last, Arbeitsspeicher, Stromquelle und Energiesparmodus aktualisieren sich unabhängig alle 0,5 Sekunden." if de else "CPU and GPU load, memory, power source and Low Power Mode update independently every 0.5 seconds.")
+          "CPU-Last, Lüfterdrehzahlen, Arbeitsspeicher, Stromquelle und Energiesparmodus aktualisieren sich unabhängig alle 0,5 Sekunden." if de else "CPU load, fan speeds, memory, power source and Low Power Mode update independently every 0.5 seconds.")
     c.showPage()
 
     # 3 Menu bar and shared menu
@@ -149,7 +149,7 @@ def build(language, output):
     image(c, ASSETS / "ManualScreenshots" / "window-size-menu.png", 70, 560, 455, 110)
     panel(c, 70, 425, 455, 100, VIOLET, t["size"],
           "Standard zeigt die großzügige Kartenansicht. Kompakt ist rund 40 % schmaler und nutzt dichtere Karten, kleinere Abstände und kleinere Schrift." if de else "Standard keeps the generous card layout. Compact is about 40% narrower and uses denser cards, smaller spacing and smaller type.")
-    image(c, ASSETS / "ManualScreenshots" / "compact-history.png", 70, 110, 180, 280)
+    image(c, ASSETS / "ManualScreenshots" / "compact-view.png", 70, 110, 180, 280)
     panel(c, 280, 255, 245, 135, GREEN, "Kompakt & Verlauf" if de else "Compact & history",
           "Die kompakte Ansicht behält den Temperaturverlauf mit 1, 6 und 24 Stunden bei." if de else "The compact view retains the 1-, 6- and 24-hour temperature history.")
     image(c, ASSETS / "ManualScreenshots" / "menu-bar-display-menu.png", 310, 150, 215, 68)

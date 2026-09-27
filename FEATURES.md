@@ -24,8 +24,8 @@ This page lists the features in this build. For installation and everyday use, s
 
 ## System Context
 
-- Separately shows total CPU load, total GPU load, used memory relative to installed RAM with a Normal, Elevated, or High status, power source/battery, and Low Power Mode.
-- Updates CPU/GPU load and used memory every 0.5 seconds, independently from the selected temperature interval.
+- Separately shows total CPU load, the RPM of each readable fan, used memory relative to installed RAM with a Normal, Elevated, or High status, power source/battery, and Low Power Mode.
+- Updates CPU load, fan speeds and used memory every 0.5 seconds, independently from the selected temperature interval.
 - Treats these values as read-only context, never as temperature measurements or system controls.
 
 ## System Information

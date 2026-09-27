@@ -38,6 +38,14 @@ final class TemperatureAggregationTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(TemperatureAggregation.maximum(validValues)), 80, accuracy: 0.000_001)
     }
 
+    func testSMCFanRPMDecodesFloatAndFixedPointWithoutInventingValues() {
+        XCTAssertEqual(SMCFanValueDecoder.fanCount(bytes: [2], type: "ui8 "), 2)
+        XCTAssertEqual(SMCFanValueDecoder.rpm(bytes: [0, 192, 122, 68], type: "flt "), 1003)
+        XCTAssertEqual(SMCFanValueDecoder.rpm(bytes: [0x0F, 0xAC], type: "fpe2"), 1003)
+        XCTAssertNil(SMCFanValueDecoder.rpm(bytes: [0, 192], type: "flt "))
+        XCTAssertNil(SMCFanValueDecoder.rpm(bytes: [0, 0, 128, 127], type: "flt "))
+    }
+
     func testMedianRemainsAvailableForSensorDeduplication() throws {
         XCTAssertEqual(try XCTUnwrap(TemperatureAggregation.median([33, 36.7, 36.8, 37])), 36.75, accuracy: 0.000_001)
     }
@@ -180,8 +188,6 @@ final class TemperatureAggregationTests: XCTestCase {
     func testSystemContextKeepsPowerStateSeparateFromSensorKinds() {
         XCTAssertFalse(SensorKind.allCases.map(\.rawValue).contains("power"))
         XCTAssertEqual(SystemContext.PowerSource.battery(percentage: 73), .battery(percentage: 73))
-        XCTAssertEqual(GPUUsageReader.usagePercent(from: ["Device Utilization %": 34]), 34)
-        XCTAssertNil(GPUUsageReader.usagePercent(from: [:]))
         let memory = SystemContext.MemoryUsage(usedBytes: 24, totalBytes: 96)
         XCTAssertEqual(memory.usagePercent, 25)
         XCTAssertEqual(memory.loadStatus, .normal)
