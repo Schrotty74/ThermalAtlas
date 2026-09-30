@@ -2,6 +2,23 @@
 
 All notable user-visible changes are documented here in English. Development builds remain local; public prereleases are announced through GitHub Releases.
 
+## 1.2.0-beta.4
+
+### Added
+
+- Mini Display under Window Size shows the selected temperatures in a movable floating strip. Right-click the strip to return to Standard or Compact; the selected mode is saved locally.
+- Click or drag in a temperature chart to see the nearest recorded point, its time and minute-average temperature.
+
+### Improved
+
+- Always on Top lets Mini Display join other apps' full-screen spaces. Visibility over individual full-screen games still needs to be checked.
+- The app icon now uses an appearance-aware Icon Composer asset, with a conventional icon fallback for older macOS versions.
+
+### Documentation
+
+- Updated both manuals and their twelve-page PDFs with Mini Display, chart selection, sensor details, warnings, refresh intervals, exports and window controls.
+- Updated the public example images without changing their existing links.
+
 ## 1.2.0-beta.3
 
 ### Changed

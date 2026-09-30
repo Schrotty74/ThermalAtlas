@@ -1,5 +1,7 @@
 # ThermalAtlas - Benutzerhandbuch
 
+Version: 1.2.0-beta.4
+
 <p align="center">
   <img src="Resources/IconSource/ThermalAtlas-LiquidGlass.png" width="150" alt="ThermalAtlas App-Icon">
 </p>
@@ -27,9 +29,10 @@ Die App ist bewusst auf die Anzeige konzentriert. Sie verändert **keine Lüfter
 | --- | --- |
 | CPU | Rein lesende Apple-Silicon-SMC-Sensoren; lesbare Sensoren werden gemittelt |
 | GPU | Rein lesende Apple-Silicon-SMC-Sensoren; lesbare Zonen werden gemittelt |
+| Lüfter | Tatsächliche RPM für jeden Lüfter, dessen Drehzahl der SMC bereitstellt; keine Lüftersteuerung |
 | Interne SSD | SMART-Temperatur, Status und Gesundheit nur bei echten macOS-Daten |
 | Externe SSDs | Jede physische externe SSD wird getrennt angezeigt, wenn macOS sie erkennt |
-| Aktualisierung | Wählbar alle 1, 2, 3 oder 4 Sekunden; Standard: 2 Sekunden |
+| Temperatur-Aktualisierung | CPU/GPU: alle 1, 2, 3 oder 4 Sekunden; Standard: 2 Sekunden. SSDs: jede Minute |
 | Speicherung | Lokale Einstellungen, Warnschwellen und höchstens 24 Stunden minutenweise gemittelter Temperaturverlauf werden lokal gespeichert |
 | Netzwerk | Für die Temperaturanzeige ist keine Netzwerkfunktion nötig |
 | Telemetrie | Keine Telemetrie und keine Analyse-Dienste |
@@ -38,10 +41,10 @@ Die App ist bewusst auf die Anzeige konzentriert. Sie verändert **keine Lüfter
 
 ## 2. Die App-Oberfläche
 
-Die Screenshots in diesem Handbuch verwenden Beispielnamen und Beispielwerte. Anzahl und Namen externer SSD-Karten unterscheiden sich je nach angeschlossener Hardware.
+Die Screenshots verwenden Beispielnamen für Laufwerke, Temperaturen und Gesundheitswerte. Anzahl und Namen externer SSD-Karten hängen von der angeschlossenen Hardware ab.
 
 <p align="center">
-  <img src="Resources/Screenshots/classic.png" width="430" alt="ThermalAtlas Adaptiv mit CPU, GPU, interner SSD und zwei externen SSD-Karten">
+  <img src="Resources/ManualScreenshots/full-adaptive-fans.png" width="430" alt="ThermalAtlas Adaptiv mit Temperaturkarten und zwei Lüfterdrehzahlen">
 </p>
 
 ### Was du im Fenster siehst
@@ -49,16 +52,17 @@ Die Screenshots in diesem Handbuch verwenden Beispielnamen und Beispielwerte. An
 **Temperaturkarten**  
 CPU- und GPU-Karten zeigen den Mittelwert der lesbaren passenden Sensoren. Jede SSD-Karte zeigt den echten Laufwerks- oder eingebundenen Volume-Namen. Rechts steht die aktuelle Temperatur.
 
-Weitere Angaben zu CPU und GPU findest du über das kleine Info-Symbol auf der jeweiligen Karte. Die Sensor-Details zeigen den Durchschnitt, den höchsten tatsächlich gemessenen Sensorwert (Hotspot) und die Anzahl gültiger Sensoren. Karte, Menüleiste und Verlauf verwenden weiterhin den Durchschnitt. Für CPU- und GPU-Warnungen zählt der Hotspot, damit ein einzelner heißer Sensor eine Warnung auslösen kann, auch wenn der Durchschnitt niedriger liegt. Bei SSDs gilt weiterhin die angezeigte Temperatur.
-
 **SSD-Status und Gesundheit**
 Wenn macOS die Daten liefert, zeigt eine SSD-Karte `SMART: Verifiziert` und eine eigene Zeile mit der verbleibenden Gesundheit in Prozent. Der Prozentwert wird ausschließlich aus dem NVMe-Feld `PERCENTAGE_USED` abgeleitet. Fehlen SMART-Daten oder dieses Feld, erfindet ThermalAtlas keinen Status und keinen Prozentwert.
+
+**Sensor-Details**
+Das Info-Symbol einer Karte öffnet Quelle, letzten gültigen Temperaturwert und Zeitpunkt. Bei CPU und GPU erscheinen zusätzlich Chip, Durchschnitt, **Hotspot** (die höchste lesbare Sensortemperatur) und Anzahl gültiger Sensoren. Bei SSDs stehen dort die lokale Laufwerks-ID und vorhandene Messhinweise. Das Info-Symbol öffnet diese Details; ein Klick auf die Karte öffnet ihren Verlauf.
 
 **Letzter echter GPU-Wert**
 Schlägt eine kurze GPU-SMC-Abfrage fehl, kann ThermalAtlas den letzten zuvor verifizierten echten GPU-Wert kurz weiter anzeigen. Eine orange Beschriftung macht das ausdrücklich sichtbar; es ist keine Schätzung und der Wert läuft nach kurzer Zeit aus.
 
 <p align="center">
-  <img src="Resources/Screenshots/liquid-glass.png" width="430" alt="ThermalAtlas Liquid Glass mit Temperaturkarten und Systemkontext">
+  <img src="Resources/ManualScreenshots/full-liquid-glass-fans.png" width="430" alt="ThermalAtlas Liquid Glass mit Temperaturkarten und Lüfterdrehzahlen im Systemkontext">
 </p>
 
 **Farbliche Statusanzeige**
@@ -76,23 +80,31 @@ Die Farben dienen nur als schnelle Orientierung. ThermalAtlas verändert aufgrun
 Unten im Fenster steht die Uhrzeit des zuletzt übernommenen Sensor-Snapshots.
 
 **Systemkontext**
-Unter den Temperaturkarten zeigt ThermalAtlas die CPU-Last, die Drehzahl jedes lesbaren Lüfters in RPM, den belegten Arbeitsspeicher im Verhältnis zum eingebauten RAM, Stromquelle oder Akku und Energiesparmodus. Der Bereich ist ausdrücklich als Kontext und nicht als Temperatursensor gekennzeichnet. Diese Werte aktualisieren sich unabhängig alle 0,5 Sekunden; die CPU-Last wird aus zwei aufeinanderfolgenden System-Snapshots berechnet und erscheint deshalb nach der zweiten Kontext-Aktualisierung. Die Lüfterdrehzahlen werden, soweit verfügbar, aus dem SMC gelesen. ThermalAtlas steuert die Lüfter nicht und speichert diese Kontextwerte nicht. Die GPU-Temperatur bleibt eine eigene Messung; GPU-Last wird nicht mehr angezeigt.
+Unter den Temperaturkarten zeigt ThermalAtlas die CPU-Last, die tatsächliche Drehzahl jedes lesbaren Lüfters in Umdrehungen pro Minute (RPM), den belegten Arbeitsspeicher im Verhältnis zum eingebauten RAM, Stromquelle oder Akku und Energiesparmodus. Sind zwei Lüfter lesbar, erscheinen sie getrennt als Lüfter 1 und Lüfter 2. Fehlt ein Drehzahlwert, erfindet die App keinen RPM-Wert. GPU-Last-Prozentwerte werden nicht mehr angezeigt; die GPU-Temperaturkarte bleibt erhalten.
+
+Der Systemkontext ist von den Temperatursensoren getrennt. Er aktualisiert sich ungefähr alle 0,5 Sekunden, unabhängig vom wählbaren Temperaturintervall. Die CPU-Last erscheint erst nach zwei aufeinanderfolgenden Abfragen. Diese rein lesenden Werte werden nicht gespeichert; ThermalAtlas verändert weder Lüfter- noch Energieeinstellungen.
+
+Der RAM-Status richtet sich nach dem belegten Anteil des eingebauten Arbeitsspeichers: **Normal** unter 70 %, **Erhöht** ab 70 % bis unter 85 % und **Hoch** ab 85 %. Er beschreibt die Speicherbelegung und ist keine Anzeige des macOS-Speicherdrucks.
 
 <p align="center">
-  <img src="Resources/ManualScreenshots/system-context-fans.png" width="620" alt="ThermalAtlas-Systemkontext mit CPU-Last, zwei Lüfterdrehzahlen, Arbeitsspeicher, Stromquelle und Energiesparmodus">
+  <img src="Resources/ManualScreenshots/system-context-fans.png" width="620" alt="ThermalAtlas-Systemkontext mit CPU-Last, zwei Lüfterdrehzahlen in RPM, Arbeitsspeicher, Stromquelle und Energiesparmodus">
 </p>
 
 ### Systeminformationen
 
-Klicke auf das Thermometer oben rechts im ThermalAtlas-Fenster, um die **Systeminformationen** zu öffnen. In der obersten Reihe stehen Mac-Modell und Apple-Chip neben dem **Thermischen Zustand**. Diese macOS-Systembewertung kann Normal, Erhöht, Hoch oder Kritisch lauten. Sie ist kein zusätzlicher Temperaturmesswert. Darunter folgen CPU- und GPU-Kernzahlen, eingebauter Arbeitsspeicher, interner Speicher sowie macOS-Version und Buildnummer. In der Kernübersicht steht P für Performance-Kerne und E für Effizienz-Kerne.
+Klicke auf das Thermometer oben rechts im ThermalAtlas-Fenster, um die **Systeminformationen** zu öffnen. Dieses eigene lokale Fenster zeigt Mac-Modell, Apple-Chip, CPU- und GPU-Kerne, eingebauten Arbeitsspeicher, internen Speicher und macOS-Version. In der Kernübersicht steht P für Performance-Kerne und E für Effizienz-Kerne.
 
 <p align="center">
-  <img src="Resources/ManualScreenshots/system-information.png" width="620" alt="ThermalAtlas-Systeminformationen mit Mac-Modell und thermischem Zustand nebeneinander, CPU- und GPU-Kernen, Arbeitsspeicher, internem Speicher sowie macOS-Version und Buildnummer">
+  <img src="Resources/ManualScreenshots/system-information.png" width="620" alt="ThermalAtlas-Systeminformationen mit Mac-Modell, Apple-Chip, CPU- und GPU-Kernen, Arbeitsspeicher, internem Speicher und macOS-Version">
 </p>
 
-Die Daten werden nur beim Öffnen dieses Fensters gelesen. ThermalAtlas fragt weder Seriennummern noch UUIDs ab und zeigt sie auch nicht an. Mit **Close** beziehungsweise dem macOS-Schließen-Button wird das Fenster geschlossen.
+Die Daten werden nur beim Öffnen dieses Fensters gelesen. ThermalAtlas erfasst oder zeigt keine Seriennummern, UUIDs oder anderen Hardware-Kennungen. Mit **Close** beziehungsweise dem macOS-Schließen-Button wird das Fenster geschlossen.
 
-Im Theme Liquid Glass erscheint das Thermometer oben rechts ab macOS 27 als interaktiver System-Glass-Button. Auf älteren macOS-Versionen öffnet der schlicht dargestellte Button dasselbe Fenster.
+Die Kachel **Thermischer Zustand** zeigt die Bewertung von macOS: **Normal**, **Erhöht**, **Hoch** oder **Kritisch**. Das ist eine Systembewertung und keine Temperatur in Grad. Öffne die Systeminformationen erneut, um den aktuellen Zustand zu lesen.
+
+### Fenster verschieben und schließen
+
+Ziehe das Hauptfenster an der Titelleiste oder am Fensterhintergrund an die gewünschte Stelle. Die Titelleisten-Buttons schließen oder minimieren es. Beim Schließen laufen App und Temperaturerfassung weiter; ein Klick auf den Menüleisteneintrag zeigt das Fenster wieder. Zum Beenden wählst du **ThermalAtlas beenden**.
 
 ---
 
@@ -131,25 +143,29 @@ Wähle im gemeinsamen Menü **Themes**, um eine Darstellung zu wählen. Die akti
 
 Die Auswahl verändert nur die Darstellung, nicht die Messlogik. Sie wird lokal gespeichert. Alle vier Varianten zeigen dieselben Sensordaten.
 
+Temperaturkarten geben ihre Verlaufsbedienung und deren Zustand über VoiceOver aus. ThermalAtlas berücksichtigt **Bewegung reduzieren** bei Kartenanimationen und beim Öffnen des Verlaufs sowie **Transparenz reduzieren** bei Glasflächen. Im Liquid-Glass-Theme verwendet der Thermometer-Button ab macOS 27 den interaktiven Glasstil des Systems; ältere Versionen zeigen den gewöhnlichen Button.
+
 | Adaptiv | Liquid Glass |
 | --- | --- |
-| <img src="Resources/Screenshots/classic.png" width="300" alt="ThermalAtlas Theme Adaptiv"> | <img src="Resources/Screenshots/liquid-glass.png" width="300" alt="ThermalAtlas Theme Liquid Glass"> |
+| <img src="Resources/ManualScreenshots/full-adaptive-fans.png" width="300" alt="ThermalAtlas Theme Adaptiv mit Lüfterdrehzahlen"> | <img src="Resources/ManualScreenshots/full-liquid-glass-fans.png" width="300" alt="ThermalAtlas Theme Liquid Glass mit Lüfterdrehzahlen"> |
 | **Aurora** | **Ember** |
-| <img src="Resources/Screenshots/aurora.png" width="300" alt="ThermalAtlas Theme Aurora"> | <img src="Resources/Screenshots/ember.png" width="300" alt="ThermalAtlas Theme Ember"> |
+| <img src="Resources/ManualScreenshots/full-aurora-fans.png" width="300" alt="ThermalAtlas Theme Aurora mit Lüfterdrehzahlen"> | <img src="Resources/ManualScreenshots/full-ember-fans.png" width="300" alt="ThermalAtlas Theme Ember mit Lüfterdrehzahlen"> |
 
 ### Scan Refresh (Aktualisierungsintervall)
 
 Wähle **Scan Refresh**, um 1, 2, 3 oder 4 Sekunden einzustellen. Der Standard ist 2 Sekunden, die aktive Auswahl trägt ein Häkchen.
 
+Diese Auswahl gilt für CPU- und GPU-Temperaturen. SSD-Temperaturen werden getrennt jede Minute gelesen.
+
 <p align="center">
   <img src="Resources/ManualScreenshots/scan-refresh-menu.png" width="238" alt="ThermalAtlas-Menü Scan Refresh mit Optionen von einer bis vier Sekunden">
 </p>
 
-Ein kürzeres Intervall reagiert schneller auf echte Änderungen, fragt die rein lesenden Sensorquellen aber häufiger ab. Ein längeres Intervall reduziert diese Abfragen. Das Intervall verändert nur, wie oft ThermalAtlas neue Werte anfordert; Kühlung, Energieeinstellungen und Hardwareverhalten des Macs bleiben unverändert.
+Ein kürzeres Intervall lässt die Temperaturanzeige schneller auf echte Änderungen reagieren, fragt die rein lesenden Temperatursensoren aber häufiger ab. Ein längeres Intervall reduziert diese Abfragen. Lüfterdrehzahlen und der übrige Systemkontext werden getrennt ungefähr alle 0,5 Sekunden aktualisiert. Diese Intervalle verändern weder Kühlung noch Energieeinstellungen oder Hardwareverhalten des Macs.
 
 ### Window Size (Fenstergröße)
 
-Wähle **Window Size** und danach **Standard** oder **Compact (about 40% smaller)**. Die kompakte Ansicht reduziert die Fensterbreite um rund 40 % und verwendet zugleich dichtere Karten, kleinere Abstände und kleinere Schrift. Dadurch bleibt die Anzeige praktisch nutzbar, statt nur zusammengedrückt zu werden. Die Größenwahl wird lokal gespeichert.
+Unter **Window Size** stehen **Standard**, **Compact (about 40% smaller)** und **Mini Display** zur Wahl. Standard zeigt die vollständige Kartenansicht. Kompakt reduziert die Fensterbreite um rund 40 % und verwendet dichtere Karten, kleinere Abstände und kleinere Schrift. Mini Display ersetzt das Fenster durch eine schmale, verschiebbare Leiste mit den ausgewählten Temperaturwerten. Diese Auswahl wird lokal gespeichert.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/compact-view.png" width="300" alt="Kompaktansicht von ThermalAtlas mit Temperaturkarten und Systemkontext">
@@ -158,7 +174,17 @@ Wähle **Window Size** und danach **Standard** oder **Compact (about 40% smaller
 Auch in der kompakten Ansicht bleibt der Temperaturverlauf verfügbar, wenn du eine Karte auswählst.
 
 <p align="center">
-  <img src="Resources/ManualScreenshots/window-size-menu.png" width="360" alt="ThermalAtlas-Untermenü Window Size mit ausgewählter Option Compact about 40 percent smaller">
+  <img src="Resources/ManualScreenshots/window-size-menu.png" width="360" alt="ThermalAtlas-Untermenü Window Size mit Standard, Compact und Mini Display; Standard und Mini Display sind angehakt">
+</p>
+
+Im selben Menü steht auch **Mini Display**. Es ersetzt das große Fenster durch eine schmale schwebende Leiste. Darin stehen die ausgewählten lesbaren Sensorwerte in derselben Reihenfolge und mit denselben Farben wie in der Menüleiste. Ziehe die Leiste an die gewünschte Stelle. Ein Rechtsklick blendet **Window Size** ein. Dort kannst du **Standard** oder **Compact** wählen, ohne das Hauptfenster wieder zu öffnen. Die Auswahl für Mini Display wird lokal gespeichert.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/mini-display.png" width="500" alt="ThermalAtlas Mini Display mit fiktiven Beispieltemperaturen">
+</p>
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/mini-display-controls.png" width="430" alt="ThermalAtlas Mini Display mit aufgeklappter Auswahl Window Size und fiktiven Beispieltemperaturen">
 </p>
 
 ### Visible Temperatures (Sichtbare Temperaturen)
@@ -181,7 +207,7 @@ Unter **Menu Bar Display** legst du fest, wie viel Platz ThermalAtlas in der mac
 
 Klicke eine Temperaturkarte an, um ihren lokalen **Temperaturverlauf** zu öffnen. Wähle **1 Hour**, **6 Hours** oder **24 Hours**; die orange gestrichelte Linie markiert die für diese Sensorgruppe gewählte Warnschwelle. ThermalAtlas speichert nur Minutenmittelwerte echter, lesbarer Werte und bewahrt höchstens 24 Stunden auf. Direkt nach dem Start braucht das Diagramm zwei unterschiedliche Minuten, bevor es eine Linie zeichnen kann. Ein nur kurz überbrückter GPU-Wert ist klar markiert und wird nicht als neue Messung aufgezeichnet.
 
-Bei eingeschaltetem VoiceOver wird jede Temperaturkarte als bedienbarer Button erkannt. VoiceOver sagt an, ob der Verlauf angezeigt oder ausgeblendet ist, und erklärt, dass sich der Verlauf über die Karte öffnen oder schließen lässt. Das gilt auch in der Kompaktansicht. Ist in den macOS-Bedienungshilfen **Bewegung reduzieren** aktiviert, erscheinen die Karten ohne Einblendanimation, Temperaturzahlen wechseln ohne Animation und der Verlauf klappt ohne Animation auf oder zu. Messwerte und Verlauf bleiben verfügbar.
+Klicke oder ziehe im Graphen, um den nächstliegenden gespeicherten Messpunkt auszuwählen. Eine Markierung zeigt seine Position; darunter erscheinen Uhrzeit und Minutenmittelwert. Ein Wechsel des Zeitbereichs löscht die Auswahl. Ein Klick außerhalb des Graphen auf die Karte schließt den Verlauf. Verlauf und CSV verwenden den Durchschnitt; die CPU- und GPU-Warnschwellen verwenden den Hotspot, falls vorhanden. Deshalb kann eine Warnung auftreten, obwohl der gezeichnete Durchschnitt unter der Schwellenlinie liegt.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/temperature-history-card.png" width="430" alt="ThermalAtlas-SSD-Karte mit lokalem Einstunden-Temperaturverlauf und Warnschwellenlinie">
@@ -190,6 +216,8 @@ Bei eingeschaltetem VoiceOver wird jede Temperaturkarte als bedienbarer Button e
 ### Temperature Alerts (Temperaturwarnungen)
 
 Unter **Temperature Alerts** lassen sich lokale macOS-Mitteilungen ein- oder ausschalten. CPU, GPU, interne SSD und externe SSDs besitzen jeweils ein eigenes Schwellen-Untermenü. Für CPU und GPU stehen 85, 90, 95 oder 100 °C zur Wahl, für SSDs 60, 65, 70 oder 75 °C. Eine Mitteilung erscheint erst, wenn ein echter Wert mindestens eine Minute lang an oder über der Schwelle liegt. Dieselbe Temperaturphase meldet sich erst wieder, nachdem der Sensor unter die Schwelle abgekühlt ist. Beim ersten Aktivieren kann macOS die Benachrichtigungsberechtigung abfragen.
+
+CPU- und GPU-Warnungen verwenden den Hotspot, falls vorhanden, sonst den Durchschnitt. SSD-Warnungen verwenden die gemeldete SSD-Temperatur. Die Standardschwellen sind 95 °C für CPU/GPU und 70 °C für SSDs. Der Menüleistenrahmen ist unter dem Warnbereich grün, innerhalb der zehn Grad unter einer gewählten Schwelle gelb und ab der Schwelle rot. Er verwendet dieselbe Temperaturbasis wie die Warnungen und aktualisiert sich auch bei ausgeschalteten Mitteilungen.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/temperature-alerts-menu.png" width="230" alt="ThermalAtlas-Menü Temperature Alerts mit getrennten CPU-, GPU- und SSD-Schwellen-Untermenüs">
@@ -208,6 +236,8 @@ Unter **Export** bereitest du bei Bedarf lokale Diagnosedaten vor. **Copy Curren
 
 Wähle unter **Export** **Always on Top**, damit das ThermalAtlas-Fenster über anderen Apps und beim Verwenden der macOS-Menüleiste sichtbar bleibt. Eine erneute Auswahl stellt die normale Fensterreihenfolge wieder her. Diese lokale Einstellung betrifft nur die Fensterreihenfolge.
 
+Bei **Mini Display** erlaubt diese Option zusätzlich die Anzeige der Leiste in den Vollbildbereichen anderer Apps. Das Verhalten über einem bestimmten Vollbildspiel muss noch in diesem Spiel geprüft werden. Beim Ausschalten kehrt die Mini-Leiste zu ihrem gewöhnlichen Verhalten als schwebendes Fenster zurück.
+
 ### Start at Login (Bei Anmeldung starten)
 
 Mit **Start at Login** unter **Always on Top** registrierst du ThermalAtlas bei macOS für den automatischen Start nach der Anmeldung. Die erneute Auswahl deaktiviert diese Registrierung wieder. Es ändert nur den Login-Start der App, niemals Energie-, Leistungs- oder Sensoreinstellungen.
@@ -224,9 +254,10 @@ Die Begriffe des englischen Standardmenüs entsprechen in der deutschen Oberflä
 
 | English | Deutsch |
 | --- | --- |
-| Themes | Themen |
-| Scan Refresh | Aktualisierungsintervall |
+| Themes | Themes |
+| Scan Refresh | Scan Refresh |
 | Window Size | Fenstergröße |
+| Mini Display | Mini-Anzeige |
 | Visible Temperatures | Sichtbare Temperaturen |
 | Menu Bar Display | Menüleistenanzeige |
 | Temperature Alerts | Temperaturwarnungen |
@@ -319,7 +350,7 @@ ThermalAtlas ist datenschutzfreundlich und lokal ausgerichtet:
 - keine Netzwerkfunktion für die Temperaturanzeige
 - keine Drittanbieter-Abhängigkeiten
 
-Lokal gespeichert werden das gewählte Theme, das Scan-Refresh-Intervall, die sichtbaren Temperaturgruppen, der Menüleistenmodus, die Fenstergröße, die Auswahl für „Immer im Vordergrund“, die Sprachwahl und die Warnschwellen. Zusätzlich bewahrt ThermalAtlas höchstens 24 Stunden lokale, minutenweise gemittelte Temperaturverläufe auf. CPU-Last, Stromquelle oder Akku und Energiesparmodus werden nur angezeigt und nicht gespeichert. Es gibt keine Konten, Telemetrie, Analyse-Dienste oder Cloud-Synchronisierung. Weitere Details stehen im [Datenschutzbericht](PRIVACY.de.md) und in der [Sicherheitsprüfung](SECURITY.md).
+Lokal gespeichert werden das gewählte Theme, das Scan-Refresh-Intervall, die sichtbaren Temperaturgruppen, der Menüleistenmodus, die Fenstergröße, die Auswahl für Mini Display, die Auswahl für „Immer im Vordergrund“, die Sprachwahl und die Warnschwellen. Zusätzlich bewahrt ThermalAtlas höchstens 24 Stunden lokale, minutenweise gemittelte Temperaturverläufe auf. CPU-Last, Lüfterdrehzahlen, RAM-Belegung, Stromquelle oder Akku und Energiesparmodus werden nur angezeigt und nicht gespeichert. Es gibt keine Konten, Telemetrie, Analyse-Dienste oder Cloud-Synchronisierung. Weitere Details stehen im [Datenschutzbericht](PRIVACY.de.md) und in der [Sicherheitsprüfung](SECURITY.md).
 
 ---
 
@@ -335,7 +366,7 @@ ThermalAtlas ist architektonisch kompakt aufgebaut: eine Menüleisten-App, ein S
 - Apple Silicon
 - Für eigene Builds: Xcode Command Line Tools mit Swift und `actool`
 
-ThermalAtlas v1.1.0 ist die aktuelle stabile Veröffentlichung. Beta 1.2.0-beta.3 ist über die [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) erhältlich.
+ThermalAtlas v1.0.0 ist die erste stabile Veröffentlichung. Künftige stabile Versionen und Vorabversionen werden über [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) veröffentlicht.
 
 ---
 

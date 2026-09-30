@@ -38,6 +38,7 @@ This page lists the features in this build. For installation and everyday use, s
 ## History, alerts, and export
 
 - Opens a local 1-, 6-, or 24-hour temperature history from every temperature card.
+- Shows the nearest recorded point’s time and minute-average temperature when you click or drag in the chart.
 - Stores only local per-minute averages for up to 24 hours; temporarily retained GPU readings are not recorded as new measurements.
 - Provides separate CPU, GPU, internal-SSD, and external-SSD alert thresholds. CPU/GPU alerts use the measured Hotspot; SSD alerts use the displayed temperature. A notification needs at least 60 seconds above the threshold and is sent again only after cooling down.
 - Exports a copyable current snapshot, a copyable diagnostic report with the Mac model, macOS version, chip name and sensor states, or local history plus a current snapshot as CSV; CSV is created only after you choose an export location.
@@ -45,6 +46,8 @@ This page lists the features in this build. For installation and everyday use, s
 ## Interface and display
 
 - Offers Standard and Compact window sizes; Compact is about 40% narrower while keeping controls readable.
+- Adds a movable Mini Display for the selected temperatures. Right-click offers Standard and Compact; the mode is saved locally.
+- With Always on Top, Mini Display can join other apps’ full-screen spaces. Visibility over individual full-screen games still needs to be checked.
 - Lets you select the CPU, GPU, internal-SSD, and external-SSD groups visible in both the popover and menu bar.
 - Offers menu-bar modes for **All Values** or **Symbol Only**.
 - Colours CPU, GPU and SSD values distinctly in the all-values menu-bar mode and adds a high-contrast status frame: green normally, yellow near a threshold, red at a selected warning threshold.

@@ -104,6 +104,10 @@ enum MenuBarDisplayMode: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
+enum MiniDisplay {
+    static let storageKey = "thermalatlas.miniDisplayVisible"
+}
+
 struct TemperatureReading: Identifiable, Sendable {
     let kind: SensorKind
     let sourceIdentifier: String?

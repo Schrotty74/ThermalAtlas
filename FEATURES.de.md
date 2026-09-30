@@ -38,6 +38,7 @@ Diese Seite beschreibt die Funktionen dieses Builds ausführlich. Installation u
 ## Verlauf, Warnungen und Export
 
 - Öffnet von jeder Temperaturkarte einen lokalen Verlauf für 1, 6 oder 24 Stunden.
+- Zeigt beim Anklicken oder Ziehen im Graphen Uhrzeit und Minutenmittelwert des nächsten aufgezeichneten Punktes.
 - Speichert nur lokale Minutenmittelwerte für höchstens 24 Stunden; vorübergehend gehaltene GPU-Werte werden nicht als neue Messung aufgezeichnet.
 - Bietet getrennte Warnschwellen für CPU, GPU, interne SSD und externe SSDs. CPU-/GPU-Warnungen verwenden den gemessenen Hotspot; SSD-Warnungen die angezeigte Temperatur. Eine Mitteilung benötigt mindestens 60 Sekunden über der Schwelle und wird erst nach einer Abkühlung erneut gesendet.
 - Exportiert einen kopierbaren aktuellen Snapshot, einen kopierbaren Diagnosebericht mit Mac-Modell, macOS-Version, Chipbezeichnung und Sensorstatus oder lokalen Verlauf plus aktuellen Snapshot als CSV; CSV entsteht erst nach der Auswahl eines Speicherorts.
@@ -45,6 +46,8 @@ Diese Seite beschreibt die Funktionen dieses Builds ausführlich. Installation u
 ## Oberfläche und Anzeige
 
 - Bietet Standard- und Kompaktgröße für das Fenster; Kompakt ist rund 40 % schmaler und hält die Bedienelemente lesbar.
+- Bietet zusätzlich eine verschiebbare Mini-Anzeige der gewählten Temperaturen. Rechtsklick öffnet Standard und Kompakt; der Modus wird lokal gespeichert.
+- Mit „Immer im Vordergrund“ kann die Mini-Anzeige andere Vollbildbereiche nutzen. Die Sichtbarkeit über einzelnen Vollbildspielen ist noch zu prüfen.
 - Lässt CPU-, GPU-, interne SSD- und externe SSD-Gruppen für Popover und Menüleiste wählen.
 - Bietet Menüleistenmodi für **Alle Werte** oder **Nur Symbol**.
 - Trennt CPU-, GPU- und SSD-Werte im Modus **Alle Werte** farblich und ergänzt eine kontrastreiche Statusfläche: grün im Normalbereich, gelb nahe einer Schwelle und rot ab der gewählten Warnschwelle.

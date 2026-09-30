@@ -14,7 +14,7 @@
 📘 **[Benutzerhandbuch (PDF)](Documentation/ThermalAtlas-Handbuch-DE.pdf)** – Oberfläche, Buttons, Sensoren, Themes, Installation und Datenschutz ausführlich erklärt.
 
 > [!IMPORTANT]
-> **ThermalAtlas v1.1.0 ist die aktuelle stabile Veröffentlichung.** Der Branch `main` enthält den finalen Quellstand. Die neuen Funktionen der Beta 1.2.0-beta.3 stehen im [`beta`-Branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
+> **ThermalAtlas v1.1.0 ist die aktuelle stabile Veröffentlichung.** Der Branch `main` enthält den finalen Quellstand. Die neuen Funktionen der Beta 1.2.0-beta.4 stehen im [`beta`-Branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
 
 ## Überblick
 
@@ -31,7 +31,8 @@ Weder Administrator- noch Root-Rechte sind nötig. ThermalAtlas verfolgt einen r
 - Zeigt SMART-Status und verbleibende SSD-Gesundheit, sobald macOS diese Werte bereitstellt.
 - Trennt schnellen, rein lesenden Systemkontext für CPU-Last, Lüfterdrehzahlen und belegten Arbeitsspeicher von der Temperaturüberwachung.
 - Führt lokale Temperaturverläufe, bietet optionale Temperaturwarnungen und exportiert Snapshot oder CSV nur auf Wunsch.
-- Bietet Standard- und Kompaktansicht, wählbare sichtbare Sensorgruppen sowie Menüleistenmodi für alle Werte oder nur das Symbol.
+- Bietet Standard, Kompakt und eine verschiebbare Mini-Anzeige sowie wählbare Sensorgruppen und Menüleistenmodi.
+- Zeigt beim Anklicken oder Ziehen im Temperaturgraphen Uhrzeit und Minutenmittelwert des gewählten Punktes.
 - Öffnet über das Thermometer im Kopf lokale Systeminformationen mit dem thermischen macOS-Zustand und bietet **Immer im Vordergrund** sowie optional **Bei Anmeldung starten**.
 - Enthält vier native Themes und eine lokale Sprachwahl zwischen Englisch und Deutsch.
 - Nutzt defensiven Apple-Silicon-Sensorzugriff und getrennte Laufwerkszyklen, damit langsame Laufwerksabfragen CPU-/GPU-Temperaturen nicht verzögern.
@@ -92,7 +93,7 @@ Veröffentlichte Builds werden lokal ad-hoc signiert. Ein Build veröffentlicht 
 
 ## Datenschutz, Datenverarbeitung und Sicherheit
 
-ThermalAtlas liest lokale Apple-Silicon-SMC-Temperaturen, lokale Laufwerksmetadaten, SMART-Temperaturen, CPU-Last, Lüfterdrehzahlen, belegten Arbeitsspeicher, Stromquelle/Akku und Energiesparmodus nur dann, wenn macOS sie bereitstellt. Die Systeminformationen lesen die angezeigten Werte und den thermischen Zustand gezielt lokal ab; Seriennummern und UUIDs werden nicht abgefragt. Lokal gespeichert werden Anzeigeneinstellungen einschließlich „Immer im Vordergrund“, Warnschwellen und lokale Temperatur-Minutenmittelwerte für höchstens 24 Stunden in `UserDefaults`; Systemkontext und Systeminformationen werden nur angezeigt. Die App enthält keine Hintergrundnetzwerkfunktionen, Telemetrie, Analyse-Dienste, Konten, Cloud-Synchronisation, Werbe-SDKs oder Drittanbieter-Abhängigkeiten. Ein Diagnosebericht oder CSV-Export entsteht nur nach einer ausdrücklichen Auswahl. Die optionalen Menüeinträge GitHub, Homepage und Handbücher öffnen die gewählte öffentliche Seite nur nach einem Klick im Standardbrowser.
+ThermalAtlas liest lokale Apple-Silicon-SMC-Temperaturen, lokale Laufwerksmetadaten, SMART-Temperaturen, CPU-Last, Lüfterdrehzahlen, belegten Arbeitsspeicher, Stromquelle/Akku und Energiesparmodus nur dann, wenn macOS sie bereitstellt. Die Systeminformationen lesen die angezeigten Werte und den thermischen Zustand gezielt lokal ab; Seriennummern und UUIDs werden nicht abgefragt. Lokal gespeichert werden Anzeigeneinstellungen einschließlich Mini-Anzeige und „Immer im Vordergrund“, Warnschwellen und lokale Temperatur-Minutenmittelwerte für höchstens 24 Stunden in `UserDefaults`; Systemkontext und Systeminformationen werden nur angezeigt. Die App enthält keine Hintergrundnetzwerkfunktionen, Telemetrie, Analyse-Dienste, Konten, Cloud-Synchronisation, Werbe-SDKs oder Drittanbieter-Abhängigkeiten. Ein Diagnosebericht oder CSV-Export entsteht nur nach einer ausdrücklichen Auswahl. Die optionalen Menüeinträge GitHub, Homepage und Handbücher öffnen die gewählte öffentliche Seite nur nach einem Klick im Standardbrowser.
 
 Siehe [Datenschutzbericht](PRIVACY.de.md), [Privacy report](PRIVACY.md) und die [Sicherheitsprüfung](SECURITY.md).
 

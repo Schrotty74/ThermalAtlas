@@ -13,7 +13,7 @@ ThermalAtlas is a local-only temperature display. It does not collect, transmit,
 
 ## Storage
 
-Local `UserDefaults` stores the selected theme, Scan Refresh interval, display language, visible sensor groups, menu-bar display mode, window size, always-on-top choice, and temperature-alert settings. The optional Start at Login registration is managed by macOS through `SMAppService`, not stored in `UserDefaults`. ThermalAtlas also stores per-sensor, minute-averaged temperature history for no more than 24 hours so it can draw the in-app chart. Each stored history point contains only a local sensor identifier, timestamp, average temperature, and sample count. CPU load, fan speeds, memory use, power source/battery, Low Power Mode, and System Information are displayed but not stored. Dev, Beta, and Final have separate bundle identifiers, settings, and caches.
+Local `UserDefaults` stores the selected theme, Scan Refresh interval, display language, visible sensor groups, menu-bar display mode, window size, Mini Display mode, always-on-top choice, and temperature-alert settings. The optional Start at Login registration is managed by macOS through `SMAppService`, not stored in `UserDefaults`. ThermalAtlas also stores per-sensor, minute-averaged temperature history for no more than 24 hours so it can draw the in-app chart. Each stored history point contains only a local sensor identifier, timestamp, average temperature, and sample count. CPU load, fan speeds, memory use, power source/battery, Low Power Mode, and System Information are displayed but not stored. Dev, Beta, and Final have separate bundle identifiers, settings, and caches.
 
 ## Network and system changes
 

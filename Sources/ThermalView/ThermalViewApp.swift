@@ -21,6 +21,9 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
     private var statusItem: NSStatusItem?
     private var statusRefreshTimer: Timer?
     private var mainPanel: NSPanel?
+    private var miniPanel: NSPanel?
+    private var miniImageView: NSImageView?
+    private var miniControlsView: NSView?
 
     override init() {
         let savedInterval = UserDefaults.standard.object(forKey: "thermalatlas.refreshInterval") as? Double
@@ -36,6 +39,19 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
         statusItem.button?.toolTip = "ThermalAtlas"
         self.statusItem = statusItem
         refreshStatusItem()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateMiniDisplayVisibility),
+            name: .thermalAtlasMiniDisplayVisibilityChanged,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateMiniDisplayAlwaysOnTop),
+            name: .thermalAtlasMiniAlwaysOnTopChanged,
+            object: nil
+        )
+        updateMiniDisplayVisibility()
 
         statusRefreshTimer = Timer.scheduledTimer(
             timeInterval: 1,
@@ -45,11 +61,15 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
             repeats: true
         )
         hideSettingsWindow()
-        showMainWindow()
+        if !UserDefaults.standard.bool(forKey: MiniDisplay.storageKey) {
+            showMainWindow()
+        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         statusRefreshTimer?.invalidate()
+        NotificationCenter.default.removeObserver(self, name: .thermalAtlasMiniDisplayVisibilityChanged, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .thermalAtlasMiniAlwaysOnTopChanged, object: nil)
     }
 
     @objc private func showMainWindow() {
@@ -77,12 +97,14 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
             externalSSDThreshold: defaults.object(forKey: TemperatureAlertSettings.externalSSDThresholdKey) as? Double ?? TemperatureAlertSettings.defaultThreshold(for: .externalSSD),
             language: AppLanguage(rawValue: defaults.string(forKey: "thermalatlas.language") ?? "") ?? .defaultLanguage
         )
+        let status = MenuBarTemperatureStatus.from(readings: readings, configuration: configuration)
         button.image = displayMode == .symbolOnly
             ? MenuBarStatusImage.symbolOnly()
             : MenuBarStatusImage.make(
                 readings: readings,
-                status: MenuBarTemperatureStatus.from(readings: readings, configuration: configuration)
+                status: status
             )
+        updateMiniDisplay(readings: readings, status: status)
     }
 
     private func hideSettingsWindow() {
@@ -121,6 +143,164 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
         mainPanel = panel
         return panel
     }
+
+    @objc private func updateMiniDisplayVisibility() {
+        if UserDefaults.standard.bool(forKey: MiniDisplay.storageKey) {
+            let panel = miniPanel ?? makeMiniPanel()
+            updateMiniDisplayAlwaysOnTop()
+            mainPanel?.orderOut(nil)
+            panel.orderFrontRegardless()
+            refreshStatusItem()
+        } else {
+            miniPanel?.orderOut(nil)
+            hideMiniControls()
+            showMainWindow()
+        }
+    }
+
+    private func makeMiniPanel() -> NSPanel {
+        let imageView = DraggableMiniImageView(frame: .zero)
+        imageView.imageScaling = .scaleNone
+        imageView.imageAlignment = .alignCenter
+        imageView.onRightClick = { [weak self] in self?.toggleMiniModePanel() }
+
+        let panel = NSPanel(
+            contentRect: NSRect(x: 0, y: 0, width: 180, height: 32),
+            styleMask: [.borderless, .nonactivatingPanel],
+            backing: .buffered,
+            defer: false
+        )
+        panel.isOpaque = false
+        panel.backgroundColor = .clear
+        panel.hasShadow = true
+        panel.hidesOnDeactivate = false
+        panel.isMovableByWindowBackground = true
+        panel.contentView = DraggableMiniContentView()
+        panel.contentView?.addSubview(imageView)
+        panel.center()
+        miniPanel = panel
+        miniImageView = imageView
+        return panel
+    }
+
+    @objc private func updateMiniDisplayAlwaysOnTop() {
+        guard let panel = miniPanel else { return }
+        if UserDefaults.standard.bool(forKey: "thermalatlas.alwaysOnTop") {
+            panel.collectionBehavior = [
+                .canJoinAllSpaces,
+                .canJoinAllApplications,
+                .fullScreenAuxiliary,
+                .stationary
+            ]
+            panel.level = .screenSaver
+            if panel.isVisible { panel.orderFrontRegardless() }
+        } else {
+            panel.collectionBehavior = []
+            panel.level = .floating
+        }
+    }
+
+    private func toggleMiniModePanel() {
+        guard let panel = miniPanel, let imageView = miniImageView else { return }
+        if miniControlsView != nil {
+            hideMiniControls()
+            layoutMiniPanel(panel: panel, imageView: imageView)
+            return
+        }
+
+        let language = AppLanguage(
+            rawValue: UserDefaults.standard.string(forKey: "thermalatlas.language") ?? ""
+        ) ?? .defaultLanguage
+        let contentView = NSVisualEffectView()
+        contentView.material = .popover
+        contentView.blendingMode = .withinWindow
+        contentView.state = .active
+        contentView.wantsLayer = true
+        contentView.layer?.cornerRadius = 9
+        contentView.layer?.masksToBounds = true
+
+        let title = NSTextField(labelWithString: language.windowSizeMenuTitle)
+        title.font = .systemFont(ofSize: 12, weight: .semibold)
+        title.frame = NSRect(x: 10, y: 64, width: 200, height: 18)
+        contentView.addSubview(title)
+
+        let standardButton = NSButton(title: language.standardWindowSizeTitle, target: self, action: #selector(selectStandardWindowSize))
+        standardButton.bezelStyle = .rounded
+        standardButton.frame = NSRect(x: 10, y: 34, width: 200, height: 24)
+        contentView.addSubview(standardButton)
+
+        let compactButton = NSButton(title: language.compactWindowSizeTitle, target: self, action: #selector(selectCompactWindowSize))
+        compactButton.bezelStyle = .rounded
+        compactButton.frame = NSRect(x: 10, y: 6, width: 200, height: 24)
+        contentView.addSubview(compactButton)
+        panel.contentView?.addSubview(contentView)
+        miniControlsView = contentView
+        layoutMiniPanel(panel: panel, imageView: imageView)
+    }
+
+    @objc private func selectStandardWindowSize() {
+        let defaults = UserDefaults.standard
+        defaults.set(false, forKey: "thermalatlas.compactPopover")
+        defaults.set(false, forKey: MiniDisplay.storageKey)
+        hideMiniControls()
+        updateMiniDisplayVisibility()
+    }
+
+    @objc private func selectCompactWindowSize() {
+        let defaults = UserDefaults.standard
+        defaults.set(true, forKey: "thermalatlas.compactPopover")
+        defaults.set(false, forKey: MiniDisplay.storageKey)
+        hideMiniControls()
+        updateMiniDisplayVisibility()
+    }
+
+    private func updateMiniDisplay(readings: [TemperatureReading], status: MenuBarTemperatureStatus) {
+        guard let panel = miniPanel, let imageView = miniImageView else { return }
+        let image = MenuBarStatusImage.make(readings: readings, status: status)
+        imageView.image = image
+        layoutMiniPanel(panel: panel, imageView: imageView)
+    }
+
+    private func layoutMiniPanel(panel: NSPanel, imageView: NSImageView) {
+        let imageSize = imageView.image?.size ?? .zero
+        let controlsHeight: CGFloat = miniControlsView == nil ? 0 : 92
+        let contentSize = NSSize(
+            width: max(ceil(imageSize.width) + 12, miniControlsView == nil ? 0 : 220),
+            height: ceil(imageSize.height) + 12 + controlsHeight
+        )
+        imageView.frame = NSRect(
+            x: 6,
+            y: controlsHeight + 6,
+            width: imageSize.width,
+            height: imageSize.height
+        )
+        miniControlsView?.frame = NSRect(x: 6, y: 6, width: contentSize.width - 12, height: controlsHeight - 6)
+        panel.setContentSize(contentSize)
+    }
+
+    private func hideMiniControls() {
+        miniControlsView?.removeFromSuperview()
+        miniControlsView = nil
+    }
+}
+
+extension Notification.Name {
+    static let thermalAtlasMiniDisplayVisibilityChanged = Notification.Name("thermalAtlasMiniDisplayVisibilityChanged")
+    static let thermalAtlasMiniAlwaysOnTopChanged = Notification.Name("thermalAtlasMiniAlwaysOnTopChanged")
+}
+
+private final class DraggableMiniContentView: NSView {
+    override var mouseDownCanMoveWindow: Bool { true }
+}
+
+private final class DraggableMiniImageView: NSImageView {
+    var onRightClick: (() -> Void)?
+
+    override var mouseDownCanMoveWindow: Bool { true }
+
+    override func rightMouseDown(with event: NSEvent) {
+        onRightClick?()
+    }
 }
 
 private struct ThermalAtlasWindowContent: View {
@@ -131,6 +311,7 @@ private struct ThermalAtlasWindowContent: View {
     @AppStorage(SensorVisibility.storageKey) private var visibleSensorsRawValue = SensorVisibility.defaultStorageValue
     @AppStorage(MenuBarDisplayMode.storageKey) private var menuBarDisplayModeRawValue = MenuBarDisplayMode.defaultMode.rawValue
     @AppStorage("thermalatlas.compactPopover") private var compactPopover = false
+    @AppStorage(MiniDisplay.storageKey) private var miniDisplayVisible = false
     @AppStorage("thermalatlas.alwaysOnTop") private var alwaysOnTop = false
     @AppStorage(TemperatureAlertSettings.enabledKey) private var alertsEnabled = false
     @AppStorage(TemperatureAlertSettings.cpuThresholdKey) private var cpuAlertThreshold = TemperatureAlertSettings.defaultThreshold(for: .cpu)
@@ -179,6 +360,7 @@ private struct ThermalAtlasWindowContent: View {
             visibleSensorKinds: selectedVisibleSensorKinds,
             menuBarDisplayMode: selectedMenuBarDisplayMode,
             compactPopover: $compactPopover,
+            miniDisplayVisible: $miniDisplayVisible,
             alwaysOnTop: $alwaysOnTop,
             alertsEnabled: $alertsEnabled,
             cpuAlertThreshold: $cpuAlertThreshold,

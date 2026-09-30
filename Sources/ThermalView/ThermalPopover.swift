@@ -43,6 +43,7 @@ struct ThermalPopover: View {
     @Binding var visibleSensorKinds: Set<SensorKind>
     @Binding var menuBarDisplayMode: MenuBarDisplayMode
     @Binding var compactPopover: Bool
+    @Binding var miniDisplayVisible: Bool
     @Binding var alwaysOnTop: Bool
     @Binding var alertsEnabled: Bool
     @Binding var cpuAlertThreshold: Double
@@ -135,8 +136,12 @@ struct ThermalPopover: View {
         .onChange(of: compactPopover) { _, isCompact in
             PopoverWindowCoordinator.adjustForCompactMode(isCompact)
         }
+        .onChange(of: miniDisplayVisible) { _, _ in
+            NotificationCenter.default.post(name: .thermalAtlasMiniDisplayVisibilityChanged, object: nil)
+        }
         .onChange(of: alwaysOnTop) { _, isEnabled in
             PopoverWindowCoordinator.setAlwaysOnTop(isEnabled)
+            NotificationCenter.default.post(name: .thermalAtlasMiniAlwaysOnTopChanged, object: nil)
         }
         .onChange(of: alertConfiguration) { _, configuration in
             service.setAlertConfiguration(configuration)
@@ -291,12 +296,25 @@ struct ThermalPopover: View {
 
     private var windowSizeMenu: some View {
         Menu(selectedLanguage.windowSizeMenuTitle) {
-            Button { compactPopover = false } label: {
+            Button {
+                compactPopover = false
+                miniDisplayVisible = false
+            } label: {
                 Label(selectedLanguage.standardWindowSizeTitle, systemImage: compactPopover ? "rectangle" : "checkmark")
             }
             .menuActionDismissBehavior(.enabled)
-            Button { compactPopover = true } label: {
+            Button {
+                compactPopover = true
+                miniDisplayVisible = false
+            } label: {
                 Label(selectedLanguage.compactWindowSizeTitle, systemImage: compactPopover ? "checkmark" : "rectangle.compress.vertical")
+            }
+            .menuActionDismissBehavior(.enabled)
+            Button { miniDisplayVisible.toggle() } label: {
+                Label(
+                    selectedLanguage.miniDisplayTitle,
+                    systemImage: miniDisplayVisible ? "checkmark" : "rectangle"
+                )
             }
             .menuActionDismissBehavior(.enabled)
         }
@@ -1269,6 +1287,11 @@ private struct TemperatureHistoryChart: View {
     let palette: ThermalThemePalette
     let language: AppLanguage
     let compact: Bool
+    @State private var selectedPointDate: Date?
+
+    private var selectedPoint: TemperatureHistoryPoint? {
+        points.first { $0.date == selectedPointDate }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: compact ? 4 : 6) {
@@ -1308,6 +1331,17 @@ private struct TemperatureHistoryChart: View {
                     RuleMark(y: .value("Warning threshold", threshold))
                         .foregroundStyle(.orange.opacity(0.65))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                    if let selectedPoint {
+                        RuleMark(x: .value("Selected time", selectedPoint.date))
+                            .foregroundStyle(palette.title.opacity(0.55))
+                            .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                        PointMark(
+                            x: .value("Selected time", selectedPoint.date),
+                            y: .value("Selected temperature", selectedPoint.averageTemperature)
+                        )
+                        .foregroundStyle(componentColor)
+                        .symbolSize(compact ? 36 : 50)
+                    }
                 }
                 .chartXAxis {
                     AxisMarks(values: .automatic(desiredCount: 3)) { _ in
@@ -1326,14 +1360,41 @@ private struct TemperatureHistoryChart: View {
                     }
                 }
                 .chartLegend(.hidden)
+                .chartOverlay { proxy in
+                    GeometryReader { geometry in
+                        Rectangle()
+                            .fill(.clear)
+                            .contentShape(Rectangle())
+                            .gesture(
+                                DragGesture(minimumDistance: 0)
+                                    .onChanged { gesture in
+                                        guard let plotFrame = proxy.plotFrame else { return }
+                                        let plot = geometry[plotFrame]
+                                        let x = gesture.location.x - plot.origin.x
+                                        guard x >= 0, x <= plot.width,
+                                              let date: Date = proxy.value(atX: x) else { return }
+                                        selectedPointDate = points.min {
+                                            abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date))
+                                        }?.date
+                                    }
+                            )
+                    }
+                }
                 .frame(height: compact ? 72 : 96)
             }
 
-            Text(language.historyHint)
+            Text(selectedPoint.map { point in
+                let time = point.date.formatted(.dateTime.hour().minute().locale(language.locale))
+                let temperature = point.averageTemperature.formatted(.number.precision(.fractionLength(1)).locale(language.locale))
+                let average = language == .german ? "Ø" : "Avg."
+                return "\(time) · \(average) \(temperature) °C"
+            } ?? language.historyHint)
                 .font(.caption2)
-                .foregroundStyle(palette.secondary.opacity(0.8))
+                .foregroundStyle(selectedPoint == nil ? palette.secondary.opacity(0.8) : palette.title)
+                .monospacedDigit()
         }
         .padding(.top, compact ? 1 : 2)
+        .onChange(of: range) { _, _ in selectedPointDate = nil }
     }
 
     private var historyRangePicker: some View {

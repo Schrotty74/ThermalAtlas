@@ -98,6 +98,7 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var windowSizeMenuTitle: String { self == .english ? "Window Size" : "Fenstergröße" }
     var standardWindowSizeTitle: String { self == .english ? "Standard" : "Standard" }
     var compactWindowSizeTitle: String { self == .english ? "Compact (about 40% smaller)" : "Kompakt (ca. 40 % kleiner)" }
+    var miniDisplayTitle: String { self == .english ? "Mini Display" : "Mini-Anzeige" }
     var alwaysOnTopTitle: String { self == .english ? "Always on Top" : "Immer im Vordergrund" }
     var languageMenuTitle: String { self == .english ? "Language" : "Sprache" }
     var startAtLoginMenuTitle: String { self == .english ? "Start at Login" : "Bei Anmeldung starten" }
