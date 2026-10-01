@@ -2,6 +2,22 @@
 
 All notable user-visible changes are documented here in English. Development builds remain local; public prereleases are announced through GitHub Releases.
 
+## 1.2.0-beta.5
+
+### Added
+
+- App Updates in the footer menu: check GitHub for newer Final and Beta releases manually, or enable daily, weekly or monthly checks. Automatic checks are off by default.
+- Update results show the installed version, the last successful check and links to newer releases. Each new release is reported automatically once; download and installation remain manual.
+
+### Privacy
+
+- Update checks use HTTPS without stored cookies or credentials. No sensor, drive, device or installed-version data is sent; GitHub receives the connection IP address. Monitoring continues to work offline.
+
+### Documentation
+
+- Updated English and German manuals with the App Updates screenshot, interval settings, version comparisons and privacy details. Both PDFs now have thirteen pages.
+- Completed the bilingual README and feature overview with update checks, icon appearance variants and Reduce Transparency support.
+
 ## 1.2.0-beta.4
 
 ### Added

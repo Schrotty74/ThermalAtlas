@@ -40,8 +40,16 @@ This page lists the features in this build. For installation and everyday use, s
 - Opens a local 1-, 6-, or 24-hour temperature history from every temperature card.
 - Shows the nearest recorded point’s time and minute-average temperature when you click or drag in the chart.
 - Stores only local per-minute averages for up to 24 hours; temporarily retained GPU readings are not recorded as new measurements.
-- Provides separate CPU, GPU, internal-SSD, and external-SSD alert thresholds. CPU/GPU alerts use the measured Hotspot; SSD alerts use the displayed temperature. A notification needs at least 60 seconds above the threshold and is sent again only after cooling down.
+- Provides separate CPU, GPU, internal-SSD, and external-SSD alert thresholds. CPU/GPU alerts use the measured Hotspot; SSD alerts use the displayed temperature. A notification needs at least 60 seconds at or above the threshold and is sent again only after cooling down.
 - Exports a copyable current snapshot, a copyable diagnostic report with the Mac model, macOS version, chip name and sensor states, or local history plus a current snapshot as CSV; CSV is created only after you choose an export location.
+
+## App Updates
+
+- Checks the official GitHub releases for the highest newer Final and Beta versions; a Final is newer than a Beta with the same version number.
+- Provides Check Now and optional Daily, Weekly or Monthly checks. Automatic checks are off by default and run while the app is running, even with its windows closed.
+- Shows the installed version and last successful check, reports newly found releases once automatically, and opens their GitHub release pages on request.
+- Keeps settings and check state locally. Failed automatic checks retry at most hourly; a failed check does not claim that the app is current.
+- Leaves download and installation to you. Checks send no sensor or device data; GitHub receives the connection IP address.
 
 ## Interface and display
 
@@ -52,17 +60,18 @@ This page lists the features in this build. For installation and everyday use, s
 - Offers menu-bar modes for **All Values** or **Symbol Only**.
 - Colours CPU, GPU and SSD values distinctly in the all-values menu-bar mode and adds a high-contrast status frame: green normally, yellow near a threshold, red at a selected warning threshold.
 - Includes four native themes: Adaptive, Liquid Glass, Aurora, and Ember.
-- Temperature cards expose their history state to VoiceOver and respect the macOS Reduce Motion setting.
+- Temperature cards expose their history state to VoiceOver and respect the macOS Reduce Motion and Reduce Transparency settings.
+- The layered Icon Composer app icon offers Default, Dark and Mono appearances on supported macOS versions, with an older macOS fallback.
 - Starts in English and offers a local German interface choice.
 - Offers an optional macOS **Start at Login** registration.
 - Can keep its window above other apps with the optional **Always on Top** setting.
-- Groups appearance, refresh, display, alerts, language, export, Always on Top, Start at Login, manuals, links, Activity Monitor, and Quit in one footer menu.
+- Groups appearance, refresh, display, alerts, language, export, Always on Top, Start at Login, App Updates, manuals, links, Activity Monitor, and Quit in one footer menu.
 
 ## Privacy and safety
 
 - Reads local sensor and drive information only; it never changes fan, power, or other system settings.
 - Has no accounts, telemetry, analytics, cloud sync, advertising SDKs, or third-party dependencies.
-- Stores selected display preferences, alert thresholds, and local temperature history in `UserDefaults` only.
+- Stores selected display preferences, alert thresholds, update intervals, check timestamps, reported release tags, and local temperature history in `UserDefaults` only.
 - Opens public links or creates exports only after an explicit user action.
 
 ## Hardware compatibility

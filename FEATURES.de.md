@@ -40,8 +40,16 @@ Diese Seite beschreibt die Funktionen dieses Builds ausführlich. Installation u
 - Öffnet von jeder Temperaturkarte einen lokalen Verlauf für 1, 6 oder 24 Stunden.
 - Zeigt beim Anklicken oder Ziehen im Graphen Uhrzeit und Minutenmittelwert des nächsten aufgezeichneten Punktes.
 - Speichert nur lokale Minutenmittelwerte für höchstens 24 Stunden; vorübergehend gehaltene GPU-Werte werden nicht als neue Messung aufgezeichnet.
-- Bietet getrennte Warnschwellen für CPU, GPU, interne SSD und externe SSDs. CPU-/GPU-Warnungen verwenden den gemessenen Hotspot; SSD-Warnungen die angezeigte Temperatur. Eine Mitteilung benötigt mindestens 60 Sekunden über der Schwelle und wird erst nach einer Abkühlung erneut gesendet.
+- Bietet getrennte Warnschwellen für CPU, GPU, interne SSD und externe SSDs. CPU-/GPU-Warnungen verwenden den gemessenen Hotspot; SSD-Warnungen die angezeigte Temperatur. Eine Mitteilung benötigt mindestens 60 Sekunden an oder über der Schwelle und wird erst nach einer Abkühlung erneut gesendet.
 - Exportiert einen kopierbaren aktuellen Snapshot, einen kopierbaren Diagnosebericht mit Mac-Modell, macOS-Version, Chipbezeichnung und Sensorstatus oder lokalen Verlauf plus aktuellen Snapshot als CSV; CSV entsteht erst nach der Auswahl eines Speicherorts.
+
+## App-Updates
+
+- Prüft die offiziellen GitHub-Releases auf die höchste neuere Final- und Beta-Version. Final ist neuer als Beta derselben Versionsnummer.
+- Bietet Jetzt prüfen und optionale tägliche, wöchentliche oder monatliche Prüfungen. Automatische Prüfungen sind zunächst aus und laufen bei geöffneter App auch mit geschlossenen Fenstern.
+- Zeigt installierte Version und letzte erfolgreiche Prüfung, meldet neue Releases automatisch einmal und öffnet auf Wunsch deren GitHub-Release-Seiten.
+- Speichert Auswahl und Prüfstatus lokal. Fehlgeschlagene automatische Prüfungen werden höchstens stündlich wiederholt; ein Fehler bestätigt keinen aktuellen Versionsstand.
+- Überlässt dir Download und Installation. Prüfungen senden keine Sensor- oder Gerätedaten; GitHub erhält die IP-Adresse der Verbindung.
 
 ## Oberfläche und Anzeige
 
@@ -52,17 +60,18 @@ Diese Seite beschreibt die Funktionen dieses Builds ausführlich. Installation u
 - Bietet Menüleistenmodi für **Alle Werte** oder **Nur Symbol**.
 - Trennt CPU-, GPU- und SSD-Werte im Modus **Alle Werte** farblich und ergänzt eine kontrastreiche Statusfläche: grün im Normalbereich, gelb nahe einer Schwelle und rot ab der gewählten Warnschwelle.
 - Enthält vier native Themes: Adaptiv, Liquid Glass, Aurora und Ember.
-- Temperaturkarten geben ihren Verlaufsstatus an VoiceOver aus und beachten die macOS-Einstellung „Bewegung reduzieren“.
+- Temperaturkarten geben ihren Verlaufsstatus an VoiceOver aus und beachten die macOS-Einstellungen „Bewegung reduzieren“ und „Transparenz reduzieren“.
+- Das mehrschichtige Icon-Composer-App-Icon bietet auf unterstützten macOS-Versionen die Erscheinungen Standard, Dunkel und Monochrom sowie einen Fallback für ältere Versionen.
 - Startet auf Englisch und bietet eine lokale deutsche Oberfläche.
 - Bietet eine optionale macOS-Registrierung für **Bei Anmeldung starten**.
 - Kann das Fenster mit der optionalen Einstellung **Immer im Vordergrund** über anderen Apps halten.
-- Bündelt Erscheinungsbild, Aktualisierung, Anzeige, Warnungen, Sprache, Export, Immer im Vordergrund, Bei Anmeldung starten, Handbücher, Links, Aktivitätsanzeige und Beenden in einem Footer-Menü.
+- Bündelt Erscheinungsbild, Aktualisierung, Anzeige, Warnungen, Sprache, Export, Immer im Vordergrund, Bei Anmeldung starten, App-Updates, Handbücher, Links, Aktivitätsanzeige und Beenden in einem Footer-Menü.
 
 ## Datenschutz und Sicherheit
 
 - Liest nur lokale Sensor- und Laufwerksinformationen; Lüfter, Energieoptionen und andere Systemeinstellungen werden niemals verändert.
 - Enthält keine Konten, Telemetrie, Analysedienste, Cloud-Synchronisation, Werbe-SDKs oder Drittanbieter-Abhängigkeiten.
-- Speichert ausschließlich gewählte Anzeigeeinstellungen, Warnschwellen und den lokalen Temperaturverlauf in `UserDefaults`.
+- Speichert ausschließlich gewählte Anzeigeeinstellungen, Warnschwellen, Updateintervalle, Prüfzeitpunkte, gemeldete Release-Tags und den lokalen Temperaturverlauf in `UserDefaults`.
 - Öffnet öffentliche Links oder erstellt Exporte nur nach einer ausdrücklichen Nutzeraktion.
 
 ## Hardware-Kompatibilität

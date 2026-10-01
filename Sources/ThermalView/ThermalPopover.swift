@@ -37,6 +37,7 @@ struct MenuBarLabel: View {
 
 struct ThermalPopover: View {
     let service: SensorService
+    let appUpdateService: AppUpdateService
     @Binding var selectedTheme: ThermalTheme
     @Binding var refreshInterval: Double
     @Binding var selectedLanguage: AppLanguage
@@ -227,6 +228,7 @@ struct ThermalPopover: View {
             exportMenu
             alwaysOnTopMenuItem
             startAtLoginMenu
+            AppUpdatesMenu(service: appUpdateService, language: selectedLanguage)
             Divider()
             Button(action: openGitHub) { Label("GitHub", systemImage: "chevron.left.forwardslash.chevron.right") }
             Button(action: openHomepage) { Label("Homepage", systemImage: "globe") }

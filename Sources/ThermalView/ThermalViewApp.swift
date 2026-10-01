@@ -18,6 +18,7 @@ struct ThermalAtlasApp: App {
 @MainActor
 private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDelegate {
     private let sensorService: SensorService
+    private let appUpdateService = AppUpdateService()
     private var statusItem: NSStatusItem?
     private var statusRefreshTimer: Timer?
     private var mainPanel: NSPanel?
@@ -32,6 +33,8 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        appUpdateService.report = { service, manual in AppUpdateWindow.show(service: service, manual: manual) }
+        appUpdateService.start()
         let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         statusItem.button?.target = self
         statusItem.button?.action = #selector(showMainWindow)
@@ -67,6 +70,7 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        appUpdateService.stop()
         statusRefreshTimer?.invalidate()
         NotificationCenter.default.removeObserver(self, name: .thermalAtlasMiniDisplayVisibilityChanged, object: nil)
         NotificationCenter.default.removeObserver(self, name: .thermalAtlasMiniAlwaysOnTopChanged, object: nil)
@@ -116,7 +120,7 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
     }
 
     private func makeMainPanel() -> NSPanel {
-        let hostingView = NSHostingView(rootView: ThermalAtlasWindowContent(service: sensorService))
+        let hostingView = NSHostingView(rootView: ThermalAtlasWindowContent(service: sensorService, appUpdateService: appUpdateService))
         let panel = NSPanel(
             contentRect: NSRect(x: 0, y: 0, width: 370, height: 480),
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .utilityWindow],
@@ -305,6 +309,7 @@ private final class DraggableMiniImageView: NSImageView {
 
 private struct ThermalAtlasWindowContent: View {
     let service: SensorService
+    let appUpdateService: AppUpdateService
     @AppStorage("thermalatlas.theme") private var themeRawValue = ThermalTheme.classic.rawValue
     @AppStorage("thermalatlas.refreshInterval") private var refreshInterval = RefreshIntervalOption.defaultOption.rawValue
     @AppStorage("thermalatlas.language") private var languageRawValue = AppLanguage.defaultLanguage.rawValue
@@ -354,6 +359,7 @@ private struct ThermalAtlasWindowContent: View {
     var body: some View {
         ThermalPopover(
             service: service,
+            appUpdateService: appUpdateService,
             selectedTheme: selectedTheme,
             refreshInterval: $refreshInterval,
             selectedLanguage: selectedLanguage,

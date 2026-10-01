@@ -195,17 +195,17 @@ def build(language, output):
     # 8 Privacy and use
     base(c, 7, "Datenschutz" if de else "Privacy", t["privacy"], t["privacy_sub"], 8)
     panel(c, 55, 560, W - 110, 105, GREEN,
-          "Nur lokal" if de else "Local only",
+          "Lokale Sensordaten" if de else "Local sensor data",
           "Keine Konten, keine Telemetrie, keine Analyse-Dienste und keine Cloud-Synchronisierung. Der Verlauf bleibt lokal und ist auf 24 Stunden begrenzt." if de else "No accounts, telemetry, analytics services or cloud synchronization. History stays local and is limited to 24 hours.")
     panel(c, 55, 415, W - 110, 105, CYAN,
           "Gespeicherte Auswahl" if de else "Stored choices",
-          "Theme, Aktualisierungsintervall, Sprache, sichtbare Temperaturgruppen, Menüleistenmodus, Fenstergröße, Mini-Anzeige, Immer im Vordergrund, Warnschwellen und Minutenmittelwerte bleiben ausschließlich lokal." if de else "Theme, refresh interval, language, visible temperature groups, menu bar mode, window size, Mini Display, Always on Top, warning thresholds and minute averages remain only locally.")
+          "Theme, Scan Refresh, Sprache, sichtbare Sensorgruppen, Menüleistenmodus, Fenstergröße, Mini-Anzeige, Immer im Vordergrund, Warnschwellen und Minutenmittelwerte bleiben lokal. Das gilt auch für Updateintervalle, Prüfzeitpunkte und bereits gemeldete Release-Tags." if de else "Theme, Scan Refresh, language, visible sensor groups, menu bar mode, window size, Mini Display, Always on Top, warning thresholds and minute averages stay local. So do update intervals, check timestamps and already reported release tags.")
     panel(c, 55, 270, W - 110, 105, ORANGE,
           "Sicherer Umgang" if de else "Safe operation",
           "ThermalAtlas liest Temperaturen, Laufwerksinformationen und Systemkontext. Die App verändert keine Lüfter-, Energie- oder sonstigen Systemeinstellungen." if de else "ThermalAtlas reads temperatures, drive information and system context. It changes no fan, power or other system settings.")
     panel(c, 55, 125, W - 110, 105, VIOLET,
-          "Mehr Informationen" if de else "More information",
-          "README, Datenschutzbericht und Sicherheitsprüfung im offiziellen ThermalAtlas-Repository ergänzen dieses Handbuch." if de else "The README, privacy report and security review in the official ThermalAtlas repository complement this manual.")
+          "GitHub-Updateprüfung" if de else "GitHub update checks",
+          "Optionale Updateprüfungen kontaktieren GitHub über HTTPS. GitHub sieht die IP-Adresse, erhält aber keine Sensor- oder Gerätedaten und keine installierte Version. Automatische Prüfungen sind zunächst aus (Seite 13). README, Datenschutzbericht und Sicherheitsprüfung stehen im offiziellen Repository." if de else "Optional update checks contact GitHub over HTTPS. GitHub sees the IP address but receives no sensor or device data or installed version. Automatic checks are off by default (page 13). The README, privacy report and security review are in the official repository.")
     c.showPage()
 
     # 9 System information
@@ -273,6 +273,24 @@ def build(language, output):
     panel(c, 55, 40, W - 110, 115, VIOLET,
           "Fenster, Links & Beenden" if de else "Windows, links & quit",
           "Ziehe Titelleiste oder Hintergrund zum Verschieben. Schließen verbirgt das Hauptfenster; die Erfassung läuft weiter. Der Menüleisteneintrag öffnet es erneut. GitHub, Homepage und Manuals öffnen Links im Browser. Open Activity Monitor öffnet die Aktivitätsanzeige. Quit ThermalAtlas beendet App und Erfassung." if de else "Drag the title bar or background to move the window. Closing hides the main window; collection continues. The menu bar item opens it again. GitHub, Homepage and Manuals open browser links. Open Activity Monitor opens Activity Monitor. Quit ThermalAtlas stops the app and collection.")
+    c.showPage()
+
+    # 13 App updates
+    base(c, 12, "App-Updates" if de else "App Updates",
+         "Final- und Beta-Versionen prüfen" if de else "Check Final and Beta versions",
+         "Verfügbar ab Beta 1.2.0-beta.5." if de else "Available from Beta 1.2.0-beta.5.", 13)
+    image(c, ASSETS / "ManualScreenshots" / "app-updates-menu.png", 55, 510, W - 110, 165)
+    lines(c, "Englisches Menü; Version, Zeitpunkt und Beta-Tag stammen aus dieser Aufnahme." if de else "English menu; version, timestamp and Beta tag are values from this capture.",
+          55, 491, W - 110, 9, 12, MUTED)
+    panel(c, 55, 370, W - 110, 100, CYAN,
+          "Check Now / Jetzt prüfen" if de else "Check Now",
+          "Öffne App Updates unter Start at Login. Check Now prüft sofort, auch bei Off. Das Ergebnisfenster zeigt neuere Versionen oder meldet, dass keine verfügbar sind. Eine fehlgeschlagene Prüfung ist keine Bestätigung, dass die App aktuell ist." if de else "Open App Updates below Start at Login. Check Now checks immediately, even with Off selected. The result window lists newer versions or reports none available. A failed check does not confirm that the app is up to date.")
+    panel(c, 55, 205, W - 110, 145, GREEN,
+          "Automatic Checks / Automatisch prüfen" if de else "Automatic Checks",
+          "Off ist der Standard. Daily prüft nach einem Kalendertag, Weekly nach sieben Tagen und Monthly nach einem Kalendermonat ab der letzten erfolgreichen Prüfung. Die App muss laufen; Hauptfenster und Mini-Anzeige dürfen geschlossen sein. Überfällige Prüfungen werden nachgeholt. Nach einem Fehler wartet ein automatischer Wiederholungsversuch mindestens eine Stunde. Die Auswahl bleibt lokal gespeichert." if de else "Off is the default. Daily checks after one calendar day, Weekly after seven days and Monthly after one calendar month from the last successful check. The app must be running; its main window and mini strip may be closed. Overdue checks are caught up. After a failure, an automatic retry waits at least one hour. The choice is stored locally.")
+    panel(c, 55, 45, W - 110, 140, VIOLET,
+          "Version, Zeitpunkt und Funde" if de else "Version, time and results",
+          "Installed version nennt die laufende App-Version, Last successful check den letzten erfolgreichen Abruf. Final und Beta öffnen je Kanal die höchste neuere Release-Version. Final ist neuer als Beta derselben Nummer. Neue Funde öffnen ein Hinweisfenster; automatisch wird jedes Release einmal gemeldet. Check Now zeigt es erneut. Download und Installation wählst du selbst. Keine Sensor- oder Gerätedaten werden gesendet; keine gespeicherten Cookies oder Zugangsdaten verwendet." if de else "Installed version identifies the running app. Last successful check shows the last successful GitHub check. Final and Beta open the highest newer release in each channel. A Final is newer than a Beta with the same version number. New finds open a notice window; each release is reported automatically once. Check Now can show it again. You choose download and installation. Checks send no sensor or device data and use no stored cookies or credentials.")
     c.save()
 
 

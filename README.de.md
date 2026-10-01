@@ -5,7 +5,7 @@
 [![Lizenz GPL-3.0](https://img.shields.io/badge/Lizenz-GPL--3.0-3DA639?logo=gnu&logoColor=white)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/Schrotty74/ThermalAtlas?display_name=tag&include_prereleases&sort=semver&label=release)](https://github.com/Schrotty74/ThermalAtlas/releases)
 [![Downloads](https://img.shields.io/github/downloads/Schrotty74/ThermalAtlas/total?label=downloads)](https://github.com/Schrotty74/ThermalAtlas/releases)
-[![Datenschutz: lokal](https://img.shields.io/badge/Datenschutz-Lokal-2EA043?logo=shield&logoColor=white)](PRIVACY.de.md)
+[![Datenschutz: lokale Sensordaten](https://img.shields.io/badge/Datenschutz-Lokale%20Sensoren-2EA043?logo=shield&logoColor=white)](PRIVACY.de.md)
 
 <p align="center"><img src="Resources/IconSource/ThermalAtlas-LiquidGlass.png" width="180" alt="ThermalAtlas Liquid-Glass-Thermometer-Icon für die macOS-Menüleisten-App"></p>
 
@@ -14,13 +14,13 @@
 📘 **[Benutzerhandbuch (PDF)](Documentation/ThermalAtlas-Handbuch-DE.pdf)** – Oberfläche, Buttons, Sensoren, Themes, Installation und Datenschutz ausführlich erklärt.
 
 > [!IMPORTANT]
-> **ThermalAtlas v1.1.0 ist die aktuelle stabile Veröffentlichung.** Der Branch `main` enthält den finalen Quellstand. Die neuen Funktionen der Beta 1.2.0-beta.4 stehen im [`beta`-Branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
+> **ThermalAtlas v1.1.0 ist die aktuelle stabile Veröffentlichung.** Der Branch `main` enthält den finalen Quellstand. Die neuen Funktionen der Beta 1.2.0-beta.5 stehen im [`beta`-Branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
 
 ## Überblick
 
 ThermalAtlas ist eine schlanke, datenschutzfreundliche und lokale macOS-Menüleisten-App für Apple Silicon. Sie zeigt echte Sensorwerte für CPU, GPU, interne SSD und jede erkannte physische externe SSD, sobald macOS sie bereitstellt – ohne Telemetrie, Konten oder Hardwaresteuerung. Die Oberfläche startet auf Englisch und bietet Deutsch als optional wählbare Anzeigesprache.
 
-Die App richtet sich an Menschen, die die thermische Auslastung ihres Macs ohne Hardwaresteuerung prüfen möchten: Sie aktualisiert sich standardmäßig alle zwei Sekunden, zeigt nicht verfügbare Messwerte klar statt sie zu schätzen und verändert niemals Lüfter, Energieoptionen oder Systemeinstellungen. ThermalAtlas funktioniert offline und enthält keine Konten, Telemetrie oder Netzwerkkommunikation.
+Die App richtet sich an Menschen, die die thermische Auslastung ihres Macs ohne Hardwaresteuerung prüfen möchten: Sie aktualisiert sich standardmäßig alle zwei Sekunden, zeigt nicht verfügbare Messwerte klar statt sie zu schätzen und verändert niemals Lüfter, Energieoptionen oder Systemeinstellungen. Die Temperaturanzeige funktioniert offline und enthält keine Konten oder Telemetrie. Optionale Updateprüfungen kontaktieren GitHub.
 
 Weder Administrator- noch Root-Rechte sind nötig. ThermalAtlas verfolgt einen rein lesenden Ansatz und liest ausschließlich von macOS bereitgestellte Sensordaten.
 
@@ -34,6 +34,7 @@ Weder Administrator- noch Root-Rechte sind nötig. ThermalAtlas verfolgt einen r
 - Bietet Standard, Kompakt und eine verschiebbare Mini-Anzeige sowie wählbare Sensorgruppen und Menüleistenmodi.
 - Zeigt beim Anklicken oder Ziehen im Temperaturgraphen Uhrzeit und Minutenmittelwert des gewählten Punktes.
 - Öffnet über das Thermometer im Kopf lokale Systeminformationen mit dem thermischen macOS-Zustand und bietet **Immer im Vordergrund** sowie optional **Bei Anmeldung starten**.
+- Prüft GitHub manuell oder optional täglich, wöchentlich oder monatlich auf neuere Final- und Beta-Versionen. Download und Installation wählst du selbst.
 - Enthält vier native Themes und eine lokale Sprachwahl zwischen Englisch und Deutsch.
 - Nutzt defensiven Apple-Silicon-Sensorzugriff und getrennte Laufwerkszyklen, damit langsame Laufwerksabfragen CPU-/GPU-Temperaturen nicht verzögern.
 - Funktioniert lokal ohne Konten, Telemetrie, Analysedienste, Drittanbieter-Abhängigkeiten oder Hardwaresteuerung.
@@ -65,7 +66,7 @@ Die vollständige, gegliederte [Funktionsübersicht](FEATURES.de.md) enthält al
 
 Lade das stabile macOS-Paket über die [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) herunter. Öffne das DMG und ziehe ThermalAtlas zur Installation auf den `Applications`-Alias.
 
-Nach dem Öffnen der App zeigt das Thermometer in der macOS-Menüleiste die aktuellen Temperaturen an. Das Thermometer im App-Kopf öffnet lokale Systeminformationen: Mac-Modell, Chip, thermischer macOS-Zustand, CPU-/GPU-Kerne, Arbeitsspeicher, interner Speicher sowie macOS-Version und Buildnummer. Die App liest diese Werte gezielt lokal ab; Seriennummern und UUIDs werden nicht abgefragt. Über den Dreipunkt-Button im Footer stehen Themes, Scan Refresh, Anzeigeoptionen, Warnungen, Export, Immer im Vordergrund, Bei Anmeldung starten, die optionale deutsche Oberfläche, Handbücher, Links, Aktivitätsanzeige und Beenden bereit. Ein Klick auf eine Karte öffnet ihren lokalen Temperaturverlauf; das Info-Symbol zeigt die Sensor-Details mit CPU-/GPU-Hotspot und Anzahl gültiger Sensoren. Wenn ein Sensor, eine SSD oder ein externes Gehäuse keinen echten Temperaturwert bereitstellt, zeigt die App `Nicht verfügbar`.
+Nach dem Öffnen der App zeigt das Thermometer in der macOS-Menüleiste die aktuellen Temperaturen an. Das Thermometer im App-Kopf öffnet lokale Systeminformationen: Mac-Modell, Chip, thermischer macOS-Zustand, CPU-/GPU-Kerne, Arbeitsspeicher, interner Speicher sowie macOS-Version und Buildnummer. Die App liest diese Werte gezielt lokal ab; Seriennummern und UUIDs werden nicht abgefragt. Über den Dreipunkt-Button im Footer stehen Themes, Scan Refresh, Anzeigeoptionen, Warnungen, Export, Immer im Vordergrund, Bei Anmeldung starten, App-Updates, die optionale deutsche Oberfläche, Handbücher, Links, Aktivitätsanzeige und Beenden bereit. Ein Klick auf eine Karte öffnet ihren lokalen Temperaturverlauf; das Info-Symbol zeigt die Sensor-Details mit CPU-/GPU-Hotspot und Anzahl gültiger Sensoren. Wenn ein Sensor, eine SSD oder ein externes Gehäuse keinen echten Temperaturwert bereitstellt, zeigt die App `Nicht verfügbar`.
 
 ### Gatekeeper-Bestätigung
 
@@ -93,7 +94,11 @@ Veröffentlichte Builds werden lokal ad-hoc signiert. Ein Build veröffentlicht 
 
 ## Datenschutz, Datenverarbeitung und Sicherheit
 
-ThermalAtlas liest lokale Apple-Silicon-SMC-Temperaturen, lokale Laufwerksmetadaten, SMART-Temperaturen, CPU-Last, Lüfterdrehzahlen, belegten Arbeitsspeicher, Stromquelle/Akku und Energiesparmodus nur dann, wenn macOS sie bereitstellt. Die Systeminformationen lesen die angezeigten Werte und den thermischen Zustand gezielt lokal ab; Seriennummern und UUIDs werden nicht abgefragt. Lokal gespeichert werden Anzeigeneinstellungen einschließlich Mini-Anzeige und „Immer im Vordergrund“, Warnschwellen und lokale Temperatur-Minutenmittelwerte für höchstens 24 Stunden in `UserDefaults`; Systemkontext und Systeminformationen werden nur angezeigt. Die App enthält keine Hintergrundnetzwerkfunktionen, Telemetrie, Analyse-Dienste, Konten, Cloud-Synchronisation, Werbe-SDKs oder Drittanbieter-Abhängigkeiten. Ein Diagnosebericht oder CSV-Export entsteht nur nach einer ausdrücklichen Auswahl. Die optionalen Menüeinträge GitHub, Homepage und Handbücher öffnen die gewählte öffentliche Seite nur nach einem Klick im Standardbrowser.
+ThermalAtlas liest lokale Apple-Silicon-SMC-Temperaturen, lokale Laufwerksmetadaten, SMART-Temperaturen, CPU-Last, Lüfterdrehzahlen, belegten Arbeitsspeicher, Stromquelle/Akku und Energiesparmodus nur dann, wenn macOS sie bereitstellt. Die Systeminformationen lesen die angezeigten Werte und den thermischen Zustand gezielt lokal ab; Seriennummern und UUIDs werden nicht abgefragt. Lokal gespeichert werden Anzeigeneinstellungen einschließlich Mini-Anzeige und „Immer im Vordergrund“, Warnschwellen und lokale Temperatur-Minutenmittelwerte für höchstens 24 Stunden in `UserDefaults`; Systemkontext und Systeminformationen werden nur angezeigt. Die App enthält keine Telemetrie, Analyse-Dienste, Konten, Cloud-Synchronisation, Werbe-SDKs oder Drittanbieter-Abhängigkeiten.
+
+Die optionale Funktion App-Updates prüft GitHub auf neuere Final- und Beta-Versionen. Jetzt prüfen startet sofort; automatische Prüfungen sind zunächst aus und können täglich, wöchentlich oder monatlich erfolgen. Dabei werden keine Sensor-, Laufwerks-, Geräte- oder installierten Versionsdaten gesendet. GitHub erhält die IP-Adresse der Verbindung. Gespeicherte Cookies oder Zugangsdaten werden nicht verwendet; Updates werden nicht automatisch heruntergeladen oder installiert. Updateintervalle, Prüfzeitpunkte und bereits gemeldete Release-Tags werden lokal gespeichert.
+
+Ein Diagnosebericht oder CSV-Export entsteht nur nach einer ausdrücklichen Auswahl. Die optionalen Menüeinträge GitHub, Homepage und Handbücher öffnen die gewählte öffentliche Seite nur nach einem Klick im Standardbrowser.
 
 Siehe [Datenschutzbericht](PRIVACY.de.md), [Privacy report](PRIVACY.md) und die [Sicherheitsprüfung](SECURITY.md).
 

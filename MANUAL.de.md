@@ -1,6 +1,6 @@
 # ThermalAtlas - Benutzerhandbuch
 
-Version: 1.2.0-beta.4
+Version: 1.2.0-beta.5
 
 <p align="center">
   <img src="Resources/IconSource/ThermalAtlas-LiquidGlass.png" width="150" alt="ThermalAtlas App-Icon">
@@ -34,7 +34,7 @@ Die App ist bewusst auf die Anzeige konzentriert. Sie verändert **keine Lüfter
 | Externe SSDs | Jede physische externe SSD wird getrennt angezeigt, wenn macOS sie erkennt |
 | Temperatur-Aktualisierung | CPU/GPU: alle 1, 2, 3 oder 4 Sekunden; Standard: 2 Sekunden. SSDs: jede Minute |
 | Speicherung | Lokale Einstellungen, Warnschwellen und höchstens 24 Stunden minutenweise gemittelter Temperaturverlauf werden lokal gespeichert |
-| Netzwerk | Für die Temperaturanzeige ist keine Netzwerkfunktion nötig |
+| Netzwerk | Temperaturanzeige bleibt lokal; optionale GitHub-Updateprüfungen |
 | Telemetrie | Keine Telemetrie und keine Analyse-Dienste |
 
 ---
@@ -242,6 +242,33 @@ Bei **Mini Display** erlaubt diese Option zusätzlich die Anzeige der Leiste in 
 
 Mit **Start at Login** unter **Always on Top** registrierst du ThermalAtlas bei macOS für den automatischen Start nach der Anmeldung. Die erneute Auswahl deaktiviert diese Registrierung wieder. Es ändert nur den Login-Start der App, niemals Energie-, Leistungs- oder Sensoreinstellungen.
 
+### App Updates (App-Updates)
+
+Wähle **App Updates** unter **Start at Login**, um die offiziellen ThermalAtlas-Releases auf GitHub auf eine neuere Final- oder Beta-Version zu prüfen. Die Option ist in Beta 1.2.0-beta.5 enthalten.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/app-updates-menu.png" width="760" alt="ThermalAtlas-Menü App Updates mit Check Now, Automatic Checks, installierter Version, letzter erfolgreicher Prüfung und Beta-Release; Intervalle Off, Daily, Weekly und Monthly">
+</p>
+
+**Check Now…** prüft GitHub sofort, auch wenn automatische Prüfungen ausgeschaltet sind. Das Ergebnisfenster zeigt neuere Versionen oder meldet, dass keine verfügbar sind. Ist GitHub nicht erreichbar oder schlägt die Anfrage fehl, meldet die App eine fehlgeschlagene Prüfung. Das bedeutet nicht, dass deine Version aktuell ist.
+
+Unter **Automatic Checks** wählst du, wie oft die laufende App prüfen soll:
+
+| Option | Verhalten |
+| --- | --- |
+| Off (Aus) | Standard. Keine automatischen Prüfungen; Check Now bleibt verfügbar |
+| Daily (Täglich) | Prüfung nach einem Kalendertag |
+| Weekly (Wöchentlich) | Prüfung nach sieben Kalendertagen |
+| Monthly (Monatlich) | Prüfung nach einem Kalendermonat |
+
+Das Intervall beginnt mit der letzten erfolgreichen Prüfung, auch einer manuellen. ThermalAtlas prüft, solange die App läuft, auch bei geschlossenem Hauptfenster oder aktiver Mini-Anzeige. Eine überfällige Prüfung folgt nach dem nächsten App-Start oder Timerlauf. Nach einer fehlgeschlagenen Anfrage wartet ein automatischer Wiederholungsversuch mindestens eine Stunde. Die Intervallwahl wird lokal gespeichert.
+
+**Installed version** ist die Version der laufenden App. **Last successful check** zeigt den Zeitpunkt der letzten erfolgreichen GitHub-Prüfung. Version, Zeitpunkt und Beta-Tag im Bild stammen aus dieser Aufnahme und sind keine Aussage über die jeweils neueste Veröffentlichung.
+
+Ein Eintrag **Final** oder **Beta** öffnet die zugehörige GitHub-Release-Seite. ThermalAtlas vergleicht Release-Versionen mit der installierten Version und zeigt pro Kanal die höchste neuere Version. Eine Final ist neuer als eine Beta mit derselben Versionsnummer; ältere oder identische Versionen werden nicht als Update angeboten. Neue Funde erscheinen außerdem in einem eigenen Hinweisfenster. Jede Veröffentlichung wird automatisch nur einmal gemeldet; Check Now kann sie erneut anzeigen. Download und Installation wählst du selbst auf der Release-Seite.
+
+Updateprüfungen kontaktieren GitHub über HTTPS. Sie übertragen keine Sensor-, Laufwerks- oder Gerätedaten und keine installierte Versionsnummer. GitHub erhält die üblichen Verbindungsinformationen einschließlich deiner IP-Adresse. Die App verwendet keine gespeicherten Cookies oder Zugangsdaten. Prüfzeitpunkte und bereits gemeldete Release-Tags werden lokal gespeichert.
+
 ### Language (Sprache)
 
 ThermalAtlas startet standardmäßig auf **Englisch**. Wähle im gemeinsamen Menü **Language** (Sprache) und danach **English** oder **Deutsch**. Die Auswahl ändert die sichtbaren App-Texte und wird lokal gespeichert; Laufwerksnamen und Sensordaten bleiben unverändert.
@@ -263,6 +290,10 @@ Die Begriffe des englischen Standardmenüs entsprechen in der deutschen Oberflä
 | Temperature Alerts | Temperaturwarnungen |
 | Always on Top | Immer im Vordergrund |
 | Start at Login | Bei Anmeldung starten |
+| App Updates | App-Updates |
+| Check Now… | Jetzt prüfen … |
+| Automatic Checks | Automatisch prüfen |
+| Off / Daily / Weekly / Monthly | Aus / Täglich / Wöchentlich / Monatlich |
 | Export | Export |
 | Language | Sprache |
 | Manuals | Handbücher |
@@ -277,7 +308,7 @@ Dasselbe Menü bietet direkte Links zum öffentlichen **GitHub-Repository**, zur
   <img src="Resources/ManualScreenshots/manuals-menu.png" width="324" alt="Englisches ThermalAtlas-Untermenü Manuals mit English Manual und Deutsches Handbuch">
 </p>
 
-Das Öffnen eines öffentlichen Links geschieht nur nach deiner Auswahl und übergibt dessen öffentliche URL an deinen Standardbrowser. Die Temperaturanzeige selbst besitzt keine Netzwerkfunktion.
+Das Öffnen eines öffentlichen Links geschieht nur nach deiner Auswahl und übergibt dessen öffentliche URL an deinen Standardbrowser. Die Temperaturanzeige bleibt lokal. Die getrennte Option App-Updates kontaktiert GitHub wie oben beschrieben.
 
 ---
 
@@ -350,7 +381,7 @@ ThermalAtlas ist datenschutzfreundlich und lokal ausgerichtet:
 - keine Netzwerkfunktion für die Temperaturanzeige
 - keine Drittanbieter-Abhängigkeiten
 
-Lokal gespeichert werden das gewählte Theme, das Scan-Refresh-Intervall, die sichtbaren Temperaturgruppen, der Menüleistenmodus, die Fenstergröße, die Auswahl für Mini Display, die Auswahl für „Immer im Vordergrund“, die Sprachwahl und die Warnschwellen. Zusätzlich bewahrt ThermalAtlas höchstens 24 Stunden lokale, minutenweise gemittelte Temperaturverläufe auf. CPU-Last, Lüfterdrehzahlen, RAM-Belegung, Stromquelle oder Akku und Energiesparmodus werden nur angezeigt und nicht gespeichert. Es gibt keine Konten, Telemetrie, Analyse-Dienste oder Cloud-Synchronisierung. Weitere Details stehen im [Datenschutzbericht](PRIVACY.de.md) und in der [Sicherheitsprüfung](SECURITY.md).
+Lokal gespeichert werden das gewählte Theme, das Scan-Refresh-Intervall, die sichtbaren Temperaturgruppen, der Menüleistenmodus, die Fenstergröße, die Auswahl für Mini Display, die Auswahl für „Immer im Vordergrund“, die Sprachwahl und die Warnschwellen. Updateintervalle, Prüfzeitpunkte und bereits gemeldete Release-Tags werden ebenfalls lokal gespeichert. Optionale Updateprüfungen kontaktieren GitHub ohne Sensor- oder Gerätedaten; GitHub erhält die üblichen Verbindungsinformationen einschließlich deiner IP-Adresse. Zusätzlich bewahrt ThermalAtlas höchstens 24 Stunden lokale, minutenweise gemittelte Temperaturverläufe auf. CPU-Last, Lüfterdrehzahlen, RAM-Belegung, Stromquelle oder Akku und Energiesparmodus werden nur angezeigt und nicht gespeichert. Es gibt keine Konten, Telemetrie, Analyse-Dienste oder Cloud-Synchronisierung. Weitere Details stehen im [Datenschutzbericht](PRIVACY.de.md) und in der [Sicherheitsprüfung](SECURITY.md).
 
 ---
 

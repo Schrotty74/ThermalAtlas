@@ -1,6 +1,6 @@
 # ThermalAtlas - User Manual
 
-Version: 1.2.0-beta.4
+Version: 1.2.0-beta.5
 
 <p align="center">
   <img src="Resources/IconSource/ThermalAtlas-LiquidGlass.png" width="150" alt="ThermalAtlas app icon">
@@ -34,7 +34,7 @@ The app is deliberately focused on monitoring. It changes **no fan control, perf
 | External SSDs | Each physical external SSD is shown separately when macOS identifies it |
 | Temperature refresh | CPU/GPU: every 1, 2, 3 or 4 seconds; default: 2 seconds. SSDs: every minute |
 | Storage | Local settings, warning thresholds and a maximum of 24 hours of minute-averaged temperature history are stored locally |
-| Network | No network feature is required for temperature monitoring |
+| Network | Temperature monitoring stays local; optional GitHub update checks |
 | Telemetry | No telemetry or analytics services |
 
 ---
@@ -242,6 +242,33 @@ For **Mini Display**, enabling this option also lets the strip appear in other a
 
 Choose **Start at Login** below **Always on Top** to let macOS launch ThermalAtlas after you sign in. Choosing it again disables the registration. This changes only the app's own login-item registration; it does not alter any power, performance or sensor setting.
 
+### App Updates
+
+Choose **App Updates** below **Start at Login** to check the official ThermalAtlas GitHub releases for a newer Final or Beta version. This option is included in Beta 1.2.0-beta.5.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/app-updates-menu.png" width="760" alt="ThermalAtlas App Updates menu with Check Now, Automatic Checks, installed version, last successful check and a Beta release; Off, Daily, Weekly and Monthly intervals">
+</p>
+
+**Check Now…** checks GitHub immediately, even when automatic checks are off. The result window shows newer versions or reports that none are available. If GitHub cannot be reached or the request fails, the app reports a failed check; this does not mean your version is up to date.
+
+Under **Automatic Checks**, choose how often the running app should check:
+
+| Option | Behavior |
+| --- | --- |
+| Off | Default. No automatic checks; Check Now remains available |
+| Daily | Check after one calendar day |
+| Weekly | Check after seven calendar days |
+| Monthly | Check after one calendar month |
+
+The interval starts from the last successful check, including a manual check. Checks run while ThermalAtlas is open, even with the main window closed or Mini Display active. An overdue check runs after the next app launch or timer check. After a failed request, automatic retries wait at least one hour. The interval is stored locally.
+
+**Installed version** is the version of the running app. **Last successful check** shows when GitHub was last checked successfully. The version, timestamp and Beta tag in the screenshot are values from that capture, not a statement about the latest release.
+
+A **Final** or **Beta** entry links to the corresponding GitHub release page. ThermalAtlas compares release versions with the installed version and lists the highest newer version in each channel. A Final is newer than a Beta with the same version number; an older or identical version is not offered as an update. New finds also open a separate notice window. Each release is reported automatically only once; Check Now can show it again. Download and installation remain your choice on the release page.
+
+Update checks contact GitHub over HTTPS. They send no sensor, drive or device data and no installed version. GitHub receives normal connection information, including your IP address. The app uses no stored cookies or credentials. Check timestamps and already reported release tags are stored locally.
+
 ### Language
 
 ThermalAtlas starts in **English**. Choose **Language** in the shared menu, then select **English** or **Deutsch**. The selection changes the visible app text and is stored locally; it does not translate drive names or alter sensor data.
@@ -258,7 +285,7 @@ The same menu provides direct links to the public **GitHub repository**, the **T
   <img src="Resources/ManualScreenshots/manuals-menu.png" width="324" alt="ThermalAtlas Manuals submenu with English Manual and Deutsches Handbuch">
 </p>
 
-Opening a public link happens only after you select it and hands its public URL to your default browser. Temperature monitoring itself has no network feature.
+Opening a public link happens only after you select it and hands its public URL to your default browser. Temperature monitoring stays local. The separate App Updates option contacts GitHub as described above.
 
 ---
 
@@ -331,7 +358,7 @@ ThermalAtlas is privacy-friendly and local by design:
 - no network feature required for temperature monitoring
 - no third-party dependencies
 
-Only the selected theme, scan-refresh interval, visible temperature groups, menu bar display mode, window size, Mini Display choice, always-on-top choice, display language and warning thresholds are stored locally. ThermalAtlas also keeps no more than 24 hours of local, minute-averaged temperature history. CPU load, fan speeds, memory usage, power source or battery, and Low Power Mode are displayed only and are not stored. No accounts, telemetry, analytics services or cloud synchronization are involved. See the [privacy report](PRIVACY.md) and [security review](SECURITY.md) for more detail.
+The selected theme, scan-refresh interval, visible temperature groups, menu bar display mode, window size, Mini Display choice, always-on-top choice, display language and warning thresholds are stored locally. Update-check intervals, check timestamps and already reported release tags are also stored locally. Optional update checks contact GitHub without sending sensor or device data; GitHub receives normal connection information, including your IP address. ThermalAtlas also keeps no more than 24 hours of local, minute-averaged temperature history. CPU load, fan speeds, memory usage, power source or battery, and Low Power Mode are displayed only and are not stored. No accounts, telemetry, analytics services or cloud synchronization are involved. See the [privacy report](PRIVACY.md) and [security review](SECURITY.md) for more detail.
 
 ---
 

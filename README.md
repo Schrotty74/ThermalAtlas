@@ -5,7 +5,7 @@
 [![License GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-3DA639?logo=gnu&logoColor=white)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/Schrotty74/ThermalAtlas?display_name=tag&include_prereleases&sort=semver&label=release)](https://github.com/Schrotty74/ThermalAtlas/releases)
 [![Downloads](https://img.shields.io/github/downloads/Schrotty74/ThermalAtlas/total?label=downloads)](https://github.com/Schrotty74/ThermalAtlas/releases)
-[![Privacy: local only](https://img.shields.io/badge/Privacy-Local%20only-2EA043?logo=shield&logoColor=white)](PRIVACY.md)
+[![Privacy: local sensor data](https://img.shields.io/badge/Privacy-Local%20sensors-2EA043?logo=shield&logoColor=white)](PRIVACY.md)
 
 <p align="center"><img src="Resources/IconSource/ThermalAtlas-LiquidGlass.png" width="180" alt="ThermalAtlas Liquid Glass thermometer icon for the macOS menu bar app"></p>
 
@@ -14,13 +14,13 @@
 📘 **[User Manual (PDF)](Documentation/ThermalAtlas-User-Manual-EN.pdf)** – interface, buttons, sensors, themes, installation and privacy explained in detail.
 
 > [!IMPORTANT]
-> **ThermalAtlas v1.1.0 is the current stable release.** The `main` branch contains the final source. New features in Beta 1.2.0-beta.4 are available on the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
+> **ThermalAtlas v1.1.0 is the current stable release.** The `main` branch contains the final source. New features in Beta 1.2.0-beta.5 are available on the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
 
 ## Overview
 
 ThermalAtlas is a lightweight, privacy-friendly, local-first macOS menu bar temperature monitor for Apple silicon. It shows real CPU, GPU, internal SSD, and every detected physical external SSD sensor value whenever macOS exposes it, without telemetry, accounts, or hardware control.
 
-The app is designed for people who want to check Mac thermal conditions without a hardware-control tool: it defaults to a two-second refresh interval, clearly shows unavailable measurements instead of estimating them, and never changes fan, power, or system settings. Its interface defaults to English and includes an optional German display language. ThermalAtlas works offline and has no accounts, analytics, or network communication.
+The app is designed for people who want to check Mac thermal conditions without a hardware-control tool: it defaults to a two-second refresh interval, clearly shows unavailable measurements instead of estimating them, and never changes fan, power, or system settings. Its interface defaults to English and includes an optional German display language. Temperature monitoring works offline and has no accounts or analytics. Optional update checks contact GitHub.
 
 No admin/root access is required. ThermalAtlas uses a read-only approach and only reads sensor data exposed by macOS.
 
@@ -34,6 +34,7 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 - Offers Standard, Compact and a movable Mini Display, selectable sensor groups, and menu-bar modes.
 - Shows the selected point’s time and minute-average temperature when you click or drag in the temperature chart.
 - Opens local System Information with the macOS Thermal State from the header thermometer; offers Always on Top and optional Start at Login registration.
+- Checks GitHub for newer Final and Beta releases manually or, if enabled, daily, weekly or monthly. Download and installation remain your choice.
 - Includes four native themes and a local English/German interface choice.
 - Uses defensive Apple-silicon sensor access and independent drive refresh cycles, so slow drive queries do not delay CPU/GPU temperatures.
 - Works locally without accounts, telemetry, analytics, third-party dependencies, or hardware control.
@@ -65,7 +66,7 @@ See the complete, grouped [feature overview](FEATURES.md).
 
 Download the stable macOS package from [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases). Open the DMG and drag ThermalAtlas to the `Applications` alias to install it.
 
-After opening the app, use the thermometer in the macOS menu bar to view the current temperatures. Select the header thermometer for local System Information: Mac model, chip, macOS Thermal State, CPU/GPU core counts, memory, internal storage, and macOS version and build number. These values come from targeted local queries; serial numbers and UUIDs are not queried. Open the footer ellipsis for themes, Scan Refresh, display options, alerts, export, Always on Top, Start at Login, the optional German interface, manuals, links, Activity Monitor, and Quit. Select a card for its local temperature history; its info button opens Sensor Details, including the CPU/GPU Hotspot and valid sensor count. The app displays `Not available` when a sensor, SSD, or external enclosure does not provide a real temperature.
+After opening the app, use the thermometer in the macOS menu bar to view the current temperatures. Select the header thermometer for local System Information: Mac model, chip, macOS Thermal State, CPU/GPU core counts, memory, internal storage, and macOS version and build number. These values come from targeted local queries; serial numbers and UUIDs are not queried. Open the footer ellipsis for themes, Scan Refresh, display options, alerts, export, Always on Top, Start at Login, App Updates, the optional German interface, manuals, links, Activity Monitor, and Quit. Select a card for its local temperature history; its info button opens Sensor Details, including the CPU/GPU Hotspot and valid sensor count. The app displays `Not available` when a sensor, SSD, or external enclosure does not provide a real temperature.
 
 ### Gatekeeper confirmation
 
@@ -93,7 +94,11 @@ Published builds are ad-hoc signed locally. Building does not publish a release.
 
 ## Privacy, data handling, and security
 
-ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, SMART temperature data, CPU load, fan speeds, used memory, power source/battery, and Low Power Mode only when macOS provides them. System Information reads its displayed values and Thermal State through targeted local queries; serial numbers and UUIDs are not queried. It stores selected display preferences, including Mini Display and Always on Top, alert thresholds, and local per-minute temperature averages for up to 24 hours in local `UserDefaults`; system-context and System Information values are displayed but not stored. The app has no background network features, telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. A diagnostic report or CSV export is created only after you explicitly choose it. Its optional GitHub, Homepage, and manual menu actions open the selected public page in your default browser only after you select them.
+ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, SMART temperature data, CPU load, fan speeds, used memory, power source/battery, and Low Power Mode only when macOS provides them. System Information reads its displayed values and Thermal State through targeted local queries; serial numbers and UUIDs are not queried. It stores selected display preferences, including Mini Display and Always on Top, alert thresholds, and local per-minute temperature averages for up to 24 hours in local `UserDefaults`; system-context and System Information values are displayed but not stored. The app has no telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies.
+
+Optional App Updates checks GitHub for newer Final and Beta releases. Check Now runs immediately; automatic checks are off by default and can be set to daily, weekly or monthly. Checks send no sensor, drive, device or installed-version data. GitHub receives the connection IP address. No stored cookies or credentials are used, and updates are never downloaded or installed automatically. Update intervals, check timestamps and already reported release tags are stored locally.
+
+A diagnostic report or CSV export is created only after you explicitly choose it. Its optional GitHub, Homepage, and manual menu actions open the selected public page in your default browser only after you select them.
 
 See [Privacy report](PRIVACY.md), [Datenschutzbericht](PRIVACY.de.md), and the [security review](SECURITY.md).
 
