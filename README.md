@@ -36,6 +36,7 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 - Opens local System Information with the macOS Thermal State from the header thermometer; offers Always on Top and optional Start at Login registration.
 - Checks GitHub for newer Final and Beta releases manually or, if enabled, daily, weekly or monthly. Download and installation remain your choice.
 - Includes four native themes and a local English/German interface choice.
+- Supports VoiceOver, Reduce Motion and Reduce Transparency, plus Default, Dark and Mono icon appearances on supported macOS versions.
 - Uses defensive Apple-silicon sensor access and independent drive refresh cycles, so slow drive queries do not delay CPU/GPU temperatures.
 - Works locally without accounts, telemetry, analytics, third-party dependencies, or hardware control.
 
