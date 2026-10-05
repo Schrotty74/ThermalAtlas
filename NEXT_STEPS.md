@@ -11,3 +11,5 @@
 - Falls der sporadische GPU-Ausfall erneut auftritt, ihn gezielt in einem Debug-Dev-Lauf erfassen: IOKit-Rückgabecodes und pro GPU-Schlüssel verfügbare Antworten protokollieren, ohne die produktive Anzeige mit erfundenen Ersatzwerten zu verändern. Seit der letzten Änderung am GPU-Fix zeigte der lokale Dev-Lauf durchgehend GPU-Werte.
 
 - Update-Menü und Hinweisfenster in beiden Sprachen manuell prüfen; automatische Prüfintervalle über längere Laufzeiten beobachten. Kalender- und Versionsvergleiche sowie die GitHub-Abfrage werden automatisiert geprüft.
+
+- Öffentlichen Beta-Status im Schrotty74-Profil und Portfolio auf 1.2.0-beta.6 abgleichen; bei der Prüfung direkt nach Veröffentlichung nannten beide noch Beta.5.
