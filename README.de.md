@@ -44,11 +44,17 @@ Die vollständige, gegliederte [Funktionsübersicht](FEATURES.de.md) enthält al
 
 ## Screenshots und Themes
 
-| Adaptiv | Liquid Glass |
+Die adaptiven Ansichten im Hell- und Dunkelmodus zeigen den lokalen Dev-Stand vom 5. Oktober 2026. Die veröffentlichte Beta 1.2.0-beta.5 verwendet noch die bisherige Darstellung. Die Laufwerksnamen sind anonymisiert.
+
+| Adaptiv – Hellmodus | Adaptiv – Dunkelmodus |
 | --- | --- |
-| <img src="Resources/Screenshots/classic.png?v=20260823-monitoring" width="330" alt="Adaptives ThermalAtlas-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> | <img src="Resources/Screenshots/liquid-glass.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Liquid-Glass-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> |
-| Aurora | Ember |
-| <img src="Resources/Screenshots/aurora.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Aurora-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> | <img src="Resources/Screenshots/ember.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Ember-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> |
+| <img src="Resources/Screenshots/classic-light.png?v=20261005-adaptive" width="330" alt="ThermalAtlas Adaptiv Hellmodus"> | <img src="Resources/Screenshots/classic.png?v=20261005-adaptive" width="330" alt="ThermalAtlas Adaptiv Dunkelmodus"> |
+
+| Liquid Glass | Aurora |
+| --- | --- |
+| <img src="Resources/Screenshots/liquid-glass.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Liquid-Glass-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> | <img src="Resources/Screenshots/aurora.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Aurora-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> |
+| Ember | |
+| <img src="Resources/Screenshots/ember.png?v=20260823-monitoring" width="330" alt="ThermalAtlas-Ember-macOS-Theme mit Temperaturkarten und separatem Systemkontext"> | |
 
 | Kompaktansicht |
 | --- |

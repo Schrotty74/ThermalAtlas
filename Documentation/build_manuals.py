@@ -183,13 +183,18 @@ def build(language, output):
 
     # 7 Themes
     base(c, 6, "Darstellung" if de else "Appearance", t["themes"], t["theme_sub"], 7)
-    positions = [(55, 390), (312, 390), (55, 85), (312, 85)]
-    names = ["Adaptiv" if de else "Adaptive", "Liquid Glass", "Aurora", "Ember"]
-    files = ["full-adaptive-fans.png", "full-liquid-glass-fans.png", "full-aurora-fans.png", "full-ember-fans.png"]
-    colors = [CYAN, VIOLET, CYAN, ORANGE]
-    for (x, y), name, filename, color in zip(positions, names, files, colors):
-        panel(c, x, y, 225, 285, color, name)
-        image(c, ASSETS / "ManualScreenshots" / filename, x + 15, y + 12, 195, 245)
+    lines(c, "Adaptiv: Dev-Vorschau vom 5. Oktober 2026. Beta.5 zeigt noch die bisherige Darstellung. Laufwerksnamen anonymisiert." if de else "Adaptive: local Dev preview, 5 October 2026. Beta.5 still uses the previous appearance. Drive names anonymized.",
+          55, 700, W - 110, 9, 12, MUTED)
+    panel(c, 55, 365, W - 110, 310, CYAN, "Adaptiv" if de else "Adaptive")
+    for x, name, filename in [(85, "Hellmodus" if de else "Light", "full-adaptive-light.png"),
+                              (315, "Dunkelmodus" if de else "Dark", "full-adaptive-fans.png")]:
+        lines(c, name, x, 635, 190, 10, 12, MUTED)
+        image(c, ASSETS / "ManualScreenshots" / filename, x, 377, 190, 245)
+    for x, name, filename, color in [(55, "Liquid Glass", "full-liquid-glass-fans.png", VIOLET),
+                                      (222, "Aurora", "full-aurora-fans.png", CYAN),
+                                      (389, "Ember", "full-ember-fans.png", ORANGE)]:
+        panel(c, x, 55, 150, 275, color, name)
+        image(c, ASSETS / "ManualScreenshots" / filename, x + 10, 65, 130, 225)
     c.showPage()
 
     # 8 Privacy and use

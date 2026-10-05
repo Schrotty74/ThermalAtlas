@@ -43,6 +43,8 @@ Die App ist bewusst auf die Anzeige konzentriert. Sie verändert **keine Lüfter
 
 Die Screenshots verwenden Beispielnamen für Laufwerke, Temperaturen und Gesundheitswerte. Anzahl und Namen externer SSD-Karten hängen von der angeschlossenen Hardware ab.
 
+Die adaptiven Ansichten im Hell- und Dunkelmodus zeigen den lokalen Dev-Stand vom 5. Oktober 2026. Die veröffentlichte Beta 1.2.0-beta.5 verwendet noch die bisherige Darstellung. Die Laufwerksnamen sind anonymisiert.
+
 <p align="center">
   <img src="Resources/ManualScreenshots/full-adaptive-fans.png" width="430" alt="ThermalAtlas Adaptiv mit Temperaturkarten und zwei Lüfterdrehzahlen">
 </p>
@@ -145,11 +147,17 @@ Die Auswahl verändert nur die Darstellung, nicht die Messlogik. Sie wird lokal 
 
 Temperaturkarten geben ihre Verlaufsbedienung und deren Zustand über VoiceOver aus. ThermalAtlas berücksichtigt **Bewegung reduzieren** bei Kartenanimationen und beim Öffnen des Verlaufs sowie **Transparenz reduzieren** bei Glasflächen. Im Liquid-Glass-Theme verwendet der Thermometer-Button ab macOS 27 den interaktiven Glasstil des Systems; ältere Versionen zeigen den gewöhnlichen Button.
 
-| Adaptiv | Liquid Glass |
+Die adaptiven Ansichten im Hell- und Dunkelmodus zeigen den lokalen Dev-Stand vom 5. Oktober 2026. Die veröffentlichte Beta 1.2.0-beta.5 verwendet noch die bisherige Darstellung. Die Laufwerksnamen sind anonymisiert.
+
+| Adaptiv – Hellmodus | Adaptiv – Dunkelmodus |
 | --- | --- |
-| <img src="Resources/ManualScreenshots/full-adaptive-fans.png" width="300" alt="ThermalAtlas Theme Adaptiv mit Lüfterdrehzahlen"> | <img src="Resources/ManualScreenshots/full-liquid-glass-fans.png" width="300" alt="ThermalAtlas Theme Liquid Glass mit Lüfterdrehzahlen"> |
-| **Aurora** | **Ember** |
-| <img src="Resources/ManualScreenshots/full-aurora-fans.png" width="300" alt="ThermalAtlas Theme Aurora mit Lüfterdrehzahlen"> | <img src="Resources/ManualScreenshots/full-ember-fans.png" width="300" alt="ThermalAtlas Theme Ember mit Lüfterdrehzahlen"> |
+| <img src="Resources/ManualScreenshots/full-adaptive-light.png" width="300" alt="ThermalAtlas Adaptiv Hellmodus"> | <img src="Resources/ManualScreenshots/full-adaptive-fans.png" width="300" alt="ThermalAtlas Adaptiv Dunkelmodus"> |
+
+| Liquid Glass | Aurora |
+| --- | --- |
+| <img src="Resources/ManualScreenshots/full-liquid-glass-fans.png" width="300" alt="ThermalAtlas Theme Liquid Glass mit Lüfterdrehzahlen"> | <img src="Resources/ManualScreenshots/full-aurora-fans.png" width="300" alt="ThermalAtlas Theme Aurora mit Lüfterdrehzahlen"> |
+| **Ember** | |
+| <img src="Resources/ManualScreenshots/full-ember-fans.png" width="300" alt="ThermalAtlas Theme Ember mit Lüfterdrehzahlen"> | |
 
 ### Scan Refresh (Aktualisierungsintervall)
 

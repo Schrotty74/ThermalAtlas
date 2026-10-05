@@ -43,6 +43,8 @@ The app is deliberately focused on monitoring. It changes **no fan control, perf
 
 The screenshots use sample drive names, temperatures and health figures. The number and names of external SSD cards depend on the connected hardware.
 
+The Adaptive light and dark screenshots preview the local Dev design from 5 October 2026. Published Beta 1.2.0-beta.5 still uses the previous appearance. Drive names are anonymized.
+
 <p align="center">
   <img src="Resources/ManualScreenshots/full-adaptive-fans.png" width="430" alt="ThermalAtlas Adaptive interface with temperature cards and two fan speed readings">
 </p>
@@ -145,11 +147,17 @@ Changing the theme affects appearance only, not sensor logic. The selection is s
 
 Temperature cards announce their history controls and state through VoiceOver. ThermalAtlas follows macOS **Reduce Motion** for card and chart-opening animations and **Reduce Transparency** for glass surfaces. In Liquid Glass on macOS 27 or later, the thermometer button uses the interactive system glass style; earlier versions use the standard button.
 
-| Adaptive | Liquid Glass |
+The Adaptive light and dark screenshots preview the local Dev design from 5 October 2026. Published Beta 1.2.0-beta.5 still uses the previous appearance. Drive names are anonymized.
+
+| Adaptive – Light | Adaptive – Dark |
 | --- | --- |
-| <img src="Resources/ManualScreenshots/full-adaptive-fans.png" width="300" alt="ThermalAtlas Adaptive theme with fan speeds"> | <img src="Resources/ManualScreenshots/full-liquid-glass-fans.png" width="300" alt="ThermalAtlas Liquid Glass theme with fan speeds"> |
-| **Aurora** | **Ember** |
-| <img src="Resources/ManualScreenshots/full-aurora-fans.png" width="300" alt="ThermalAtlas Aurora theme with fan speeds"> | <img src="Resources/ManualScreenshots/full-ember-fans.png" width="300" alt="ThermalAtlas Ember theme with fan speeds"> |
+| <img src="Resources/ManualScreenshots/full-adaptive-light.png" width="300" alt="ThermalAtlas Adaptive Light"> | <img src="Resources/ManualScreenshots/full-adaptive-fans.png" width="300" alt="ThermalAtlas Adaptive Dark"> |
+
+| Liquid Glass | Aurora |
+| --- | --- |
+| <img src="Resources/ManualScreenshots/full-liquid-glass-fans.png" width="300" alt="ThermalAtlas Liquid Glass theme with fan speeds"> | <img src="Resources/ManualScreenshots/full-aurora-fans.png" width="300" alt="ThermalAtlas Aurora theme with fan speeds"> |
+| **Ember** | |
+| <img src="Resources/ManualScreenshots/full-ember-fans.png" width="300" alt="ThermalAtlas Ember theme with fan speeds"> | |
 
 ### Scan Refresh
 

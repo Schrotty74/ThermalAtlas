@@ -44,11 +44,17 @@ See the complete, grouped [feature overview](FEATURES.md).
 
 ## Screenshots and themes
 
-| Adaptive | Liquid Glass |
+The Adaptive light and dark screenshots preview the local Dev design from 5 October 2026. Published Beta 1.2.0-beta.5 still uses the previous appearance. Drive names are anonymized.
+
+| Adaptive – Light | Adaptive – Dark |
 | --- | --- |
-| <img src="Resources/Screenshots/classic.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Adaptive macOS theme showing temperature cards and a separate System Context area"> | <img src="Resources/Screenshots/liquid-glass.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Liquid Glass macOS theme showing temperature cards and a separate System Context area"> |
-| Aurora | Ember |
-| <img src="Resources/Screenshots/aurora.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Aurora macOS theme showing temperature cards and a separate System Context area"> | <img src="Resources/Screenshots/ember.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Ember macOS theme showing temperature cards and a separate System Context area"> |
+| <img src="Resources/Screenshots/classic-light.png?v=20261005-adaptive" width="330" alt="ThermalAtlas Adaptive Light"> | <img src="Resources/Screenshots/classic.png?v=20261005-adaptive" width="330" alt="ThermalAtlas Adaptive Dark"> |
+
+| Liquid Glass | Aurora |
+| --- | --- |
+| <img src="Resources/Screenshots/liquid-glass.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Liquid Glass macOS theme showing temperature cards and a separate System Context area"> | <img src="Resources/Screenshots/aurora.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Aurora macOS theme showing temperature cards and a separate System Context area"> |
+| Ember | |
+| <img src="Resources/Screenshots/ember.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Ember macOS theme showing temperature cards and a separate System Context area"> | |
 
 | Compact view |
 | --- |
