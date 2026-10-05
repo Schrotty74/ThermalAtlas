@@ -1,6 +1,6 @@
 # ThermalAtlas - User Manual
 
-Version: 1.2.0-beta.5
+Version: 1.2.0-beta.6
 
 <p align="center">
   <img src="Resources/IconSource/ThermalAtlas-LiquidGlass.png" width="150" alt="ThermalAtlas app icon">
@@ -43,7 +43,7 @@ The app is deliberately focused on monitoring. It changes **no fan control, perf
 
 The screenshots use sample drive names, temperatures and health figures. The number and names of external SSD cards depend on the connected hardware.
 
-The Adaptive light and dark screenshots preview the local Dev design from 5 October 2026. Published Beta 1.2.0-beta.5 still uses the previous appearance. Drive names are anonymized.
+From Beta 1.2.0-beta.6, Adaptive uses neutral macOS surfaces in light and dark mode. Drive names in the screenshots are anonymized.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/full-adaptive-fans.png" width="430" alt="ThermalAtlas Adaptive interface with temperature cards and two fan speed readings">
@@ -84,7 +84,7 @@ The bottom of the window shows the time of the latest accepted sensor snapshot.
 **System context**
 Below the temperature cards, ThermalAtlas shows CPU load, the actual speed of each readable fan in revolutions per minute (RPM), used memory in relation to installed RAM, power source or battery, and Low Power Mode. On a Mac with two readable fans, the speeds appear separately as Fan 1 and Fan 2. If a fan speed cannot be read, the app does not invent an RPM value. GPU load percentages are no longer displayed; the GPU temperature card remains available.
 
-System Context is separate from the temperature sensors. It refreshes about every 0.5 seconds, independently of the selectable temperature refresh interval. CPU load needs two successive snapshots before it appears. These read-only values are not stored, and ThermalAtlas does not change fan or power settings.
+System Context is separate from the temperature sensors. It refreshes about every 0.5 seconds, independently of the selectable temperature refresh interval. CPU load needs two successive snapshots before it appears. Fan minute averages are stored locally for at most 24 hours; the other context values are displayed only. ThermalAtlas does not change fan or power settings.
 
 Memory status follows the used share of installed RAM: **Normal** below 70%, **Elevated** from 70% to below 85%, and **High** from 85%. This is a memory-usage indicator, not macOS memory pressure.
 
@@ -147,7 +147,7 @@ Changing the theme affects appearance only, not sensor logic. The selection is s
 
 Temperature cards announce their history controls and state through VoiceOver. ThermalAtlas follows macOS **Reduce Motion** for card and chart-opening animations and **Reduce Transparency** for glass surfaces. In Liquid Glass on macOS 27 or later, the thermometer button uses the interactive system glass style; earlier versions use the standard button.
 
-The Adaptive light and dark screenshots preview the local Dev design from 5 October 2026. Published Beta 1.2.0-beta.5 still uses the previous appearance. Drive names are anonymized.
+From Beta 1.2.0-beta.6, Adaptive uses neutral macOS surfaces in light and dark mode. Drive names in the screenshots are anonymized.
 
 | Adaptive – Light | Adaptive – Dark |
 | --- | --- |
@@ -213,13 +213,38 @@ Choose **Menu Bar Display** to decide how much space ThermalAtlas uses in the ma
 
 ### Temperature History
 
-Click a temperature card to open its local **Temperature History**. Choose **1 Hour**, **6 Hours** or **24 Hours**; the orange dashed line marks that sensor group's selected warning threshold. ThermalAtlas stores minute averages for real, readable values only and keeps at most 24 hours. Right after launch, the chart needs two separate minutes before it can draw a line. A temporarily retained GPU value is clearly marked and is not recorded as a new measurement.
+Click a temperature card to open its local **Temperature History**. Choose **1 h**, **3 h**, **6 h**, **12 h** or **24 h**; the orange dashed line marks that sensor group's selected warning threshold. ThermalAtlas stores minute averages for real, readable values only and keeps at most 24 hours. Right after launch, the chart needs two separate minutes before it can draw a line. A temporarily retained GPU value is clearly marked and is not recorded as a new measurement.
 
 Click or drag inside the chart to select the nearest recorded point. A marker shows its position, and the text below shows its time and minute-average temperature. Changing the time range clears the selection. Click elsewhere on the card to close the history. History and CSV use the average temperature; CPU and GPU warning thresholds use the Hotspot when available, so a warning can occur while the plotted average remains below the threshold line.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/temperature-history-card.png" width="430" alt="Illustrative GPU history with sample data, a selected point and warning threshold">
 </p>
+
+### Fan History
+
+Fan History is available from Beta 1.2.0-beta.6. Click a readable fan's RPM value in **System Context** to open its local **Fan History**. The chart opens separately and does not enlarge the main window.
+
+To open the view:
+
+1. Click the ThermalAtlas icon or temperature display in the macOS menu bar to open the main window. If Mini Display is active, first right-click it and choose Standard or Compact.
+2. Find **System Context** below the temperature cards.
+3. Click **Fan** or **Fan 1/2** with its **RPM value**. Each displayed fan opens its own history.
+4. Choose **1 h**, **3 h**, **6 h**, **12 h** or **24 h** at the top. Click outside to close the view.
+
+Initially, the view says “Collecting local history…” until two minute points are available. A single recorded point already provides Min/Max/average. If no fan speed is readable, “Not available” appears and there is no clickable fan value.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/fan-history.png" width="600" alt="ThermalAtlas Fan 1 history with five time ranges and Min, Max and average readings of 1,000 RPM">
+</p>
+
+The screenshot shows **Fan 1** with **1 h** selected. The other buttons select **3 h**, **6 h**, **12 h** or **24 h**; the same five ranges are available for temperature history. The horizontal axis shows time, and the vertical axis shows revolutions per minute (**RPM**). The curve uses one average per recorded minute. A selected hour range limits how far back the chart looks; it does not mean a full hour has already been recorded.
+
+**Min**, **Max** and **Ø** summarize the available minute averages in the selected period. They show the lowest minute average, highest minute average and arithmetic mean of those averages, with each recorded minute given equal weight. They do not show instantaneous RPM peaks. In this capture all three figures round to **1,000 RPM**, and the curve is flat at that display scale. Both visible time labels read **07:29** because the short recorded interval is labelled without seconds.
+
+Click or drag in the graph to select a recorded point and see its time and minute-average RPM. Changing the range clears that selection. Close the popover by clicking outside it. History stays local for at most 24 hours. Missing fan readings do not become zero values; gaps interrupt the curve. A genuinely reported **0 RPM** is a valid stopped-fan reading. ThermalAtlas reads fan speeds and does not control them.
+
+The temperature chart also shows Min, Max and Ø for its minute averages. Sensor Details show the age of the last valid reading; temporarily retained GPU values show their age directly on the card. After the existing 15-second retention limit, the temperature becomes unavailable while the last valid GPU timestamp remains visible in the details.
 
 ### Temperature Alerts
 
@@ -366,7 +391,7 @@ ThermalAtlas is privacy-friendly and local by design:
 - no network feature required for temperature monitoring
 - no third-party dependencies
 
-The selected theme, scan-refresh interval, visible temperature groups, menu bar display mode, window size, Mini Display choice, always-on-top choice, display language and warning thresholds are stored locally. Update-check intervals, check timestamps and already reported release tags are also stored locally. Optional update checks contact GitHub without sending sensor or device data; GitHub receives normal connection information, including your IP address. ThermalAtlas also keeps no more than 24 hours of local, minute-averaged temperature history. CPU load, fan speeds, memory usage, power source or battery, and Low Power Mode are displayed only and are not stored. No accounts, telemetry, analytics services or cloud synchronization are involved. See the [privacy report](PRIVACY.md) and [security review](SECURITY.md) for more detail.
+The selected theme, scan-refresh interval, visible temperature groups, menu bar display mode, window size, Mini Display choice, always-on-top choice, display language and warning thresholds are stored locally. Update-check intervals, check timestamps and already reported release tags are also stored locally. Optional update checks contact GitHub without sending sensor or device data; GitHub receives normal connection information, including your IP address. ThermalAtlas also keeps no more than 24 hours of local, minute-averaged temperature history. Fan minute averages are stored separately from temperature history for at most 24 hours. CPU load, memory usage, power source or battery, and Low Power Mode are displayed only and are not stored. No accounts, telemetry, analytics services or cloud synchronization are involved. See the [privacy report](PRIVACY.md) and [security review](SECURITY.md) for more detail.
 
 ---
 

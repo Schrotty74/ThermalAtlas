@@ -23,6 +23,6 @@ Please do not publish sensitive vulnerability details in a public GitHub issue. 
 
 ## Scope
 
-Relevant reports include read-only SMC/IOKit sensor access, drive and SMART queries, system-information collection, local temperature history, alerts, CSV/diagnostic exports, Start at Login behavior, local preferences, GitHub update checks and any unintended ability to modify hardware or system state.
+Relevant reports include read-only SMC/IOKit sensor access, drive and SMART queries, system-information collection, local temperature and fan history, alerts, CSV/diagnostic exports, Start at Login behavior, local preferences, GitHub update checks and any unintended ability to modify hardware or system state.
 
 Thank you for helping keep ThermalAtlas and its users secure.

@@ -40,11 +40,13 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 - Uses defensive Apple-silicon sensor access and independent drive refresh cycles, so slow drive queries do not delay CPU/GPU temperatures.
 - Works locally without accounts, telemetry, analytics, third-party dependencies, or hardware control.
 
+- Click a fan RPM value for its local history. Temperature and fan charts offer 1/3/6/12/24 hours, Min/Max/average of minute averages, and point selection. Sensor Details show reading age; retained GPU values show it on the card.
+
 See the complete, grouped [feature overview](FEATURES.md).
 
 ## Screenshots and themes
 
-The Adaptive light and dark screenshots preview the local Dev design from 5 October 2026. Published Beta 1.2.0-beta.5 still uses the previous appearance. Drive names are anonymized.
+From Beta 1.2.0-beta.6, Adaptive uses neutral macOS surfaces in light and dark mode. Drive names in the screenshots are anonymized.
 
 | Adaptive – Light | Adaptive – Dark |
 | --- | --- |
@@ -97,7 +99,7 @@ Published builds are ad-hoc signed locally. Building does not publish a release.
 
 ## Privacy, data handling, and security
 
-ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, SMART temperature data, CPU load, fan speeds, used memory, power source/battery, and Low Power Mode only when macOS provides them. System Information reads its displayed values and Thermal State through targeted local queries; serial numbers and UUIDs are not queried. It stores selected display preferences, including Mini Display and Always on Top, alert thresholds, and local per-minute temperature averages for up to 24 hours in local `UserDefaults`; system-context and System Information values are displayed but not stored. The app has no telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies.
+ThermalAtlas reads local Apple-silicon SMC temperatures, local drive metadata, SMART temperature data, CPU load, fan speeds, used memory, power source/battery, and Low Power Mode only when macOS provides them. System Information reads its displayed values and Thermal State through targeted local queries; serial numbers and UUIDs are not queried. It stores selected display preferences, including Mini Display and Always on Top, alert thresholds, and local per-minute temperature averages for up to 24 hours in local `UserDefaults`; CPU load, memory, power state and System Information values are displayed but not stored. Fan minute averages are stored locally for at most 24 hours. The app has no telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies.
 
 Optional App Updates checks GitHub for newer Final and Beta releases. Check Now runs immediately; automatic checks are off by default and can be set to daily, weekly or monthly. Checks send no sensor, drive, device or installed-version data. GitHub receives the connection IP address. No stored cookies or credentials are used, and updates are never downloaded or installed automatically. Update intervals, check timestamps and already reported release tags are stored locally.
 

@@ -151,7 +151,7 @@ def build(language, output):
           "Standard zeigt die großzügige Kartenansicht. Kompakt ist rund 40 % schmaler und nutzt dichtere Karten, kleinere Abstände und kleinere Schrift. Mini Display ersetzt das Fenster durch eine verschiebbare Leiste mit den ausgewählten Temperaturwerten. Mehr dazu auf Seite 5." if de else "Standard keeps the generous card layout. Compact is about 40% narrower and uses denser cards, smaller spacing and smaller type. Mini Display replaces the window with a movable strip showing the selected temperatures. See page 5 for details.")
     image(c, ASSETS / "ManualScreenshots" / "compact-view.png", 70, 110, 180, 280)
     panel(c, 280, 255, 245, 135, GREEN, "Kompakt & Verlauf" if de else "Compact & history",
-          "Die kompakte Ansicht behält den Temperaturverlauf mit 1, 6 und 24 Stunden bei." if de else "The compact view retains the 1-, 6- and 24-hour temperature history.")
+          "Die kompakte Ansicht behält den Temperaturverlauf mit 1, 3, 6, 12 und 24 Stunden bei." if de else "The compact view retains the 1-, 3-, 6-, 12- and 24-hour temperature history.")
     image(c, ASSETS / "ManualScreenshots" / "menu-bar-display-menu.png", 310, 150, 215, 68)
     panel(c, 280, 75, 245, 60, CYAN, None,
           "Menüleistenmodus und sichtbare Temperaturgruppen werden ebenfalls lokal gespeichert." if de else "Menu bar mode and visible temperature groups are also stored locally.")
@@ -173,7 +173,7 @@ def build(language, output):
          "Lokale Minutenmittelwerte und zurückhaltende macOS-Mitteilungen." if de else "Local minute averages and restrained macOS notifications.", 6)
     image(c, ASSETS / "ManualScreenshots" / "temperature-history-card.png", 70, 385, 455, 285)
     panel(c, 70, 270, 455, 110, CYAN, t["history"],
-          "Wähle 1, 6 oder 24 Stunden. Klicke oder ziehe im Graphen: Die Markierung zeigt den nächsten gespeicherten Messpunkt mit Uhrzeit und Minutenmittelwert. Ein Bereichswechsel löscht die Auswahl. Ein Klick auf die Karte außerhalb des Graphen schließt den Verlauf. Die gestrichelte Linie zeigt die Warnschwelle." if de else "Choose 1, 6 or 24 hours. Click or drag in the chart to mark the nearest recorded point and show its time and minute average. Changing the range clears the selection. Click the card outside the chart to close history. The dashed line shows the warning threshold.")
+          "Wähle 1, 3, 6, 12 oder 24 Stunden. Klicke oder ziehe im Graphen: Die Markierung zeigt den nächsten gespeicherten Messpunkt mit Uhrzeit und Minutenmittelwert. Ein Bereichswechsel löscht die Auswahl. Ein Klick auf die Karte außerhalb des Graphen schließt den Verlauf. Die gestrichelte Linie zeigt die Warnschwelle." if de else "Choose 1, 3, 6, 12 or 24 hours. Click or drag in the chart to mark the nearest recorded point and show its time and minute average. Changing the range clears the selection. Click the card outside the chart to close history. The dashed line shows the warning threshold.")
     image(c, ASSETS / "ManualScreenshots" / "temperature-alerts-menu.png", 70, 78, 185, 190)
     image(c, ASSETS / "ManualScreenshots" / "temperature-alert-thresholds.png", 275, 78, 110, 155)
     image(c, ASSETS / "ManualScreenshots" / "export-menu.png", 400, 210, 125, 40)
@@ -183,7 +183,7 @@ def build(language, output):
 
     # 7 Themes
     base(c, 6, "Darstellung" if de else "Appearance", t["themes"], t["theme_sub"], 7)
-    lines(c, "Adaptiv: Dev-Vorschau vom 5. Oktober 2026. Beta.5 zeigt noch die bisherige Darstellung. Laufwerksnamen anonymisiert." if de else "Adaptive: local Dev preview, 5 October 2026. Beta.5 still uses the previous appearance. Drive names anonymized.",
+    lines(c, "Adaptiv: neutrale macOS-Flächen im Hell- und Dunkelmodus. Laufwerksnamen anonymisiert." if de else "Adaptive: neutral macOS surfaces in light and dark mode. Drive names anonymized.",
           55, 700, W - 110, 9, 12, MUTED)
     panel(c, 55, 365, W - 110, 310, CYAN, "Adaptiv" if de else "Adaptive")
     for x, name, filename in [(85, "Hellmodus" if de else "Light", "full-adaptive-light.png"),
@@ -201,7 +201,7 @@ def build(language, output):
     base(c, 7, "Datenschutz" if de else "Privacy", t["privacy"], t["privacy_sub"], 8)
     panel(c, 55, 560, W - 110, 105, GREEN,
           "Lokale Sensordaten" if de else "Local sensor data",
-          "Keine Konten, keine Telemetrie, keine Analyse-Dienste und keine Cloud-Synchronisierung. Der Verlauf bleibt lokal und ist auf 24 Stunden begrenzt." if de else "No accounts, telemetry, analytics services or cloud synchronization. History stays local and is limited to 24 hours.")
+          "Keine Konten, keine Telemetrie, keine Analyse-Dienste und keine Cloud-Synchronisierung. Temperatur- und Lüfterverläufe bleiben lokal für höchstens 24 Stunden." if de else "No accounts, telemetry, analytics services or cloud synchronization. Temperature and fan history stay local for at most 24 hours.")
     panel(c, 55, 415, W - 110, 105, CYAN,
           "Gespeicherte Auswahl" if de else "Stored choices",
           "Theme, Scan Refresh, Sprache, sichtbare Sensorgruppen, Menüleistenmodus, Fenstergröße, Mini-Anzeige, Immer im Vordergrund, Warnschwellen und Minutenmittelwerte bleiben lokal. Das gilt auch für Updateintervalle, Prüfzeitpunkte und bereits gemeldete Release-Tags." if de else "Theme, Scan Refresh, language, visible sensor groups, menu bar mode, window size, Mini Display, Always on Top, warning thresholds and minute averages stay local. So do update intervals, check timestamps and already reported release tags.")
@@ -296,6 +296,23 @@ def build(language, output):
     panel(c, 55, 45, W - 110, 140, VIOLET,
           "Version, Zeitpunkt und Funde" if de else "Version, time and results",
           "Installed version nennt die laufende App-Version, Last successful check den letzten erfolgreichen Abruf. Final und Beta öffnen je Kanal die höchste neuere Release-Version. Final ist neuer als Beta derselben Nummer. Neue Funde öffnen ein Hinweisfenster; automatisch wird jedes Release einmal gemeldet. Check Now zeigt es erneut. Download und Installation wählst du selbst. Keine Sensor- oder Gerätedaten werden gesendet; keine gespeicherten Cookies oder Zugangsdaten verwendet." if de else "Installed version identifies the running app. Last successful check shows the last successful GitHub check. Final and Beta open the highest newer release in each channel. A Final is newer than a Beta with the same version number. New finds open a notice window; each release is reported automatically once. Check Now can show it again. You choose download and installation. Checks send no sensor or device data and use no stored cookies or credentials.")
+    c.showPage()
+
+    # 14 Fan history
+    base(c, 13, "Lüfterverlauf" if de else "Fan History",
+         "Drehzahlen im Verlauf" if de else "Fan speeds over time",
+         "Verfügbar ab Beta 1.2.0-beta.6." if de else "Available from Beta 1.2.0-beta.6.", 14)
+    image(c, ASSETS / "ManualScreenshots" / "fan-history.png", 55, 395, W - 110, 280)
+    lines(c, "Englische Aufnahme: Lüfter 1, 1 h ausgewählt, gerundete Angaben von jeweils 1.000 RPM." if de else "English capture: Fan 1, 1 h selected, figures rounded to 1,000 RPM.",
+          55, 379, W - 110, 9, 12, MUTED)
+    panel(c, 55, 225, W - 110, 135, CYAN,
+          "Öffnen, Zeitraum und Achsen" if de else "Opening, range and axes",
+          "Öffne das Hauptfenster über die Menüleiste; bei Mini zuerst Standard/Kompakt wählen. Klicke im Systemkontext auf Lüfter oder Lüfter 1/2 mit RPM-Wert. Jeder Lüfter öffnet seinen eigenen Verlauf. 1/3/6/12/24 h begrenzen den Rückblick auch im Temperaturverlauf. Die waagrechte Achse zeigt Uhrzeit, die senkrechte RPM. Die Kurve zeigt Minutenmittelwerte. 07:29 steht hier zweimal, weil der kurze Ausschnitt ohne Sekunden beschriftet ist." if de else "Open the main window from the menu bar; in Mini, choose Standard/Compact first. In System Context, click Fan or Fan 1/2 with its RPM value. Each fan opens its own history. 1/3/6/12/24 h limit the lookback in both fan and temperature history. The horizontal axis shows time; the vertical axis shows RPM. The curve shows minute averages. Both labels read 07:29 because this short interval is labelled without seconds.")
+    panel(c, 55, 80, W - 110, 125, GREEN,
+          "Min / Max / Ø" if de else "Min / Max / average",
+          "Niedrigster, höchster und durchschnittlicher Minutenmittelwert im gewählten Zeitraum; jede vorhandene Minute zählt gleich. Keine kurzzeitigen RPM-Spitzen. Hier sind alle Angaben auf 1.000 RPM gerundet. Klicke oder ziehe für Uhrzeit und Wert eines Punktes. Bereichswechsel löscht die Auswahl; außerhalb klicken schließt. Speicherung: lokal, höchstens 24 Stunden. Fehlende Werte bilden Lücken, echte 0 RPM bleiben gültig. Keine Lüftersteuerung." if de else "Lowest, highest and mean minute average in the selected period; each recorded minute has equal weight. These are not instantaneous RPM peaks. All figures here round to 1,000 RPM. Click or drag for a point's time and value. Changing range clears selection; click outside to close. Storage is local for at most 24 hours. Missing values leave gaps; real 0 RPM remains valid. No fan control.")
+    lines(c, "Messwertalter: Sensor-Details zeigen das Alter; überbrückte GPU-Werte auch direkt auf der Karte." if de else "Reading age appears in Sensor Details; retained GPU values also show it directly on the card.",
+          55, 57, W - 110, 9, 12, MUTED)
     c.save()
 
 

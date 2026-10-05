@@ -37,11 +37,15 @@ This page lists the features in this build. For installation and everyday use, s
 
 ## History, alerts, and export
 
-- Opens a local 1-, 6-, or 24-hour temperature history from every temperature card.
+- Opens a local 1-, 3-, 6-, 12-, or 24-hour temperature history from every temperature card.
 - Shows the nearest recorded point’s time and minute-average temperature when you click or drag in the chart.
 - Stores only local per-minute averages for up to 24 hours; temporarily retained GPU readings are not recorded as new measurements.
 - Provides separate CPU, GPU, internal-SSD, and external-SSD alert thresholds. CPU/GPU alerts use the measured Hotspot; SSD alerts use the displayed temperature. A notification needs at least 60 seconds at or above the threshold and is sent again only after cooling down.
 - Exports a copyable current snapshot, a copyable diagnostic report with the Mac model, macOS version, chip name and sensor states, or local history plus a current snapshot as CSV; CSV is created only after you choose an export location.
+
+- Opens a separate RPM history from each readable fan value, with the same five ranges and point selection.
+- Shows Min/Max/average of the available minute averages in both chart types. Each recorded minute has equal weight; missing minutes leave gaps.
+- Shows reading age in Sensor Details and on cards with temporarily retained GPU values. The existing 15-second GPU retention limit remains unchanged.
 
 ## App Updates
 
@@ -59,7 +63,7 @@ This page lists the features in this build. For installation and everyday use, s
 - Lets you select the CPU, GPU, internal-SSD, and external-SSD groups visible in both the popover and menu bar.
 - Offers menu-bar modes for **All Values** or **Symbol Only**.
 - Colours CPU, GPU and SSD values distinctly in the all-values menu-bar mode and adds a high-contrast status frame: green normally, yellow near a threshold, red at a selected warning threshold.
-- Includes four native themes: Adaptive, Liquid Glass, Aurora, and Ember.
+- Includes four native themes: Adaptive, Liquid Glass, Aurora, and Ember. Adaptive uses neutral macOS window and control surfaces in both light and dark mode.
 - Temperature cards expose their history state to VoiceOver and respect the macOS Reduce Motion and Reduce Transparency settings.
 - The layered Icon Composer app icon offers Default, Dark and Mono appearances on supported macOS versions, with an older macOS fallback.
 - Starts in English and offers a local German interface choice.
@@ -71,7 +75,7 @@ This page lists the features in this build. For installation and everyday use, s
 
 - Reads local sensor and drive information only; it never changes fan, power, or other system settings.
 - Has no accounts, telemetry, analytics, cloud sync, advertising SDKs, or third-party dependencies.
-- Stores selected display preferences, alert thresholds, update intervals, check timestamps, reported release tags, and local temperature history in `UserDefaults` only.
+- Stores selected display preferences, alert thresholds, update intervals, check timestamps, reported release tags, and local temperature and fan history in `UserDefaults` only.
 - Opens public links or creates exports only after an explicit user action.
 
 ## Hardware compatibility

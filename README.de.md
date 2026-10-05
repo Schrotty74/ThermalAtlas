@@ -40,11 +40,13 @@ Weder Administrator- noch Root-Rechte sind nötig. ThermalAtlas verfolgt einen r
 - Nutzt defensiven Apple-Silicon-Sensorzugriff und getrennte Laufwerkszyklen, damit langsame Laufwerksabfragen CPU-/GPU-Temperaturen nicht verzögern.
 - Funktioniert lokal ohne Konten, Telemetrie, Analysedienste, Drittanbieter-Abhängigkeiten oder Hardwaresteuerung.
 
+- Ein Klick auf einen Lüfterwert öffnet dessen lokalen Verlauf. Temperatur- und Lüfterdiagramme bieten 1/3/6/12/24 Stunden, Min/Max/Ø der Minutenmittelwerte und Punktwahl. Sensor-Details zeigen das Messwertalter; überbrückte GPU-Werte auch direkt auf der Karte.
+
 Die vollständige, gegliederte [Funktionsübersicht](FEATURES.de.md) enthält alle Details.
 
 ## Screenshots und Themes
 
-Die adaptiven Ansichten im Hell- und Dunkelmodus zeigen den lokalen Dev-Stand vom 5. Oktober 2026. Die veröffentlichte Beta 1.2.0-beta.5 verwendet noch die bisherige Darstellung. Die Laufwerksnamen sind anonymisiert.
+Adaptiv verwendet ab Beta 1.2.0-beta.6 neutrale macOS-Flächen im Hell- und Dunkelmodus. Die Laufwerksnamen in den Bildern sind anonymisiert.
 
 | Adaptiv – Hellmodus | Adaptiv – Dunkelmodus |
 | --- | --- |
@@ -97,7 +99,7 @@ Veröffentlichte Builds werden lokal ad-hoc signiert. Ein Build veröffentlicht 
 
 ## Datenschutz, Datenverarbeitung und Sicherheit
 
-ThermalAtlas liest lokale Apple-Silicon-SMC-Temperaturen, lokale Laufwerksmetadaten, SMART-Temperaturen, CPU-Last, Lüfterdrehzahlen, belegten Arbeitsspeicher, Stromquelle/Akku und Energiesparmodus nur dann, wenn macOS sie bereitstellt. Die Systeminformationen lesen die angezeigten Werte und den thermischen Zustand gezielt lokal ab; Seriennummern und UUIDs werden nicht abgefragt. Lokal gespeichert werden Anzeigeneinstellungen einschließlich Mini-Anzeige und „Immer im Vordergrund“, Warnschwellen und lokale Temperatur-Minutenmittelwerte für höchstens 24 Stunden in `UserDefaults`; Systemkontext und Systeminformationen werden nur angezeigt. Die App enthält keine Telemetrie, Analyse-Dienste, Konten, Cloud-Synchronisation, Werbe-SDKs oder Drittanbieter-Abhängigkeiten.
+ThermalAtlas liest lokale Apple-Silicon-SMC-Temperaturen, lokale Laufwerksmetadaten, SMART-Temperaturen, CPU-Last, Lüfterdrehzahlen, belegten Arbeitsspeicher, Stromquelle/Akku und Energiesparmodus nur dann, wenn macOS sie bereitstellt. Die Systeminformationen lesen die angezeigten Werte und den thermischen Zustand gezielt lokal ab; Seriennummern und UUIDs werden nicht abgefragt. Lokal gespeichert werden Anzeigeneinstellungen einschließlich Mini-Anzeige und „Immer im Vordergrund“, Warnschwellen und lokale Temperatur-Minutenmittelwerte für höchstens 24 Stunden in `UserDefaults`; CPU-Last, RAM, Energiezustand und Systeminformationen werden nur angezeigt. Lüfter-Minutenmittelwerte werden ebenfalls lokal für höchstens 24 Stunden gespeichert. Die App enthält keine Telemetrie, Analyse-Dienste, Konten, Cloud-Synchronisation, Werbe-SDKs oder Drittanbieter-Abhängigkeiten.
 
 Die optionale Funktion App-Updates prüft GitHub auf neuere Final- und Beta-Versionen. Jetzt prüfen startet sofort; automatische Prüfungen sind zunächst aus und können täglich, wöchentlich oder monatlich erfolgen. Dabei werden keine Sensor-, Laufwerks-, Geräte- oder installierten Versionsdaten gesendet. GitHub erhält die IP-Adresse der Verbindung. Gespeicherte Cookies oder Zugangsdaten werden nicht verwendet; Updates werden nicht automatisch heruntergeladen oder installiert. Updateintervalle, Prüfzeitpunkte und bereits gemeldete Release-Tags werden lokal gespeichert.
 

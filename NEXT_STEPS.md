@@ -2,7 +2,9 @@
 
 ## Weiter beobachten
 
-- Die neutrale adaptive Hell-/Dunkeldarstellung aus dem lokalen Dev-Stand erst bei einem ausdrücklich beauftragten Beta-Release übernehmen. Die neuen Dokumentationsbilder zeigen bereits eine entsprechend gekennzeichnete Vorschau.
+- Neue Verläufe manuell in EN/DE prüfen: Lüfterwert anklicken, alle fünf Zeiträume, Punktwahl und Min/Max/Ø in Standard- und Kompaktansicht. Die sichtbare englische Lüfteransicht ist durch die bereitgestellte Aufnahme belegt; weitere Bedienprüfungen bleiben offen. Bei erneutem GPU-Ausfall Altersangabe und Übergang nach 15 Sekunden zu „Nicht verfügbar“ prüfen.
+
+- Adaptiv im Hell-/Dunkelmodus, mit aufgeklapptem Verlauf und Systeminformationen sowie „Transparenz reduzieren“ gezielt prüfen.
 
 - Die Mini-Anzeige bei aktivem „Immer im Vordergrund“ im jeweiligen Vollbildspiel prüfen; erfolgreiche Kompilierung bestätigt noch nicht die Sichtbarkeit über jedem Spiel.
 

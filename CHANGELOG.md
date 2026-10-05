@@ -2,6 +2,28 @@
 
 All notable user-visible changes are documented here in English. Development builds remain local; public prereleases are announced through GitHub Releases.
 
+## 1.2.0-beta.6
+
+### Added
+
+- Click a readable fan RPM value in System Context to open its local history in a separate chart.
+- Temperature and fan histories offer 1, 3, 6, 12 and 24 hours. Both show Min, Max and average of the recorded minute averages, plus the time and value of a selected point.
+
+### Improved
+
+- Adaptive uses neutral macOS window and control surfaces in light and dark mode, with subtle grey outlines and shadows.
+- Retained GPU readings show their age on the card. Sensor Details uses the actual reading timestamp, including separately refreshed SSD values; the last valid GPU timestamp remains visible after its 15-second retention limit expires.
+- Missing minutes interrupt chart lines instead of connecting across gaps.
+
+### Privacy
+
+- Fan history stays in local UserDefaults for at most 24 hours, separate from temperature history. Missing readings are not stored as zero. Fan control, temperature CSV format and network behavior remain unchanged.
+
+### Documentation
+
+- Updated both manuals and their fourteen-page PDFs with the fan-history screenshot, opening instructions, five time ranges and explanations of RPM axes, minute averages and reading age.
+- Updated the bilingual README, feature overview and privacy report for the new histories and Adaptive appearance.
+
 ## 1.2.0-beta.5
 
 ### Added

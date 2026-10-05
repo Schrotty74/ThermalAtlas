@@ -16,6 +16,7 @@ final class SensorService {
     private(set) var systemContext = SystemContext.unavailable
     private(set) var refreshInterval: TimeInterval
     let history = TemperatureHistoryStore()
+    let fanHistory = FanHistoryStore()
     private var refreshTask: Task<Void, Never>?
     private var systemContextRefreshTask: Task<Void, Never>?
     private var topologyRefreshTask: Task<Void, Never>?
@@ -158,6 +159,7 @@ final class SensorService {
 
     private func refreshSystemContext() async {
         let updatedContext = await systemContextSampler.read()
+        fanHistory.record(updatedContext.fanSpeeds)
         guard updatedContext != systemContext else { return }
         systemContext = updatedContext
     }
@@ -266,9 +268,13 @@ final class SensorService {
                 return reading
             }
 
-            guard let lastVerifiedGPU,
-                  now.timeIntervalSince(lastVerifiedGPU.measuredAt) <= 15 else {
-                return reading
+            guard let lastVerifiedGPU else { return reading }
+            guard now.timeIntervalSince(lastVerifiedGPU.measuredAt) <= 15 else {
+                return TemperatureReading(
+                    kind: .gpu, temperatureCelsius: nil, detail: reading.detail,
+                    unavailableReason: reading.unavailableReason,
+                    measuredAt: reading.measuredAt, lastVerifiedAt: lastVerifiedGPU.measuredAt
+                )
             }
 
             let seconds = max(0, Int(now.timeIntervalSince(lastVerifiedGPU.measuredAt).rounded()))

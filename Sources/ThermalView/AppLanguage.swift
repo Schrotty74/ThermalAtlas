@@ -40,6 +40,14 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var systemContextTitle: String { self == .english ? "System Context" : "Systemkontext" }
     var systemContextHint: String { self == .english ? "Context only — not temperature sensors" : "Nur Kontext — keine Temperatursensoren" }
     var cpuLoadTitle: String { self == .english ? "CPU Load" : "CPU-Last" }
+    var fanHistoryTitle: String { self == .english ? "Fan History" : "Lüfterverlauf" }
+    var minuteAveragesTitle: String { self == .english ? "Minute averages" : "Minutenmittelwerte" }
+    var measurementAgeTitle: String { self == .english ? "Reading age" : "Messwertalter" }
+    func measurementAge(since date: Date, now: Date = .now) -> String {
+        let seconds = max(0, Int(now.timeIntervalSince(date)))
+        let value = seconds < 60 ? "\(seconds) s" : seconds < 3600 ? "\(seconds / 60) min" : "\(seconds / 3600) h"
+        return self == .english ? "\(value) old" : "\(value) alt"
+    }
     var fanSpeedTitle: String { self == .english ? "Fan" : "Lüfter" }
     var memoryUsageTitle: String { self == .english ? "Memory" : "Arbeitsspeicher" }
     var memoryLoadTitle: String { self == .english ? "Memory status" : "RAM-Status" }

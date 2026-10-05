@@ -56,7 +56,7 @@ struct ThermalPopover: View {
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.colorScheme) private var colorScheme
 
-    private var palette: ThermalThemePalette { selectedTheme.palette }
+    private var palette: ThermalThemePalette { selectedTheme.palette(for: colorScheme) }
     private var footerMenuForeground: Color { palette.title }
     private var footerMenuBackgroundOpacity: Double {
         selectedTheme == .classic && colorScheme == .light ? 0.10 : 0.16
@@ -117,7 +117,7 @@ struct ThermalPopover: View {
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(selectedTheme.usesFullWindowGlass ? Color.white.opacity(0.34) : palette.gpu.opacity(0.16), lineWidth: 1)
+                .stroke(selectedTheme.usesFullWindowGlass ? Color.white.opacity(0.34) : palette.surfaceStroke(accent: palette.gpu, opacity: 0.16), lineWidth: 1)
         }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.35), value: selectedTheme)
         .background(ThermalWindowConfigurator())
@@ -158,6 +158,8 @@ struct ThermalPopover: View {
                 colorScheme: colorScheme
             )
             .overlay { liquidGlassLightTint }
+        } else if palette.usesNeutralSurfaces {
+            palette.windowBackground
         } else if selectedTheme == .classic {
             RoundedRectangle(cornerRadius: 24, style: .continuous).fill(.regularMaterial)
         } else {
@@ -486,7 +488,7 @@ private struct SystemInformationWindowContent: View {
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.colorScheme) private var colorScheme
 
-    private var palette: ThermalThemePalette { theme.palette }
+    private var palette: ThermalThemePalette { theme.palette(for: colorScheme) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -720,7 +722,7 @@ private extension View {
         }
         .overlay {
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .stroke(palette.gpu.opacity(theme.usesFullWindowGlass ? 0.30 : palette.cardStrokeOpacity), lineWidth: 1)
+                .stroke(palette.surfaceStroke(accent: palette.gpu, opacity: theme.usesFullWindowGlass ? 0.30 : palette.cardStrokeOpacity), lineWidth: 1)
         }
     }
 }
@@ -907,6 +909,8 @@ private struct ThermalSystemContext: View {
     let language: AppLanguage
     let compact: Bool
 
+    @State private var selectedFanIndex: Int?
+
     private var context: SystemContext { service.systemContext }
 
     var body: some View {
@@ -943,14 +947,7 @@ private struct ThermalSystemContext: View {
                     )
                 } else {
                     ForEach(context.fanSpeeds, id: \.index) { fan in
-                        contextItem(
-                            title: context.fanSpeeds.count == 1
-                                ? language.fanSpeedTitle
-                                : "\(language.fanSpeedTitle) \(fan.index + 1)",
-                            value: "\(fan.rpm.formatted(.number.locale(language.locale))) RPM",
-                            symbol: "fanblades.fill",
-                            tint: palette.secondary
-                        )
+                        fanButton(fan)
                     }
                 }
                 contextItem(
@@ -980,7 +977,22 @@ private struct ThermalSystemContext: View {
             RoundedRectangle(cornerRadius: compact ? 11 : 14, style: .continuous)
                 .stroke(palette.secondary.opacity(0.18), lineWidth: 1)
         }
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
+    }
+
+    private func fanButton(_ fan: SMCFanSpeedReader.Fan) -> some View {
+        let title = context.fanSpeeds.count == 1 ? language.fanSpeedTitle : "\(language.fanSpeedTitle) \(fan.index + 1)"
+        return Button { selectedFanIndex = fan.index } label: {
+            contextItem(title: title, value: "\(fan.rpm.formatted(.number.locale(language.locale))) RPM",
+                        symbol: "fanblades.fill", tint: palette.secondary)
+        }
+        .buttonStyle(.plain)
+        .help(language.fanHistoryTitle)
+        .accessibilityLabel("\(title), \(fan.rpm) RPM")
+        .accessibilityHint(language.fanHistoryTitle)
+        .popover(isPresented: Binding(get: { selectedFanIndex == fan.index }, set: { if !$0 { selectedFanIndex = nil } })) {
+            FanHistoryView(history: service.fanHistory, index: fan.index, title: title, palette: palette, language: language)
+        }
     }
 
     private func contextItem(title: String, value: String, symbol: String, tint: Color) -> some View {
@@ -1064,7 +1076,7 @@ private struct SensorCard: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
 
-    private var palette: ThermalThemePalette { selectedTheme.palette }
+    private var palette: ThermalThemePalette { selectedTheme.palette(for: colorScheme) }
     private var componentColor: Color { palette.componentColor(for: reading.kind) }
 
     private var cardContent: some View {
@@ -1084,7 +1096,13 @@ private struct SensorCard: View {
                         if reading.isLastVerifiedValue {
                             Image(systemName: "clock.arrow.circlepath")
                         }
-                        Text(subtitle)
+                        if reading.isLastVerifiedValue, let date = reading.lastVerifiedAt ?? reading.measuredAt {
+                            TimelineView(.periodic(from: .now, by: 1)) { timeline in
+                                Text("\(language.measurementAge(since: date, now: timeline.date)) · \(language == .english ? "Last reading" : "Letzter Wert")")
+                            }
+                        } else {
+                            Text(subtitle)
+                        }
                     }
                     .font(compact ? .caption2.weight(.medium) : .caption.weight(.medium))
                     .foregroundStyle(reading.isLastVerifiedValue ? .orange : palette.title.opacity(0.76))
@@ -1113,14 +1131,17 @@ private struct SensorCard: View {
             }
         }
             if showsHistory {
-                TemperatureHistoryChart(
-                    points: history.points(for: reading.id, range: historyRange),
+                HistoryChart(
+                    points: history.points(for: reading.id, range: historyRange).map { HistoryChartPoint(date: $0.date, value: $0.averageTemperature) },
                     range: $historyRange,
                     threshold: alertThreshold,
                     componentColor: componentColor,
                     palette: palette,
                     language: language,
-                    compact: compact
+                    compact: compact,
+                    title: language.temperatureHistoryTitle,
+                    unit: "°C",
+                    fractionDigits: 1
                 )
             }
         }
@@ -1148,14 +1169,17 @@ private struct SensorCard: View {
             .background { cardBackground }
             .overlay {
                 RoundedRectangle(cornerRadius: compact ? 12 : 16, style: .continuous)
-                    .stroke(componentColor.opacity(palette.cardStrokeOpacity), lineWidth: 1)
+                    .stroke(palette.surfaceStroke(accent: componentColor), lineWidth: 1)
             }
-            .shadow(color: componentColor.opacity(0.09), radius: compact ? 6 : 10, y: compact ? 2 : 4)
+            .shadow(color: palette.usesNeutralSurfaces ? .black.opacity(colorScheme == .dark ? 0.12 : 0.06) : componentColor.opacity(0.09), radius: compact ? 6 : 10, y: compact ? 2 : 4)
     }
 
     @ViewBuilder
     private var cardBackground: some View {
-        if selectedTheme == .classic {
+        if palette.usesNeutralSurfaces {
+            RoundedRectangle(cornerRadius: compact ? 12 : 16, style: .continuous)
+                .fill(palette.cardBase)
+        } else if selectedTheme == .classic {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(.thinMaterial)
                 .overlay { cardTint }
@@ -1281,31 +1305,34 @@ private extension View {
     }
 }
 
-private struct TemperatureHistoryChart: View {
-    let points: [TemperatureHistoryPoint]
+private struct HistoryChart: View {
+    let points: [HistoryChartPoint]
     @Binding var range: TemperatureHistoryRange
-    let threshold: Double
+    let threshold: Double?
     let componentColor: Color
     let palette: ThermalThemePalette
     let language: AppLanguage
     let compact: Bool
+    let title: String
+    let unit: String
+    let fractionDigits: Int
     @State private var selectedPointDate: Date?
 
-    private var selectedPoint: TemperatureHistoryPoint? {
+    private var selectedPoint: HistoryChartPoint? {
         points.first { $0.date == selectedPointDate }
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: compact ? 4 : 6) {
             if compact {
-                Text(language.temperatureHistoryTitle)
+                Text(title)
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(palette.title.opacity(0.9))
                 historyRangePicker
                     .frame(maxWidth: .infinity)
             } else {
                 HStack {
-                    Text(language.temperatureHistoryTitle)
+                    Text(title)
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(palette.title.opacity(0.9))
                     Spacer()
@@ -1321,25 +1348,33 @@ private struct TemperatureHistoryChart: View {
                     .frame(maxWidth: .infinity, minHeight: compact ? 42 : 58, alignment: .center)
             } else {
                 Chart {
-                    ForEach(points) { point in
+                    ForEach(HistoryChartPoint.segmented(points)) { point in
                         LineMark(
                             x: .value("Time", point.date),
-                            y: .value("Temperature", point.averageTemperature)
+                            y: .value(unit, point.value),
+                            series: .value("Segment", point.segment)
                         )
-                        .interpolationMethod(.catmullRom)
+                        .interpolationMethod(.linear)
                         .foregroundStyle(componentColor)
                         .lineStyle(StrokeStyle(lineWidth: compact ? 1.5 : 2, lineCap: .round, lineJoin: .round))
+                        if point.isIsolated {
+                            PointMark(x: .value("Time", point.date), y: .value(unit, point.value))
+                                .foregroundStyle(componentColor)
+                                .symbolSize(16)
+                        }
                     }
-                    RuleMark(y: .value("Warning threshold", threshold))
-                        .foregroundStyle(.orange.opacity(0.65))
-                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                    if let threshold {
+                        RuleMark(y: .value("Warning threshold", threshold))
+                            .foregroundStyle(.orange.opacity(0.65))
+                            .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                    }
                     if let selectedPoint {
                         RuleMark(x: .value("Selected time", selectedPoint.date))
                             .foregroundStyle(palette.title.opacity(0.55))
                             .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
                         PointMark(
                             x: .value("Selected time", selectedPoint.date),
-                            y: .value("Selected temperature", selectedPoint.averageTemperature)
+                            y: .value(unit, selectedPoint.value)
                         )
                         .foregroundStyle(componentColor)
                         .symbolSize(compact ? 36 : 50)
@@ -1385,12 +1420,26 @@ private struct TemperatureHistoryChart: View {
                 .frame(height: compact ? 72 : 96)
             }
 
+            if let summary = HistorySummary(values: points.map(\.value)) {
+                HStack {
+                    summaryValue("Min", summary.minimum)
+                    Spacer(minLength: 4)
+                    summaryValue("Max", summary.maximum)
+                    Spacer(minLength: 4)
+                    summaryValue("Ø", summary.average)
+                }
+                .font(.caption2)
+                .foregroundStyle(palette.title)
+                .monospacedDigit()
+                .accessibilityLabel(language.minuteAveragesTitle)
+            }
+
             Text(selectedPoint.map { point in
                 let time = point.date.formatted(.dateTime.hour().minute().locale(language.locale))
-                let temperature = point.averageTemperature.formatted(.number.precision(.fractionLength(1)).locale(language.locale))
+                let temperature = point.value.formatted(.number.precision(.fractionLength(fractionDigits)).locale(language.locale))
                 let average = language == .german ? "Ø" : "Avg."
-                return "\(time) · \(average) \(temperature) °C"
-            } ?? language.historyHint)
+                return "\(time) · \(average) \(temperature) \(unit)"
+            } ?? language.minuteAveragesTitle)
                 .font(.caption2)
                 .foregroundStyle(selectedPoint == nil ? palette.secondary.opacity(0.8) : palette.title)
                 .monospacedDigit()
@@ -1399,15 +1448,43 @@ private struct TemperatureHistoryChart: View {
         .onChange(of: range) { _, _ in selectedPointDate = nil }
     }
 
+    private func summaryValue(_ label: String, _ value: Double) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(label).foregroundStyle(palette.secondary)
+            Text("\(value.formatted(.number.precision(.fractionLength(fractionDigits)).locale(language.locale))) \(unit)")
+        }
+    }
+
     private var historyRangePicker: some View {
-        Picker(language.temperatureHistoryTitle, selection: $range) {
+        Picker(title, selection: $range) {
             ForEach(TemperatureHistoryRange.allCases) { value in
-                Text(value.title(for: language)).tag(value)
+                Text("\(value.rawValue) h")
+                    .accessibilityLabel(value.title(for: language))
+                    .tag(value)
             }
         }
         .labelsHidden()
         .pickerStyle(.segmented)
         .controlSize(.small)
+    }
+}
+
+private struct FanHistoryView: View {
+    let history: FanHistoryStore
+    let index: Int
+    let title: String
+    let palette: ThermalThemePalette
+    let language: AppLanguage
+    @State private var range: TemperatureHistoryRange = .oneHour
+
+    var body: some View {
+        HistoryChart(points: history.points(for: index, range: range).map { HistoryChartPoint(date: $0.date, value: $0.averageRPM) },
+                     range: $range, threshold: nil, componentColor: palette.secondary,
+                     palette: palette, language: language, compact: false,
+                     title: "\(title) · \(language.fanHistoryTitle)", unit: "RPM", fractionDigits: 0)
+            .padding(14)
+            .frame(width: 360)
+            .background(palette.cardBase)
     }
 }
 
@@ -1422,8 +1499,9 @@ private struct SensorDetailsView: View {
         AppleSiliconSMCTemperatureBackend.detectedChipNameForDiagnostics()
     }
     private var lastValidAt: Date? {
+        if let lastVerifiedAt = reading.lastVerifiedAt { return lastVerifiedAt }
         guard reading.temperatureCelsius != nil else { return nil }
-        return reading.lastVerifiedAt ?? snapshotUpdatedAt
+        return reading.measuredAt ?? snapshotUpdatedAt
     }
 
     var body: some View {
@@ -1448,6 +1526,11 @@ private struct SensorDetailsView: View {
                 detailRow(language.lastValidValueTitle, temperatureText)
             }
             detailRow(language.lastValidTimeTitle, timeText)
+            if let lastValidAt {
+                TimelineView(.periodic(from: .now, by: 1)) { timeline in
+                    detailRow(language.measurementAgeTitle, language.measurementAge(since: lastValidAt, now: timeline.date))
+                }
+            }
             if let detail = reading.detail, reading.kind != .cpu && reading.kind != .gpu {
                 detailRow(language == .english ? "Reading" : "Messwert", detail)
             }

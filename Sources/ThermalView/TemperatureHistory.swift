@@ -3,7 +3,9 @@ import Observation
 
 enum TemperatureHistoryRange: Int, CaseIterable, Identifiable {
     case oneHour = 1
+    case threeHours = 3
     case sixHours = 6
+    case twelveHours = 12
     case twentyFourHours = 24
 
     var id: Int { rawValue }
@@ -11,9 +13,13 @@ enum TemperatureHistoryRange: Int, CaseIterable, Identifiable {
     func title(for language: AppLanguage) -> String {
         switch (self, language) {
         case (.oneHour, .english): "1 Hour"
+        case (.threeHours, .english): "3 Hours"
+        case (.twelveHours, .english): "12 Hours"
         case (.sixHours, .english): "6 Hours"
         case (.twentyFourHours, .english): "24 Hours"
         case (.oneHour, .german): "1 Stunde"
+        case (.threeHours, .german): "3 Stunden"
+        case (.twelveHours, .german): "12 Stunden"
         case (.sixHours, .german): "6 Stunden"
         case (.twentyFourHours, .german): "24 Stunden"
         }

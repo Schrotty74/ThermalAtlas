@@ -14,6 +14,6 @@ Bitte veröffentliche sensible Details zu Sicherheitslücken nicht in einem öff
 
 ## Geltungsbereich
 
-Relevante Meldungen umfassen unter anderem den ausschließlich lesenden SMC-/IOKit-Sensorzugriff, Laufwerks- und SMART-Abfragen, Systeminformationen, lokalen Temperaturverlauf, Warnungen, CSV-/Diagnoseexporte, Start-at-Login-Verhalten, lokale Einstellungen, GitHub-Updateprüfungen und jede unbeabsichtigte Möglichkeit, Hardware- oder Systemzustände zu verändern.
+Relevante Meldungen umfassen unter anderem den ausschließlich lesenden SMC-/IOKit-Sensorzugriff, Laufwerks- und SMART-Abfragen, Systeminformationen, lokale Temperatur- und Lüfterverläufe, Warnungen, CSV-/Diagnoseexporte, Start-at-Login-Verhalten, lokale Einstellungen, GitHub-Updateprüfungen und jede unbeabsichtigte Möglichkeit, Hardware- oder Systemzustände zu verändern.
 
 Vielen Dank, dass du dabei hilfst, ThermalAtlas und seine Nutzer sicher zu halten.

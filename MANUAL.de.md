@@ -1,6 +1,6 @@
 # ThermalAtlas - Benutzerhandbuch
 
-Version: 1.2.0-beta.5
+Version: 1.2.0-beta.6
 
 <p align="center">
   <img src="Resources/IconSource/ThermalAtlas-LiquidGlass.png" width="150" alt="ThermalAtlas App-Icon">
@@ -43,7 +43,7 @@ Die App ist bewusst auf die Anzeige konzentriert. Sie verändert **keine Lüfter
 
 Die Screenshots verwenden Beispielnamen für Laufwerke, Temperaturen und Gesundheitswerte. Anzahl und Namen externer SSD-Karten hängen von der angeschlossenen Hardware ab.
 
-Die adaptiven Ansichten im Hell- und Dunkelmodus zeigen den lokalen Dev-Stand vom 5. Oktober 2026. Die veröffentlichte Beta 1.2.0-beta.5 verwendet noch die bisherige Darstellung. Die Laufwerksnamen sind anonymisiert.
+Adaptiv verwendet ab Beta 1.2.0-beta.6 neutrale macOS-Flächen im Hell- und Dunkelmodus. Die Laufwerksnamen in den Bildern sind anonymisiert.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/full-adaptive-fans.png" width="430" alt="ThermalAtlas Adaptiv mit Temperaturkarten und zwei Lüfterdrehzahlen">
@@ -84,7 +84,7 @@ Unten im Fenster steht die Uhrzeit des zuletzt übernommenen Sensor-Snapshots.
 **Systemkontext**
 Unter den Temperaturkarten zeigt ThermalAtlas die CPU-Last, die tatsächliche Drehzahl jedes lesbaren Lüfters in Umdrehungen pro Minute (RPM), den belegten Arbeitsspeicher im Verhältnis zum eingebauten RAM, Stromquelle oder Akku und Energiesparmodus. Sind zwei Lüfter lesbar, erscheinen sie getrennt als Lüfter 1 und Lüfter 2. Fehlt ein Drehzahlwert, erfindet die App keinen RPM-Wert. GPU-Last-Prozentwerte werden nicht mehr angezeigt; die GPU-Temperaturkarte bleibt erhalten.
 
-Der Systemkontext ist von den Temperatursensoren getrennt. Er aktualisiert sich ungefähr alle 0,5 Sekunden, unabhängig vom wählbaren Temperaturintervall. Die CPU-Last erscheint erst nach zwei aufeinanderfolgenden Abfragen. Diese rein lesenden Werte werden nicht gespeichert; ThermalAtlas verändert weder Lüfter- noch Energieeinstellungen.
+Der Systemkontext ist von den Temperatursensoren getrennt. Er aktualisiert sich ungefähr alle 0,5 Sekunden, unabhängig vom wählbaren Temperaturintervall. Die CPU-Last erscheint erst nach zwei aufeinanderfolgenden Abfragen. Lüfter-Minutenmittelwerte werden lokal für höchstens 24 Stunden gespeichert; die übrigen Kontextwerte werden nur angezeigt. ThermalAtlas verändert weder Lüfter- noch Energieeinstellungen.
 
 Der RAM-Status richtet sich nach dem belegten Anteil des eingebauten Arbeitsspeichers: **Normal** unter 70 %, **Erhöht** ab 70 % bis unter 85 % und **Hoch** ab 85 %. Er beschreibt die Speicherbelegung und ist keine Anzeige des macOS-Speicherdrucks.
 
@@ -147,7 +147,7 @@ Die Auswahl verändert nur die Darstellung, nicht die Messlogik. Sie wird lokal 
 
 Temperaturkarten geben ihre Verlaufsbedienung und deren Zustand über VoiceOver aus. ThermalAtlas berücksichtigt **Bewegung reduzieren** bei Kartenanimationen und beim Öffnen des Verlaufs sowie **Transparenz reduzieren** bei Glasflächen. Im Liquid-Glass-Theme verwendet der Thermometer-Button ab macOS 27 den interaktiven Glasstil des Systems; ältere Versionen zeigen den gewöhnlichen Button.
 
-Die adaptiven Ansichten im Hell- und Dunkelmodus zeigen den lokalen Dev-Stand vom 5. Oktober 2026. Die veröffentlichte Beta 1.2.0-beta.5 verwendet noch die bisherige Darstellung. Die Laufwerksnamen sind anonymisiert.
+Adaptiv verwendet ab Beta 1.2.0-beta.6 neutrale macOS-Flächen im Hell- und Dunkelmodus. Die Laufwerksnamen in den Bildern sind anonymisiert.
 
 | Adaptiv – Hellmodus | Adaptiv – Dunkelmodus |
 | --- | --- |
@@ -213,13 +213,38 @@ Unter **Menu Bar Display** legst du fest, wie viel Platz ThermalAtlas in der mac
 
 ### Temperature History (Temperaturverlauf)
 
-Klicke eine Temperaturkarte an, um ihren lokalen **Temperaturverlauf** zu öffnen. Wähle **1 Hour**, **6 Hours** oder **24 Hours**; die orange gestrichelte Linie markiert die für diese Sensorgruppe gewählte Warnschwelle. ThermalAtlas speichert nur Minutenmittelwerte echter, lesbarer Werte und bewahrt höchstens 24 Stunden auf. Direkt nach dem Start braucht das Diagramm zwei unterschiedliche Minuten, bevor es eine Linie zeichnen kann. Ein nur kurz überbrückter GPU-Wert ist klar markiert und wird nicht als neue Messung aufgezeichnet.
+Klicke eine Temperaturkarte an, um ihren lokalen **Temperaturverlauf** zu öffnen. Wähle **1 h**, **3 h**, **6 h**, **12 h** oder **24 h**; die orange gestrichelte Linie markiert die für diese Sensorgruppe gewählte Warnschwelle. ThermalAtlas speichert nur Minutenmittelwerte echter, lesbarer Werte und bewahrt höchstens 24 Stunden auf. Direkt nach dem Start braucht das Diagramm zwei unterschiedliche Minuten, bevor es eine Linie zeichnen kann. Ein nur kurz überbrückter GPU-Wert ist klar markiert und wird nicht als neue Messung aufgezeichnet.
 
 Klicke oder ziehe im Graphen, um den nächstliegenden gespeicherten Messpunkt auszuwählen. Eine Markierung zeigt seine Position; darunter erscheinen Uhrzeit und Minutenmittelwert. Ein Wechsel des Zeitbereichs löscht die Auswahl. Ein Klick außerhalb des Graphen auf die Karte schließt den Verlauf. Verlauf und CSV verwenden den Durchschnitt; die CPU- und GPU-Warnschwellen verwenden den Hotspot, falls vorhanden. Deshalb kann eine Warnung auftreten, obwohl der gezeichnete Durchschnitt unter der Schwellenlinie liegt.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/temperature-history-card.png" width="430" alt="ThermalAtlas-SSD-Karte mit lokalem Einstunden-Temperaturverlauf und Warnschwellenlinie">
 </p>
+
+### Fan History (Lüfterverlauf)
+
+Der Lüfterverlauf ist ab Beta 1.2.0-beta.6 verfügbar. Klicke im **Systemkontext** auf einen lesbaren Lüfterwert in RPM, um dessen lokalen **Lüfterverlauf** zu öffnen. Das Diagramm erscheint separat und vergrößert das Hauptfenster nicht.
+
+So öffnest du die Anzeige:
+
+1. Klicke auf das ThermalAtlas-Symbol beziehungsweise die Temperaturanzeige in der macOS-Menüleiste, um das Hauptfenster zu öffnen. Falls die Mini-Anzeige aktiv ist, wechsle zunächst per Rechtsklick zu Standard oder Kompakt.
+2. Suche unter den Temperaturkarten den Bereich **System Context** beziehungsweise **Systemkontext**.
+3. Klicke dort auf **Fan / Lüfter** oder **Fan 1/2 / Lüfter 1/2** mit dem zugehörigen **RPM-Wert**. Jeder angezeigte Lüfter öffnet seinen eigenen Verlauf.
+4. Wähle oben **1 h**, **3 h**, **6 h**, **12 h** oder **24 h**. Ein Klick außerhalb schließt die Anzeige.
+
+Zu Beginn steht „Lokaler Verlauf wird gesammelt …“, bis zwei Minutenpunkte vorhanden sind. Ein einzelner vorhandener Punkt reicht bereits für Min/Max/Ø. Ist keine Drehzahl lesbar, erscheint „Nicht verfügbar“ und es gibt keinen anklickbaren Lüfterwert.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/fan-history.png" width="600" alt="ThermalAtlas-Lüfterverlauf für Fan 1 mit fünf Zeiträumen und Min, Max und Durchschnitt von jeweils 1.000 RPM">
+</p>
+
+Die Aufnahme zeigt **Fan 1**, also Lüfter 1, mit ausgewähltem Zeitraum **1 h**. Die weiteren Schaltflächen wählen **3 h**, **6 h**, **12 h** oder **24 h**; dieselben fünf Zeiträume stehen auch im Temperaturverlauf zur Verfügung. Die waagrechte Achse zeigt die Uhrzeit, die senkrechte die Umdrehungen pro Minute (**RPM**). Die Kurve verwendet einen Mittelwert je aufgezeichneter Minute. Der gewählte Zeitraum begrenzt den Rückblick; er bedeutet nicht, dass bereits eine volle Stunde aufgezeichnet wurde.
+
+**Min**, **Max** und **Ø** fassen die vorhandenen Minutenmittelwerte im gewählten Zeitraum zusammen: den niedrigsten Minutenmittelwert, den höchsten Minutenmittelwert und deren arithmetischen Durchschnitt. Jede aufgezeichnete Minute zählt dabei gleich. Kurzzeitige RPM-Spitzen werden damit nicht ausgewiesen. In der Aufnahme sind alle drei Angaben auf **1.000 RPM** gerundet; die Kurve ist bei dieser Auflösung waagrecht. Beide sichtbaren Zeitmarken lauten **07:29**, weil der kurze aufgezeichnete Ausschnitt ohne Sekunden beschriftet wird.
+
+Klicke oder ziehe im Graphen, um einen aufgezeichneten Punkt auszuwählen und dessen Uhrzeit und Minutenmittelwert in RPM zu sehen. Ein Bereichswechsel löscht die Auswahl. Ein Klick außerhalb schließt das Zusatzfenster. Der Verlauf bleibt lokal und umfasst höchstens 24 Stunden. Fehlende Lüfterwerte werden nicht als Null aufgezeichnet; Lücken unterbrechen die Kurve. Tatsächlich gemeldete **0 RPM** sind dagegen ein gültiger Wert für einen stehenden Lüfter. ThermalAtlas liest die Drehzahlen und steuert die Lüfter nicht.
+
+Auch der Temperaturverlauf zeigt Min, Max und Ø seiner Minutenmittelwerte. Die Sensor-Details nennen das Alter des letzten gültigen Messwerts; kurz überbrückte GPU-Werte zeigen es direkt auf der Karte. Nach der bisherigen Überbrückungsgrenze von 15 Sekunden wird die Temperatur nicht verfügbar. Der Zeitpunkt des letzten gültigen GPU-Werts bleibt in den Details sichtbar.
 
 ### Temperature Alerts (Temperaturwarnungen)
 
@@ -389,7 +414,7 @@ ThermalAtlas ist datenschutzfreundlich und lokal ausgerichtet:
 - keine Netzwerkfunktion für die Temperaturanzeige
 - keine Drittanbieter-Abhängigkeiten
 
-Lokal gespeichert werden das gewählte Theme, das Scan-Refresh-Intervall, die sichtbaren Temperaturgruppen, der Menüleistenmodus, die Fenstergröße, die Auswahl für Mini Display, die Auswahl für „Immer im Vordergrund“, die Sprachwahl und die Warnschwellen. Updateintervalle, Prüfzeitpunkte und bereits gemeldete Release-Tags werden ebenfalls lokal gespeichert. Optionale Updateprüfungen kontaktieren GitHub ohne Sensor- oder Gerätedaten; GitHub erhält die üblichen Verbindungsinformationen einschließlich deiner IP-Adresse. Zusätzlich bewahrt ThermalAtlas höchstens 24 Stunden lokale, minutenweise gemittelte Temperaturverläufe auf. CPU-Last, Lüfterdrehzahlen, RAM-Belegung, Stromquelle oder Akku und Energiesparmodus werden nur angezeigt und nicht gespeichert. Es gibt keine Konten, Telemetrie, Analyse-Dienste oder Cloud-Synchronisierung. Weitere Details stehen im [Datenschutzbericht](PRIVACY.de.md) und in der [Sicherheitsprüfung](SECURITY.md).
+Lokal gespeichert werden das gewählte Theme, das Scan-Refresh-Intervall, die sichtbaren Temperaturgruppen, der Menüleistenmodus, die Fenstergröße, die Auswahl für Mini Display, die Auswahl für „Immer im Vordergrund“, die Sprachwahl und die Warnschwellen. Updateintervalle, Prüfzeitpunkte und bereits gemeldete Release-Tags werden ebenfalls lokal gespeichert. Optionale Updateprüfungen kontaktieren GitHub ohne Sensor- oder Gerätedaten; GitHub erhält die üblichen Verbindungsinformationen einschließlich deiner IP-Adresse. Zusätzlich bewahrt ThermalAtlas höchstens 24 Stunden lokale, minutenweise gemittelte Temperaturverläufe auf. Lüfter-Minutenmittelwerte werden getrennt vom Temperaturverlauf lokal für höchstens 24 Stunden gespeichert. CPU-Last, RAM-Belegung, Stromquelle oder Akku und Energiesparmodus werden nur angezeigt und nicht gespeichert. Es gibt keine Konten, Telemetrie, Analyse-Dienste oder Cloud-Synchronisierung. Weitere Details stehen im [Datenschutzbericht](PRIVACY.de.md) und in der [Sicherheitsprüfung](SECURITY.md).
 
 ---
 
