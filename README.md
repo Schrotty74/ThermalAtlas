@@ -53,12 +53,8 @@ The Adaptive light and dark screenshots preview the local Dev design from 5 Octo
 | Liquid Glass | Aurora |
 | --- | --- |
 | <img src="Resources/Screenshots/liquid-glass.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Liquid Glass macOS theme showing temperature cards and a separate System Context area"> | <img src="Resources/Screenshots/aurora.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Aurora macOS theme showing temperature cards and a separate System Context area"> |
-| Ember | |
-| <img src="Resources/Screenshots/ember.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Ember macOS theme showing temperature cards and a separate System Context area"> | |
-
-| Compact view |
-| --- |
-| <img src="Resources/Screenshots/compact.png" width="260" alt="ThermalAtlas compact view with temperature cards and a System Context area"> |
+| Ember | Compact view |
+| <img src="Resources/Screenshots/ember.png?v=20260823-monitoring" width="330" alt="ThermalAtlas Ember macOS theme showing temperature cards and a separate System Context area"> | <img src="Resources/Screenshots/compact.png" width="260" alt="ThermalAtlas compact view with temperature cards and a System Context area"> |
 
 ## Requirements
 
