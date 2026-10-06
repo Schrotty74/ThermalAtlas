@@ -14,7 +14,7 @@
 📘 **[Benutzerhandbuch (PDF)](Documentation/ThermalAtlas-Handbuch-DE.pdf)** – Oberfläche, Buttons, Sensoren, Themes, Installation und Datenschutz ausführlich erklärt.
 
 > [!IMPORTANT]
-> **ThermalAtlas v1.1.0 ist die aktuelle stabile Veröffentlichung.** Der Branch `main` enthält den finalen Quellstand. Die neuen Funktionen der Beta 1.2.0-beta.5 stehen im [`beta`-Branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
+> **ThermalAtlas v1.1.0 ist die aktuelle stabile Veröffentlichung.** Der Branch `main` enthält den finalen Quellstand. Beta 1.2.0-beta.7 ergänzt Tastaturbedienung für Diagramme, verständlichere Hinweise zum Systemkontext und einen erneuten Speicherversuch für fehlgeschlagene CSV-Exporte im [`beta`-Branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
 
 ## Überblick
 
@@ -32,11 +32,12 @@ Weder Administrator- noch Root-Rechte sind nötig. ThermalAtlas verfolgt einen r
 - Trennt schnellen, rein lesenden Systemkontext für CPU-Last, Lüfterdrehzahlen und belegten Arbeitsspeicher von der Temperaturüberwachung.
 - Führt lokale Temperaturverläufe, bietet optionale Temperaturwarnungen und exportiert Snapshot oder CSV nur auf Wunsch.
 - Bietet Standard, Kompakt und eine verschiebbare Mini-Anzeige sowie wählbare Sensorgruppen und Menüleistenmodi.
-- Zeigt beim Anklicken oder Ziehen im Temperaturgraphen Uhrzeit und Minutenmittelwert des gewählten Punktes.
+- Zeigt beim Anklicken oder Ziehen im Temperaturgraphen Uhrzeit und Minutenmittelwert des gewählten Punktes. Pfeiltasten und Buttons Vorherige/Nächste Minute wechseln zwischen Punkten; Escape hebt die Auswahl auf. Zeitlabels folgen der App-Sprache, einzelne Messpunkte bleiben sichtbar.
 - Öffnet über das Thermometer im Kopf lokale Systeminformationen mit dem thermischen macOS-Zustand und bietet **Immer im Vordergrund** sowie optional **Bei Anmeldung starten**.
 - Prüft GitHub manuell oder optional täglich, wöchentlich oder monatlich auf neuere Final- und Beta-Versionen. Download und Installation wählst du selbst.
 - Enthält vier native Themes und eine lokale Sprachwahl zwischen Englisch und Deutsch.
-- Unterstützt VoiceOver, Bewegung reduzieren und Transparenz reduzieren sowie die Icon-Erscheinungen Standard, Dunkel und Monochrom auf unterstützten macOS-Versionen.
+- Unterstützt VoiceOver für native Temperaturkarten und Mini-Anzeige, deren Tastaturbedienung mit Return und Leertaste, Bewegung reduzieren und Transparenz reduzieren sowie die Icon-Erscheinungen Standard, Dunkel und Monochrom auf unterstützten macOS-Versionen.
+- Erklärt den Systemkontext getrennt von den Temperaturen. Bei einem fehlgeschlagenen CSV-Speichervorgang zeigt die App den macOS-Fehler und bietet „Erneut versuchen…“ an, um den Speicherdialog erneut zu öffnen.
 - Nutzt defensiven Apple-Silicon-Sensorzugriff und getrennte Laufwerkszyklen, damit langsame Laufwerksabfragen CPU-/GPU-Temperaturen nicht verzögern.
 - Funktioniert lokal ohne Konten, Telemetrie, Analysedienste, Drittanbieter-Abhängigkeiten oder Hardwaresteuerung.
 

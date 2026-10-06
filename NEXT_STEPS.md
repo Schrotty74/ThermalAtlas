@@ -2,14 +2,21 @@
 
 ## Weiter beobachten
 
-- Neue Verläufe manuell in EN/DE prüfen: Lüfterwert anklicken, alle fünf Zeiträume, Punktwahl und Min/Max/Ø in Standard- und Kompaktansicht. Die sichtbare englische Lüfteransicht ist durch die bereitgestellte Aufnahme belegt; weitere Bedienprüfungen bleiben offen. Bei erneutem GPU-Ausfall Altersangabe und Übergang nach 15 Sekunden zu „Nicht verfügbar“ prüfen.
+- Die Korrekturen in Beta 1.2.0-beta.7 praktisch in EN/DE prüfen: Temperaturkarten mit Tastatur öffnen/schließen, Diagrammpunkte mit Pfeiltasten und den neuen Schaltflächen wählen und die Auswahl mit Escape löschen. VoiceOver für Menüleiste, Mini-Anzeige und Diagramme prüfen; außerdem die Mini-Fenstergrößenwahl per Tastatur, den macOS-Einstellungsbefehl, die verständlichere Erklärung zum Systemkontext hinter der Info-Schaltfläche in beiden Sprachen sowie den CSV-Export über App-Menü und echten Speichern-Dialog. Fehlerdialog, Wiederholung und Abbruch sind in EN/DE mit echten Schreibfehlern und nativen Fehlerdialogen isoliert geprüft; die Speicherortwahl war dabei vorgegeben. Die spezielle Einstellung „Bewegung reduzieren“ beim Öffnen/Schließen von Verläufen separat prüfen. Quellcode, Regressionstests, synthetische Werte-/Kurvenbilder und Dev-Build sind geprüft; native macOS-Bedienelemente werden vom verwendeten Bildrenderer nur als Platzhalter dargestellt.
 
-- Adaptiv im Hell-/Dunkelmodus, mit aufgeklapptem Verlauf und Systeminformationen sowie „Transparenz reduzieren“ gezielt prüfen.
+- Weitere Leistungsänderungen erst nach einer gezielten Instruments-Messung beurteilen, besonders bei geöffneten 24-Stunden-Verläufen und aktiver Mini-Anzeige. Synthetische Benchmarks bestätigen weniger Aufwand für Verlaufsbereinigung und Punktwahl; die Gesamt-CPU-Last, Energie und tatsächlichen Renderzeiten der laufenden App wurden nicht gemessen.
 
-- Die Mini-Anzeige bei aktivem „Immer im Vordergrund“ im jeweiligen Vollbildspiel prüfen; erfolgreiche Kompilierung bestätigt noch nicht die Sichtbarkeit über jedem Spiel.
+- Temperatur- und Lüfterverläufe manuell in EN/DE prüfen: Lüfterwert anklicken, alle fünf Zeiträume (1/3/6/12/24 h), Punktwahl und Min/Max/Ø in Standard- und Kompaktansicht. Bei einem erneuten GPU-Ausfall die sichtbare Altersangabe und den Übergang nach 15 Sekunden zu „Nicht verfügbar“ prüfen. Speicherung und Zeitfilter sind automatisiert geprüft. Die bereitgestellte Aufnahme bestätigt die sichtbare englische Lüfteransicht; weitere Bedienprüfungen bleiben offen.
 
-- Falls der sporadische GPU-Ausfall erneut auftritt, ihn gezielt in einem Debug-Dev-Lauf erfassen: IOKit-Rückgabecodes und pro GPU-Schlüssel verfügbare Antworten protokollieren, ohne die produktive Anzeige mit erfundenen Ersatzwerten zu verändern. Seit der letzten Änderung am GPU-Fix zeigte der lokale Dev-Lauf durchgehend GPU-Werte.
+- Die aktuell betrachtete Darstellung passt laut Rückmeldung vom 6. Oktober 2026 soweit. Ergänzend bleiben gezielte Prüfungen für erhöhte Kontraste, „Transparenz reduzieren“ und bislang nicht bestätigte Theme-/Ansichtswechsel offen. Die Rückmeldung nennt keine einzelnen geprüften Varianten.
 
-- Update-Menü und Hinweisfenster in beiden Sprachen manuell prüfen; automatische Prüfintervalle über längere Laufzeiten beobachten. Kalender- und Versionsvergleiche sowie die GitHub-Abfrage werden automatisiert geprüft.
+- Die in Beta.5 veröffentlichte und lokal vorhandene Updatefunktion weiter manuell in EN/DE prüfen: Menübedienung, Hinweisfenster, Release-Link und automatische Meldung bei geschlossenem Hauptfenster beziehungsweise aktiver Mini-Anzeige. Die bereitgestellte englische Menüaufnahme zeigt die neuen Optionen und steht in beiden lokalen Handbüchern; eine vollständige Bedienprüfung ersetzt sie nicht.
 
-- Öffentlichen Beta-Status im Schrotty74-Profil und Portfolio auf 1.2.0-beta.6 abgleichen; bei der Prüfung direkt nach Veröffentlichung nannten beide noch Beta.5.
+- GPU-Verfügbarkeit weiter beobachten: Laut Rückmeldung vom 6. Oktober 2026 sind aktuell keine weiteren Ausfälle aufgefallen. Nur bei einem erneuten Ausfall gezielt in einem Debug-Dev-Lauf die IOKit-Rückgabecodes und verfügbaren Antworten je GPU-Schlüssel erfassen; keine erfundenen Ersatzwerte anzeigen.
+- Falls wiederholbare SwiftUI-Previews für die Temperaturansicht benötigt werden, zuerst ausdrücklich entscheiden, ob das Xcode-Build-Layout des Executable-Targets mit `ENABLE_DEBUG_DYLIB=YES` angepasst werden darf. Ohne diese Änderung kann Xcode die Previews nicht ausführen.
+
+- Öffentlichen Beta-Status im Schrotty74-Profil und Portfolio nach Veröffentlichung auf 1.2.0-beta.7 abgleichen; bei der Prüfung am 6. Oktober 2026 nennen Profil und Portfolio bereits Beta.6.
+
+## Spätere Wartungsaufgabe
+
+- `ThermalPopover.swift` bei einem späteren ausdrücklichen Auftrag schrittweise in zusammengehörige SwiftUI-Ansichten aufteilen, etwa Temperaturkarten, Systemkontext und Menüs. `HistoryChart.swift` ist bereits getrennt. Verhalten, Gestaltung und Datenfluss erhalten; jeweils nur einen Bereich auslagern und anschließend Build sowie betroffene Bedienung, Popover und Fenstergrößen prüfen. Die Aufteilung ist nicht dringend und wird jetzt nicht umgesetzt.

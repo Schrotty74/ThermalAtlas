@@ -1,6 +1,6 @@
 # ThermalAtlas - Benutzerhandbuch
 
-Version: 1.2.0-beta.6
+Version: 1.2.0-beta.7
 
 <p align="center">
   <img src="Resources/IconSource/ThermalAtlas-LiquidGlass.png" width="150" alt="ThermalAtlas App-Icon">
@@ -86,6 +86,8 @@ Unter den Temperaturkarten zeigt ThermalAtlas die CPU-Last, die tatsächliche Dr
 
 Der Systemkontext ist von den Temperatursensoren getrennt. Er aktualisiert sich ungefähr alle 0,5 Sekunden, unabhängig vom wählbaren Temperaturintervall. Die CPU-Last erscheint erst nach zwei aufeinanderfolgenden Abfragen. Lüfter-Minutenmittelwerte werden lokal für höchstens 24 Stunden gespeichert; die übrigen Kontextwerte werden nur angezeigt. ThermalAtlas verändert weder Lüfter- noch Energieeinstellungen.
 
+Die Kontextfelder ordnen sich in Standard- und Kompaktansicht so an, dass alle Werte sichtbar bleiben. Der Info-Button neben **Systemkontext** erklärt CPU-Auslastung, Lüfterdrehzahlen, Arbeitsspeicher und Energiezustand. Das sind Betriebsinformationen; die Temperaturen stehen in den Karten darüber. Zeigt das macOS-Fenster „Einstellungen“ den Hinweis, dass Messwerte und Einstellungen im Hauptfenster liegen, öffne es mit **ThermalAtlas öffnen**.
+
 Der RAM-Status richtet sich nach dem belegten Anteil des eingebauten Arbeitsspeichers: **Normal** unter 70 %, **Erhöht** ab 70 % bis unter 85 % und **Hoch** ab 85 %. Er beschreibt die Speicherbelegung und ist keine Anzeige des macOS-Speicherdrucks.
 
 <p align="center">
@@ -145,7 +147,7 @@ Wähle im gemeinsamen Menü **Themes**, um eine Darstellung zu wählen. Die akti
 
 Die Auswahl verändert nur die Darstellung, nicht die Messlogik. Sie wird lokal gespeichert. Alle vier Varianten zeigen dieselben Sensordaten.
 
-Temperaturkarten geben ihre Verlaufsbedienung und deren Zustand über VoiceOver aus. ThermalAtlas berücksichtigt **Bewegung reduzieren** bei Kartenanimationen und beim Öffnen des Verlaufs sowie **Transparenz reduzieren** bei Glasflächen. Im Liquid-Glass-Theme verwendet der Thermometer-Button ab macOS 27 den interaktiven Glasstil des Systems; ältere Versionen zeigen den gewöhnlichen Button.
+Temperaturkarten sind native Buttons. VoiceOver liest Temperatur und Verlaufsstatus vor; die Karte lässt sich mit der üblichen Button-Aktion aktivieren. In der Mini-Anzeige öffnen **Return** und **Leertaste** sowie VoiceOver-Aktivieren die Größensteuerung. ThermalAtlas beachtet **Bewegung reduzieren**, wenn Karten erscheinen, Verläufe geöffnet oder Fenstergrößen angepasst werden. **Transparenz reduzieren** wirkt auf Glasflächen. Im Liquid-Glass-Theme verwendet der Thermometer-Button ab macOS 27 den interaktiven Glasstil des Systems; ältere Versionen zeigen den gewöhnlichen Button.
 
 Adaptiv verwendet ab Beta 1.2.0-beta.6 neutrale macOS-Flächen im Hell- und Dunkelmodus. Die Laufwerksnamen in den Bildern sind anonymisiert.
 
@@ -215,7 +217,9 @@ Unter **Menu Bar Display** legst du fest, wie viel Platz ThermalAtlas in der mac
 
 Klicke eine Temperaturkarte an, um ihren lokalen **Temperaturverlauf** zu öffnen. Wähle **1 h**, **3 h**, **6 h**, **12 h** oder **24 h**; die orange gestrichelte Linie markiert die für diese Sensorgruppe gewählte Warnschwelle. ThermalAtlas speichert nur Minutenmittelwerte echter, lesbarer Werte und bewahrt höchstens 24 Stunden auf. Direkt nach dem Start braucht das Diagramm zwei unterschiedliche Minuten, bevor es eine Linie zeichnen kann. Ein nur kurz überbrückter GPU-Wert ist klar markiert und wird nicht als neue Messung aufgezeichnet.
 
-Klicke oder ziehe im Graphen, um den nächstliegenden gespeicherten Messpunkt auszuwählen. Eine Markierung zeigt seine Position; darunter erscheinen Uhrzeit und Minutenmittelwert. Ein Wechsel des Zeitbereichs löscht die Auswahl. Ein Klick außerhalb des Graphen auf die Karte schließt den Verlauf. Verlauf und CSV verwenden den Durchschnitt; die CPU- und GPU-Warnschwellen verwenden den Hotspot, falls vorhanden. Deshalb kann eine Warnung auftreten, obwohl der gezeichnete Durchschnitt unter der Schwellenlinie liegt.
+Klicke oder ziehe im Graphen, um den nächstliegenden gespeicherten Messpunkt auszuwählen. Eine Markierung zeigt seine Position; darunter erscheinen Uhrzeit und Minutenmittelwert. Mit den Pfeiltasten links und rechts oder den Buttons **Vorherige Minute** und **Nächste Minute** wechselst du zwischen Punkten. **Escape** hebt die Auswahl auf. Die Zeitlabels richten sich nach der gewählten App-Sprache. Ein einzelner Messpunkt bleibt sichtbar, auch ein echter Wert von 0 RPM im Lüfterverlauf. Ein Wechsel des Zeitbereichs löscht die Auswahl. Ein Klick außerhalb des Graphen auf die Karte schließt den Verlauf. Verlauf und CSV verwenden den Durchschnitt; die CPU- und GPU-Warnschwellen verwenden den Hotspot, falls vorhanden. Deshalb kann eine Warnung auftreten, obwohl der gezeichnete Durchschnitt unter der Schwellenlinie liegt.
+
+Beim Öffnen und Schließen eines Temperaturverlaufs passt das Hauptfenster seine Höhe an die Karten an. **Bewegung reduzieren** schaltet die Animation dieser Größenänderung aus.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/temperature-history-card.png" width="430" alt="ThermalAtlas-SSD-Karte mit lokalem Einstunden-Temperaturverlauf und Warnschwellenlinie">
@@ -232,7 +236,7 @@ So öffnest du die Anzeige:
 3. Klicke dort auf **Fan / Lüfter** oder **Fan 1/2 / Lüfter 1/2** mit dem zugehörigen **RPM-Wert**. Jeder angezeigte Lüfter öffnet seinen eigenen Verlauf.
 4. Wähle oben **1 h**, **3 h**, **6 h**, **12 h** oder **24 h**. Ein Klick außerhalb schließt die Anzeige.
 
-Zu Beginn steht „Lokaler Verlauf wird gesammelt …“, bis zwei Minutenpunkte vorhanden sind. Ein einzelner vorhandener Punkt reicht bereits für Min/Max/Ø. Ist keine Drehzahl lesbar, erscheint „Nicht verfügbar“ und es gibt keinen anklickbaren Lüfterwert.
+Zu Beginn steht „Lokaler Verlauf wird gesammelt …“, bis zwei Minutenpunkte vorhanden sind. Ein einzelner vorhandener Punkt reicht bereits für Min/Max/Ø und wird einzeln eingezeichnet. Ein echter Wert von 0 RPM bleibt ein gültiger Punkt. Ist keine Drehzahl lesbar, erscheint „Nicht verfügbar“ und es gibt keinen anklickbaren Lüfterwert.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/fan-history.png" width="600" alt="ThermalAtlas-Lüfterverlauf für Fan 1 mit fünf Zeiträumen und Min, Max und Durchschnitt von jeweils 1.000 RPM">
@@ -242,7 +246,7 @@ Die Aufnahme zeigt **Fan 1**, also Lüfter 1, mit ausgewähltem Zeitraum **1 h**
 
 **Min**, **Max** und **Ø** fassen die vorhandenen Minutenmittelwerte im gewählten Zeitraum zusammen: den niedrigsten Minutenmittelwert, den höchsten Minutenmittelwert und deren arithmetischen Durchschnitt. Jede aufgezeichnete Minute zählt dabei gleich. Kurzzeitige RPM-Spitzen werden damit nicht ausgewiesen. In der Aufnahme sind alle drei Angaben auf **1.000 RPM** gerundet; die Kurve ist bei dieser Auflösung waagrecht. Beide sichtbaren Zeitmarken lauten **07:29**, weil der kurze aufgezeichnete Ausschnitt ohne Sekunden beschriftet wird.
 
-Klicke oder ziehe im Graphen, um einen aufgezeichneten Punkt auszuwählen und dessen Uhrzeit und Minutenmittelwert in RPM zu sehen. Ein Bereichswechsel löscht die Auswahl. Ein Klick außerhalb schließt das Zusatzfenster. Der Verlauf bleibt lokal und umfasst höchstens 24 Stunden. Fehlende Lüfterwerte werden nicht als Null aufgezeichnet; Lücken unterbrechen die Kurve. Tatsächlich gemeldete **0 RPM** sind dagegen ein gültiger Wert für einen stehenden Lüfter. ThermalAtlas liest die Drehzahlen und steuert die Lüfter nicht.
+Klicke oder ziehe im Graphen, um einen aufgezeichneten Punkt auszuwählen und dessen Uhrzeit und Minutenmittelwert in RPM zu sehen. Mit den Pfeiltasten links und rechts oder den Buttons **Vorherige Minute** und **Nächste Minute** wechselst du zwischen Punkten. **Escape** hebt die Auswahl auf. Die Zeitlabels richten sich nach der gewählten App-Sprache. Ein Bereichswechsel löscht die Auswahl. Ein Klick außerhalb schließt das Zusatzfenster. Der Verlauf bleibt lokal und umfasst höchstens 24 Stunden. Fehlende Lüfterwerte werden nicht als Null aufgezeichnet; Lücken unterbrechen die Kurve. Tatsächlich gemeldete **0 RPM** sind dagegen ein gültiger Wert für einen stehenden Lüfter. ThermalAtlas liest die Drehzahlen und steuert die Lüfter nicht.
 
 Auch der Temperaturverlauf zeigt Min, Max und Ø seiner Minutenmittelwerte. Die Sensor-Details nennen das Alter des letzten gültigen Messwerts; kurz überbrückte GPU-Werte zeigen es direkt auf der Karte. Nach der bisherigen Überbrückungsgrenze von 15 Sekunden wird die Temperatur nicht verfügbar. Der Zeitpunkt des letzten gültigen GPU-Werts bleibt in den Details sichtbar.
 
@@ -252,6 +256,8 @@ Unter **Temperature Alerts** lassen sich lokale macOS-Mitteilungen ein- oder aus
 
 CPU- und GPU-Warnungen verwenden den Hotspot, falls vorhanden, sonst den Durchschnitt. SSD-Warnungen verwenden die gemeldete SSD-Temperatur. Die Standardschwellen sind 95 °C für CPU/GPU und 70 °C für SSDs. Der Menüleistenrahmen ist unter dem Warnbereich grün, innerhalb der zehn Grad unter einer gewählten Schwelle gelb und ab der Schwelle rot. Er verwendet dieselbe Temperaturbasis wie die Warnungen und aktualisiert sich auch bei ausgeschalteten Mitteilungen.
 
+Die 60-Sekunden-Frist beginnt erneut, wenn ein Sensor verschwindet und wieder erscheint oder du seine Schwelle änderst. Dadurch wird eine neue oder geänderte Warnphase nicht mit der vorherigen verrechnet.
+
 <p align="center">
   <img src="Resources/ManualScreenshots/temperature-alerts-menu.png" width="230" alt="ThermalAtlas-Menü Temperature Alerts mit getrennten CPU-, GPU- und SSD-Schwellen-Untermenüs">
   <img src="Resources/ManualScreenshots/temperature-alert-thresholds.png" width="130" alt="ThermalAtlas-Untermenü der CPU-Warnschwelle mit ausgewählten 95 Grad Celsius">
@@ -259,7 +265,7 @@ CPU- und GPU-Warnungen verwenden den Hotspot, falls vorhanden, sonst den Durchsc
 
 ### Export
 
-Unter **Export** bereitest du bei Bedarf lokale Diagnosedaten vor. **Copy Current Readings** kopiert den aktuellen Snapshot als Text in die Zwischenablage. **Copy Diagnostic Report** kopiert Mac-Modell, macOS-Version, Chipbezeichnung und den aktuellen lesbaren beziehungsweise nicht verfügbaren Sensorstatus. **Export CSV** öffnet den normalen macOS-Speicherdialog und schreibt eine CSV mit den verfügbaren Minutenmittelwerten des lokalen Verlaufs sowie dem aktuellen Snapshot. Ohne deine Auswahl eines Speicherorts entsteht keine Exportdatei.
+Unter **Export** bereitest du bei Bedarf lokale Diagnosedaten vor. **Copy Current Readings** kopiert den aktuellen Snapshot als Text in die Zwischenablage. **Copy Diagnostic Report** kopiert Mac-Modell, macOS-Version, Chipbezeichnung und den aktuellen lesbaren beziehungsweise nicht verfügbaren Sensorstatus. **Export CSV** öffnet den normalen macOS-Speicherdialog und schreibt eine CSV mit den verfügbaren Minutenmittelwerten des lokalen Verlaufs sowie dem aktuellen Snapshot. Ohne deine Auswahl eines Speicherorts entsteht keine Exportdatei. Schlägt das Speichern fehl, zeigt ein Dialog die macOS-Fehlerbeschreibung und bietet **Erneut versuchen…** oder **Schließen** an. Bei erneutem Versuch öffnet sich der Speicherdialog wieder, damit du einen Speicherort auswählen kannst.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/export-menu.png" width="394" alt="ThermalAtlas-Untermenü Export">

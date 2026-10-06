@@ -458,16 +458,29 @@ struct ThermalPopover: View {
     }
 
     private func exportCSV() {
-        let panel = NSSavePanel()
-        panel.nameFieldStringValue = "ThermalAtlas-Readings.csv"
-        panel.allowedContentTypes = [.commaSeparatedText]
-        guard panel.runModal() == .OK, let url = panel.url else { return }
-        let contents = TemperatureExport.csv(
-            snapshot: service.snapshot,
-            history: service.history,
-            language: selectedLanguage
-        )
-        try? contents.write(to: url, atomically: true, encoding: .utf8)
+        while true {
+            let panel = NSSavePanel()
+            panel.nameFieldStringValue = "ThermalAtlas-Readings.csv"
+            panel.allowedContentTypes = [.commaSeparatedText]
+            guard panel.runModal() == .OK, let url = panel.url else { return }
+            let contents = TemperatureExport.csv(
+                snapshot: service.snapshot,
+                history: service.history,
+                language: selectedLanguage
+            )
+            do {
+                try contents.write(to: url, atomically: true, encoding: .utf8)
+                return
+            } catch {
+                let alert = NSAlert()
+                alert.alertStyle = .warning
+                alert.messageText = selectedLanguage.csvSaveErrorTitle
+                alert.informativeText = selectedLanguage.csvSaveErrorMessage + "\n\n" + error.localizedDescription
+                alert.addButton(withTitle: selectedLanguage.retryTitle)
+                alert.addButton(withTitle: selectedLanguage.closeTitle)
+                guard alert.runModal() == .alertFirstButtonReturn else { return }
+            }
+        }
     }
 
     private func copyDiagnosticReport() {
@@ -812,17 +825,24 @@ enum PopoverWindowCoordinator {
     weak static var window: NSWindow?
 
     static func adjustForHistory(isOpening: Bool, compact: Bool) {
-        guard let window else { return }
-        let delta: CGFloat = compact ? 126 : 178
-        let previousFrame = window.frame
-        let newHeight = max(1, previousFrame.height + (isOpening ? delta : -delta))
-        let newFrame = NSRect(
-            x: previousFrame.origin.x,
-            y: previousFrame.maxY - newHeight,
-            width: previousFrame.width,
-            height: newHeight
-        )
-        window.setFrame(newFrame, display: true, animate: true)
+        DispatchQueue.main.async {
+            guard let window else { return }
+            window.contentView?.layoutSubtreeIfNeeded()
+            let previousFrame = window.frame
+            let fallbackDelta: CGFloat = compact ? 126 : 178
+            let fittedHeight = window.contentView?.fittingSize.height ?? 0
+            let contentWidth = window.contentRect(forFrameRect: previousFrame).width
+            let newHeight = fittedHeight > 0
+                ? window.frameRect(forContentRect: NSRect(x: 0, y: 0, width: contentWidth, height: fittedHeight)).height
+                : max(1, previousFrame.height + (isOpening ? fallbackDelta : -fallbackDelta))
+            let newFrame = NSRect(
+                x: previousFrame.origin.x,
+                y: previousFrame.maxY - newHeight,
+                width: previousFrame.width,
+                height: newHeight
+            )
+            window.setFrame(newFrame, display: true, animate: !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)
+        }
     }
 
     static func adjustForCompactMode(_ isCompact: Bool) {
@@ -838,7 +858,7 @@ enum PopoverWindowCoordinator {
             )
             var newFrame = window.frameRect(forContentRect: NSRect(origin: .zero, size: contentSize))
             newFrame.origin = NSPoint(x: currentFrame.origin.x, y: currentFrame.maxY - newFrame.height)
-            window.setFrame(newFrame, display: true, animate: true)
+            window.setFrame(newFrame, display: true, animate: !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)
         }
     }
 
@@ -910,20 +930,28 @@ private struct ThermalSystemContext: View {
     let compact: Bool
 
     @State private var selectedFanIndex: Int?
+    @State private var showsContextHint = false
 
     private var context: SystemContext { service.systemContext }
 
     var body: some View {
         VStack(alignment: .leading, spacing: compact ? 5 : 7) {
-            HStack(spacing: 5) {
-                Image(systemName: "bolt.circle")
-                Text(language.systemContextTitle)
+            HStack {
+                Label(language.systemContextTitle, systemImage: "bolt.circle")
                     .font(compact ? .caption.weight(.semibold) : .subheadline.weight(.semibold))
-                Spacer()
-                Text(language.systemContextHint)
-                    .font(.caption2)
-                    .foregroundStyle(palette.secondary.opacity(0.75))
-                    .lineLimit(1)
+                Spacer(minLength: 4)
+                Button { showsContextHint = true } label: {
+                    Image(systemName: "info.circle")
+                }
+                .buttonStyle(.borderless)
+                .accessibilityLabel(language.systemContextHint)
+                .help(language.systemContextHint)
+                .popover(isPresented: $showsContextHint) {
+                    Text(language.systemContextHint)
+                        .padding(12)
+                        .frame(width: 260, alignment: .leading)
+                        .fixedSize()
+                }
             }
             .foregroundStyle(palette.secondary)
 
@@ -957,13 +985,13 @@ private struct ThermalSystemContext: View {
                     tint: memoryTint
                 )
                 contextItem(
-                    title: language.powerSourceTitle,
+                    title: language == .german ? "Stromquelle" : language.powerSourceTitle,
                     value: powerText,
                     symbol: powerSymbol,
                     tint: palette.gpu
                 )
                 contextItem(
-                    title: language.lowPowerModeTitle,
+                    title: language == .german ? "Sparmodus" : "Low Power",
                     value: context.isLowPowerModeEnabled ? language.enabledTitle : language.disabledTitle,
                     symbol: "leaf.fill",
                     tint: context.isLowPowerModeEnabled ? .green : palette.secondary
@@ -971,7 +999,7 @@ private struct ThermalSystemContext: View {
             }
         }
         .padding(.horizontal, compact ? 9 : 12)
-        .padding(.vertical, compact ? 8 : 10)
+        .padding(.vertical, 8)
         .background(palette.title.opacity(0.055), in: RoundedRectangle(cornerRadius: compact ? 11 : 14, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: compact ? 11 : 14, style: .continuous)
@@ -996,17 +1024,23 @@ private struct ThermalSystemContext: View {
     }
 
     private func contextItem(title: String, value: String, symbol: String, tint: Color) -> some View {
-        HStack(spacing: compact ? 4 : 6) {
-            Image(systemName: symbol)
+        VStack(alignment: .leading, spacing: 2) {
+            Label(title, systemImage: symbol)
+                .font(.caption2)
                 .foregroundStyle(tint)
-            VStack(alignment: .leading, spacing: 1) {
-                Text(title).font(.caption2).foregroundStyle(palette.secondary)
-                Text(value)
-                    .font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
-                    .lineLimit(1)
-            }
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+            Text(value)
+                .font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
+                .foregroundStyle(palette.title)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(title), \(value)")
+        .help("\(title): \(value)")
     }
 
     private var cpuUsageText: String {
@@ -1027,7 +1061,7 @@ private struct ThermalSystemContext: View {
 
     private var memoryTitle: String {
         guard let memory = context.memoryUsage else { return language.memoryUsageTitle }
-        return "\(language.memoryUsageTitle) · \(memory.loadStatus.title(for: language))"
+        return "RAM · \(memory.loadStatus.title(for: language))"
     }
 
     private var memoryTint: Color {
@@ -1081,55 +1115,64 @@ private struct SensorCard: View {
 
     private var cardContent: some View {
         VStack(alignment: .leading, spacing: compact ? 7 : 10) {
-            HStack(spacing: compact ? 8 : 12) {
-            Image(systemName: reading.kind.symbol)
-                .font(compact ? .subheadline.weight(.semibold) : .headline.weight(.semibold))
-                .frame(width: compact ? 24 : 30, height: compact ? 24 : 30)
-                .foregroundStyle(componentColor)
-                .background(componentColor.opacity(0.14), in: RoundedRectangle(cornerRadius: compact ? 7 : 9, style: .continuous))
-            VStack(alignment: .leading, spacing: compact ? 1 : 3) {
-                Text(reading.title ?? reading.kind.title(for: language))
-                    .font(compact ? .subheadline.weight(.medium) : .body.weight(.medium))
-                    .foregroundStyle(palette.title)
-                if let subtitle {
-                    HStack(spacing: compact ? 2 : 4) {
-                        if reading.isLastVerifiedValue {
-                            Image(systemName: "clock.arrow.circlepath")
-                        }
-                        if reading.isLastVerifiedValue, let date = reading.lastVerifiedAt ?? reading.measuredAt {
-                            TimelineView(.periodic(from: .now, by: 1)) { timeline in
-                                Text("\(language.measurementAge(since: date, now: timeline.date)) · \(language == .english ? "Last reading" : "Letzter Wert")")
+            HStack(alignment: .bottom, spacing: compact ? 3 : 5) {
+                Button(action: toggleHistory) {
+                    HStack(spacing: compact ? 8 : 12) {
+                        Image(systemName: reading.kind.symbol)
+                            .font(compact ? .subheadline.weight(.semibold) : .headline.weight(.semibold))
+                            .frame(width: compact ? 24 : 30, height: compact ? 24 : 30)
+                            .foregroundStyle(componentColor)
+                            .background(componentColor.opacity(0.14), in: RoundedRectangle(cornerRadius: compact ? 7 : 9, style: .continuous))
+                        VStack(alignment: .leading, spacing: compact ? 1 : 3) {
+                            Text(reading.title ?? reading.kind.title(for: language))
+                                .font(compact ? .subheadline.weight(.medium) : .body.weight(.medium))
+                                .foregroundStyle(palette.title)
+                            if let subtitle {
+                                HStack(spacing: compact ? 2 : 4) {
+                                    if reading.isLastVerifiedValue {
+                                        Image(systemName: "clock.arrow.circlepath")
+                                    }
+                                    if reading.isLastVerifiedValue, let date = reading.lastVerifiedAt ?? reading.measuredAt {
+                                        TimelineView(.periodic(from: .now, by: 1)) { timeline in
+                                            Text("\(language.measurementAge(since: date, now: timeline.date)) · \(language == .english ? "Last reading" : "Letzter Wert")")
+                                        }
+                                    } else {
+                                        Text(subtitle)
+                                    }
+                                }
+                                .font(compact ? .caption2.weight(.medium) : .caption.weight(.medium))
+                                .foregroundStyle(reading.isLastVerifiedValue ? .orange : palette.title.opacity(0.76))
+                                .lineLimit(1)
                             }
-                        } else {
-                            Text(subtitle)
+                            if let smartStatus = reading.smartStatus {
+                                Text(smartStatus.localized(for: language))
+                                    .font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
+                                    .foregroundStyle(smartStatusColor(for: smartStatus))
+                                    .lineLimit(1)
+                                if let smartHealthPercentage = reading.smartHealthPercentage {
+                                    Text("\(language.healthPrefix): \(smartHealthPercentage) %")
+                                        .font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
+                                        .foregroundStyle(palette.title.opacity(0.90))
+                                        .lineLimit(1)
+                                }
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        VStack(alignment: .trailing, spacing: compact ? 2 : 4) {
+                            Text(temperatureText)
+                                .font(compact ? .title3.weight(.semibold) : .title2.weight(.semibold))
+                                .monospacedDigit()
+                                .contentTransition(.numericText())
+                            statusIndicator
                         }
                     }
-                    .font(compact ? .caption2.weight(.medium) : .caption.weight(.medium))
-                    .foregroundStyle(reading.isLastVerifiedValue ? .orange : palette.title.opacity(0.76))
-                    .lineLimit(1)
                 }
-                if let smartStatus = reading.smartStatus {
-                    Text(smartStatus.localized(for: language))
-                        .font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
-                        .foregroundStyle(smartStatusColor(for: smartStatus))
-                        .lineLimit(1)
-                    if let smartHealthPercentage = reading.smartHealthPercentage {
-                        Text("\(language.healthPrefix): \(smartHealthPercentage) %")
-                            .font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
-                            .foregroundStyle(palette.title.opacity(0.90))
-                            .lineLimit(1)
-                    }
-                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(reading.title ?? reading.kind.title(for: language))
+                .accessibilityValue("\(temperatureText), \(showsHistory ? language.sensorHistoryShownAccessibilityValue : language.sensorHistoryHiddenAccessibilityValue)")
+                .accessibilityHint(language.sensorHistoryAccessibilityHint)
+                sensorDetailsButton
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            VStack(alignment: .trailing, spacing: compact ? 2 : 4) {
-                Text(temperatureText)
-                    .font(compact ? .title3.weight(.semibold) : .title2.weight(.semibold))
-                    .monospacedDigit()
-                    .contentTransition(.numericText())
-                statusAndDetails
-            }
-        }
             if showsHistory {
                 HistoryChart(
                     points: history.points(for: reading.id, range: historyRange).map { HistoryChartPoint(date: $0.date, value: $0.averageTemperature) },
@@ -1154,12 +1197,7 @@ private struct SensorCard: View {
             .task { revealCard() }
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.3), value: reading.temperatureCelsius)
             .contentShape(RoundedRectangle(cornerRadius: compact ? 12 : 16, style: .continuous))
-            .onTapGesture(perform: toggleHistory)
-            .accessibilityLabel(reading.title ?? reading.kind.title(for: language))
-            .accessibilityValue(showsHistory ? language.sensorHistoryShownAccessibilityValue : language.sensorHistoryHiddenAccessibilityValue)
-            .accessibilityHint(language.sensorHistoryAccessibilityHint)
-            .accessibilityAddTraits(.isButton)
-            .accessibilityAction { toggleHistory() }
+
     }
 
     private var styledCard: some View {
@@ -1251,27 +1289,27 @@ private struct SensorCard: View {
         }
     }
 
-    private var statusAndDetails: some View {
+    private var statusIndicator: some View {
         HStack(spacing: compact ? 3 : 5) {
             Circle().fill(statusColor).frame(width: compact ? 4 : 6, height: compact ? 4 : 6)
             Capsule().fill(statusColor).frame(width: compact ? 16 : 23, height: compact ? 3 : 4)
-            Button {
-                showsDetails = true
-            } label: {
-                Image(systemName: "info.circle")
-                    .font(compact ? .caption : .caption.weight(.semibold))
-            }
-            .buttonStyle(.borderless)
-            .foregroundStyle(palette.secondary)
-            .accessibilityLabel(language.sensorDetailsTitle)
-            .popover(isPresented: $showsDetails, arrowEdge: .trailing) {
-                SensorDetailsView(
-                    reading: reading,
-                    snapshotUpdatedAt: snapshotUpdatedAt,
-                    language: language,
-                    palette: palette
-                )
-            }
+        }
+        .accessibilityHidden(true)
+    }
+
+    private var sensorDetailsButton: some View {
+        Button { showsDetails = true } label: {
+            Image(systemName: "info.circle")
+                .font(compact ? .caption : .caption.weight(.semibold))
+                .padding(2)
+        }
+        .buttonStyle(.borderless)
+        .foregroundStyle(palette.secondary)
+        .accessibilityLabel("\(reading.title ?? reading.kind.title(for: language)): \(language.sensorDetailsTitle)")
+        .help(language.sensorDetailsTitle)
+        .popover(isPresented: $showsDetails, arrowEdge: .trailing) {
+            SensorDetailsView(reading: reading, snapshotUpdatedAt: snapshotUpdatedAt,
+                              language: language, palette: palette)
         }
     }
 
@@ -1302,189 +1340,6 @@ private extension View {
         } else {
             buttonStyle(.plain)
         }
-    }
-}
-
-private struct HistoryChart: View {
-    let points: [HistoryChartPoint]
-    @Binding var range: TemperatureHistoryRange
-    let threshold: Double?
-    let componentColor: Color
-    let palette: ThermalThemePalette
-    let language: AppLanguage
-    let compact: Bool
-    let title: String
-    let unit: String
-    let fractionDigits: Int
-    @State private var selectedPointDate: Date?
-
-    private var selectedPoint: HistoryChartPoint? {
-        points.first { $0.date == selectedPointDate }
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: compact ? 4 : 6) {
-            if compact {
-                Text(title)
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(palette.title.opacity(0.9))
-                historyRangePicker
-                    .frame(maxWidth: .infinity)
-            } else {
-                HStack {
-                    Text(title)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(palette.title.opacity(0.9))
-                    Spacer()
-                    historyRangePicker
-                        .frame(width: 172)
-                }
-            }
-
-            if points.count < 2 {
-                Text(language.collectingHistoryTitle)
-                    .font(compact ? .caption2 : .caption)
-                    .foregroundStyle(palette.secondary)
-                    .frame(maxWidth: .infinity, minHeight: compact ? 42 : 58, alignment: .center)
-            } else {
-                Chart {
-                    ForEach(HistoryChartPoint.segmented(points)) { point in
-                        LineMark(
-                            x: .value("Time", point.date),
-                            y: .value(unit, point.value),
-                            series: .value("Segment", point.segment)
-                        )
-                        .interpolationMethod(.linear)
-                        .foregroundStyle(componentColor)
-                        .lineStyle(StrokeStyle(lineWidth: compact ? 1.5 : 2, lineCap: .round, lineJoin: .round))
-                        if point.isIsolated {
-                            PointMark(x: .value("Time", point.date), y: .value(unit, point.value))
-                                .foregroundStyle(componentColor)
-                                .symbolSize(16)
-                        }
-                    }
-                    if let threshold {
-                        RuleMark(y: .value("Warning threshold", threshold))
-                            .foregroundStyle(.orange.opacity(0.65))
-                            .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
-                    }
-                    if let selectedPoint {
-                        RuleMark(x: .value("Selected time", selectedPoint.date))
-                            .foregroundStyle(palette.title.opacity(0.55))
-                            .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
-                        PointMark(
-                            x: .value("Selected time", selectedPoint.date),
-                            y: .value(unit, selectedPoint.value)
-                        )
-                        .foregroundStyle(componentColor)
-                        .symbolSize(compact ? 36 : 50)
-                    }
-                }
-                .chartXAxis {
-                    AxisMarks(values: .automatic(desiredCount: 3)) { _ in
-                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0.4))
-                            .foregroundStyle(palette.secondary.opacity(0.25))
-                        AxisValueLabel(format: .dateTime.hour().minute())
-                            .foregroundStyle(palette.secondary)
-                    }
-                }
-                .chartYAxis {
-                    AxisMarks(position: .leading, values: .automatic(desiredCount: 3)) { _ in
-                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0.4))
-                            .foregroundStyle(palette.secondary.opacity(0.25))
-                        AxisValueLabel()
-                            .foregroundStyle(palette.secondary)
-                    }
-                }
-                .chartLegend(.hidden)
-                .chartOverlay { proxy in
-                    GeometryReader { geometry in
-                        Rectangle()
-                            .fill(.clear)
-                            .contentShape(Rectangle())
-                            .gesture(
-                                DragGesture(minimumDistance: 0)
-                                    .onChanged { gesture in
-                                        guard let plotFrame = proxy.plotFrame else { return }
-                                        let plot = geometry[plotFrame]
-                                        let x = gesture.location.x - plot.origin.x
-                                        guard x >= 0, x <= plot.width,
-                                              let date: Date = proxy.value(atX: x) else { return }
-                                        selectedPointDate = points.min {
-                                            abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date))
-                                        }?.date
-                                    }
-                            )
-                    }
-                }
-                .frame(height: compact ? 72 : 96)
-            }
-
-            if let summary = HistorySummary(values: points.map(\.value)) {
-                HStack {
-                    summaryValue("Min", summary.minimum)
-                    Spacer(minLength: 4)
-                    summaryValue("Max", summary.maximum)
-                    Spacer(minLength: 4)
-                    summaryValue("Ø", summary.average)
-                }
-                .font(.caption2)
-                .foregroundStyle(palette.title)
-                .monospacedDigit()
-                .accessibilityLabel(language.minuteAveragesTitle)
-            }
-
-            Text(selectedPoint.map { point in
-                let time = point.date.formatted(.dateTime.hour().minute().locale(language.locale))
-                let temperature = point.value.formatted(.number.precision(.fractionLength(fractionDigits)).locale(language.locale))
-                let average = language == .german ? "Ø" : "Avg."
-                return "\(time) · \(average) \(temperature) \(unit)"
-            } ?? language.minuteAveragesTitle)
-                .font(.caption2)
-                .foregroundStyle(selectedPoint == nil ? palette.secondary.opacity(0.8) : palette.title)
-                .monospacedDigit()
-        }
-        .padding(.top, compact ? 1 : 2)
-        .onChange(of: range) { _, _ in selectedPointDate = nil }
-    }
-
-    private func summaryValue(_ label: String, _ value: Double) -> some View {
-        VStack(alignment: .leading, spacing: 1) {
-            Text(label).foregroundStyle(palette.secondary)
-            Text("\(value.formatted(.number.precision(.fractionLength(fractionDigits)).locale(language.locale))) \(unit)")
-        }
-    }
-
-    private var historyRangePicker: some View {
-        Picker(title, selection: $range) {
-            ForEach(TemperatureHistoryRange.allCases) { value in
-                Text("\(value.rawValue) h")
-                    .accessibilityLabel(value.title(for: language))
-                    .tag(value)
-            }
-        }
-        .labelsHidden()
-        .pickerStyle(.segmented)
-        .controlSize(.small)
-    }
-}
-
-private struct FanHistoryView: View {
-    let history: FanHistoryStore
-    let index: Int
-    let title: String
-    let palette: ThermalThemePalette
-    let language: AppLanguage
-    @State private var range: TemperatureHistoryRange = .oneHour
-
-    var body: some View {
-        HistoryChart(points: history.points(for: index, range: range).map { HistoryChartPoint(date: $0.date, value: $0.averageRPM) },
-                     range: $range, threshold: nil, componentColor: palette.secondary,
-                     palette: palette, language: language, compact: false,
-                     title: "\(title) · \(language.fanHistoryTitle)", unit: "RPM", fractionDigits: 0)
-            .padding(14)
-            .frame(width: 360)
-            .background(palette.cardBase)
     }
 }
 

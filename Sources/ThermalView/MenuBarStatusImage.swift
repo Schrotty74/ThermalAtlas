@@ -19,9 +19,7 @@ enum MenuBarStatusImage {
     }
 
     static func make(readings: [TemperatureReading], status: MenuBarTemperatureStatus) -> NSImage {
-        let signature = readings.map { reading in
-            "\(reading.id):\(reading.temperatureCelsius.map { Int($0.rounded()) } ?? -999)"
-        }.joined(separator: "|") + "|\(status)"
+        let signature = imageSignature(readings: readings, status: status)
         if let cachedAllValuesImage, cachedAllValuesImage.signature == signature {
             return cachedAllValuesImage.image
         }
@@ -69,6 +67,41 @@ enum MenuBarStatusImage {
         image.isTemplate = false
         cachedAllValuesImage = (signature, image)
         return image
+    }
+
+    static func imageSignature(readings: [TemperatureReading], status: MenuBarTemperatureStatus) -> String {
+        readings.map { reading in
+            "\(reading.id):\(reading.temperatureCelsius.map { Int($0.rounded()) } ?? -999)"
+        }.joined(separator: "|") + "|\(status)"
+    }
+
+    static func accessibilityDescription(
+        readings: [TemperatureReading],
+        status: MenuBarTemperatureStatus,
+        language: AppLanguage
+    ) -> String {
+        let values = readings.map { reading -> String in
+            let title = reading.title ?? reading.kind.title(for: language)
+            guard let temperature = reading.temperatureCelsius else {
+                let reason = reading.unavailableReason?.localized(for: language) ?? language.notAvailable
+                return "\(title): \(reason)"
+            }
+            let value = Int(temperature.rounded())
+            let temperatureText = language == .english
+                ? "\(value) degrees Celsius"
+                : "\(value) Grad Celsius"
+            return "\(title): \(temperatureText)"
+        }
+        let statusText: String
+        switch (status, language) {
+        case (.normal, .english): statusText = "Status: Normal"
+        case (.warm, .english): statusText = "Status: Approaching warning threshold"
+        case (.warning, .english): statusText = "Status: Warning threshold reached"
+        case (.normal, .german): statusText = "Status: Normal"
+        case (.warm, .german): statusText = "Status: Warnschwelle wird erreicht"
+        case (.warning, .german): statusText = "Status: Warnschwelle erreicht"
+        }
+        return (["ThermalAtlas"] + values + [statusText]).joined(separator: ". ")
     }
 
     private static func menuBarColor(for kind: SensorKind) -> NSColor {

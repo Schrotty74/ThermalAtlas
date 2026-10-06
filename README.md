@@ -14,7 +14,7 @@
 📘 **[User Manual (PDF)](Documentation/ThermalAtlas-User-Manual-EN.pdf)** – interface, buttons, sensors, themes, installation and privacy explained in detail.
 
 > [!IMPORTANT]
-> **ThermalAtlas v1.1.0 is the current stable release.** The `main` branch contains the final source. New features in Beta 1.2.0-beta.5 are available on the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
+> **ThermalAtlas v1.1.0 is the current stable release.** The `main` branch contains the final source. Beta 1.2.0-beta.7 adds keyboard chart navigation, clearer System Context guidance and a retry path for failed CSV saves on the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
 
 ## Overview
 
@@ -32,11 +32,12 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 - Separates fast, read-only CPU load, fan speeds and used-memory context from temperature monitoring.
 - Keeps local temperature history, provides optional temperature alerts, and exports a snapshot or CSV only on request.
 - Offers Standard, Compact and a movable Mini Display, selectable sensor groups, and menu-bar modes.
-- Shows the selected point’s time and minute-average temperature when you click or drag in the temperature chart.
+- Shows the selected point’s time and minute-average temperature when you click or drag in the temperature chart. Arrow keys and Previous/Next buttons move through points; Escape clears the selection. Axis time labels follow the selected app language, and isolated readings remain visible.
 - Opens local System Information with the macOS Thermal State from the header thermometer; offers Always on Top and optional Start at Login registration.
 - Checks GitHub for newer Final and Beta releases manually or, if enabled, daily, weekly or monthly. Download and installation remain your choice.
 - Includes four native themes and a local English/German interface choice.
-- Supports VoiceOver, Reduce Motion and Reduce Transparency, plus Default, Dark and Mono icon appearances on supported macOS versions.
+- Supports VoiceOver for native temperature cards and the Mini Display, keyboard activation of Mini Display controls, Reduce Motion and Reduce Transparency, plus Default, Dark and Mono icon appearances on supported macOS versions.
+- Explains the System Context values separately from temperatures. A failed CSV save shows the macOS error and lets you reopen the save dialog to try again.
 - Uses defensive Apple-silicon sensor access and independent drive refresh cycles, so slow drive queries do not delay CPU/GPU temperatures.
 - Works locally without accounts, telemetry, analytics, third-party dependencies, or hardware control.
 

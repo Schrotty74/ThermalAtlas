@@ -45,6 +45,7 @@ final class TemperatureHistoryStore {
     private let defaults: UserDefaults
     private let storageKey: String
     private(set) var pointsByReadingID: [String: [TemperatureHistoryPoint]]
+    private var lastPrunedMinute: Date?
 
     init(defaults: UserDefaults = .standard, storageKey: String = TemperatureHistoryStore.storageKey) {
         self.defaults = defaults
@@ -63,7 +64,6 @@ final class TemperatureHistoryStore {
         )
         let cutoff = snapshot.updatedAt.addingTimeInterval(-Self.maximumAge)
 
-        var startedNewMinute = false
         for reading in snapshot.readings where reading.isFreshMeasurement && !reading.isLastVerifiedValue {
             guard let temperature = reading.temperatureCelsius else { continue }
             let identifier = reading.id
@@ -74,16 +74,16 @@ final class TemperatureHistoryStore {
                 points[last].sampleCount = count + 1
             } else {
                 points.append(TemperatureHistoryPoint(date: minute, averageTemperature: temperature, sampleCount: 1))
-                startedNewMinute = true
             }
-            pointsByReadingID[identifier] = points.filter { $0.date >= cutoff }
+            pointsByReadingID[identifier] = points
         }
-        // Keep refining the in-memory average during a minute, but write only
-        // when a new minute begins. Pruning and persistence follow that same
-        // cadence, avoiding a complete history walk on every sensor scan.
-        if startedNewMinute {
+        // Avoid filtering all 24-hour point arrays on every sensor scan. Prune
+        // and persist once per minute, even when sensors are unavailable, so
+        // retained history stays bounded while range queries remain exact.
+        if lastPrunedMinute != minute {
             pointsByReadingID = Self.pruned(pointsByReadingID, before: cutoff)
             persist()
+            lastPrunedMinute = minute
         }
     }
 

@@ -21,6 +21,8 @@ Updateintervalle, Zeitpunkte der letzten erfolgreichen und versuchten Prüfung s
 
 Die App enthält keine Telemetrie, Analyse-Dienste, Konten, Cloud-Synchronisation, Werbung oder Drittanbieter-Abhängigkeiten. Sie besitzt keine Lüftersteuerung, Energiesteuerung oder schreibenden Sensorpfade. Ein Text- oder CSV-Export entsteht nur nach deiner Auswahl und an einem lokal gewählten Speicherort. Die Aktivitätsanzeige sowie die optionalen Links zu GitHub, Homepage und Handbüchern öffnen sich nur nach einem Klick auf den jeweiligen Menüeintrag.
 
+Bei einem CSV-Schreibfehler erscheint ein lokaler Fehlerdialog mit der Möglichkeit, den Speicherort erneut zu wählen. Der Fehler wird nicht übertragen; der Export bleibt eine vom Nutzer ausgelöste lokale Aktion.
+
 ## Grenzen
 
 Einige Laufwerke und externe Gehäuse geben keine SMART-Temperatur aus. Private Apple-Silicon-SMC-Schlüssel können sich mit macOS-Updates ändern oder fehlen. ThermalAtlas zeigt dann „Nicht verfügbar“, statt Werte zu schätzen.

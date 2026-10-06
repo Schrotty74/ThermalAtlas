@@ -38,7 +38,7 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var alertThresholdTitle: String { self == .english ? "Warning Threshold" : "Warnschwelle" }
     var temperatureHistoryTitle: String { self == .english ? "Temperature History" : "Temperaturverlauf" }
     var systemContextTitle: String { self == .english ? "System Context" : "Systemkontext" }
-    var systemContextHint: String { self == .english ? "Context only — not temperature sensors" : "Nur Kontext — keine Temperatursensoren" }
+    var systemContextHint: String { self == .english ? "This section shows CPU load, fan speeds, memory usage and power status on your Mac. Temperature readings are in the cards above." : "Dieser Bereich zeigt Auslastung, Lüfterdrehzahlen, Speicher und Energiezustand deines Macs. Temperaturwerte stehen in den Karten darüber." }
     var cpuLoadTitle: String { self == .english ? "CPU Load" : "CPU-Last" }
     var fanHistoryTitle: String { self == .english ? "Fan History" : "Lüfterverlauf" }
     var minuteAveragesTitle: String { self == .english ? "Minute averages" : "Minutenmittelwerte" }
@@ -94,6 +94,15 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var exportCSVTitle: String { self == .english ? "Export CSV…" : "CSV exportieren…" }
     var copyDiagnosticReportTitle: String { self == .english ? "Copy Diagnostic Report" : "Diagnosebericht kopieren" }
     var exportMenuTitle: String { self == .english ? "Export" : "Export" }
+    var csvSaveErrorTitle: String { self == .english ? "CSV could not be saved" : "CSV konnte nicht gespeichert werden" }
+    var csvSaveErrorMessage: String { self == .english ? "Check the destination and try saving again." : "Prüfe den Speicherort und versuche es erneut." }
+    var retryTitle: String { self == .english ? "Try Again…" : "Erneut versuchen…" }
+    var chartTimeTitle: String { self == .english ? "Time" : "Uhrzeit" }
+    var chartSegmentTitle: String { self == .english ? "Segment" : "Abschnitt" }
+    var chartSelectedTimeTitle: String { self == .english ? "Selected time" : "Gewählte Uhrzeit" }
+    var chartPointNavigationHint: String { self == .english ? "Use the left and right arrow keys to select a minute. Escape clears the selection." : "Mit den Pfeiltasten links und rechts eine Minute auswählen. Escape hebt die Auswahl auf." }
+    var chartPreviousPointTitle: String { self == .english ? "Previous minute" : "Vorherige Minute" }
+    var chartNextPointTitle: String { self == .english ? "Next minute" : "Nächste Minute" }
     var collectingHistoryTitle: String { self == .english ? "Collecting local history…" : "Lokaler Verlauf wird gesammelt …" }
     var historyHint: String { self == .english ? "Tap the card again to close" : "Karte erneut anklicken zum Schließen" }
     var sensorHistoryAccessibilityHint: String {

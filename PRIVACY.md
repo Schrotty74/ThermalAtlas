@@ -21,6 +21,8 @@ Update intervals, last successful and attempted check timestamps, and already re
 
 The app has no telemetry, analytics, accounts, cloud sync, advertising SDKs, or third-party dependencies. It has no fan-control, power-control, or sensor-write paths. A text or CSV export is created only after the user chooses it and selects a local destination. Activity Monitor and the optional GitHub, Homepage, and manual links open only after the user clicks the corresponding menu item.
 
+CSV save failures show a local error dialog with an option to choose the destination again. The error is not sent anywhere; export remains a user-initiated local action.
+
 ## Limits
 
 Some drives and external enclosures do not expose SMART temperatures. Private Apple-silicon SMC keys can change or be unavailable after macOS updates. ThermalAtlas shows unavailable values rather than estimating them.

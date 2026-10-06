@@ -2,6 +2,29 @@
 
 All notable user-visible changes are documented here in English. Development builds remain local; public prereleases are announced through GitHub Releases.
 
+## 1.2.0-beta.7
+
+### Improved
+
+- CSV save failures show a localized error with Try Again and Close actions. Try Again opens the save dialog again so you can choose another destination.
+- Temperature cards can be opened from the keyboard. Temperature and fan charts support previous/next point buttons, Left/Right arrow keys and Escape to clear the selection.
+- Charts show and allow selection of a single recorded point, including a fan reading of 0 RPM. Chart labels, times and numbers follow the selected English or German app language.
+- Menu bar and Mini Display readings have localized accessibility labels and values. Mini Display size selection also supports the accessibility press action, Return and Space.
+- Window resizing respects Reduce Motion and fits expanded history content while preserving the window width and top edge.
+- The macOS Settings window provides an explanation and a button to open the main ThermalAtlas window.
+- System Context gives its values more room within the existing window width. Its info button opens a compact explanation of CPU load, fans, memory and power status.
+- History cleanup and point lookup do less repeated work. Hidden or unchanged Mini Display panels skip unnecessary image and size updates.
+
+### Fixed
+
+- Removed drives no longer retain old temperature-warning episodes. A reconnected drive starts a new warning period; changing a threshold also resets its period.
+- The System Context explanation no longer opens in an excessively tall popover.
+
+### Documentation
+
+- Updated both manuals and fifteen-page PDFs with keyboard navigation, accessibility, CSV error recovery and the System Context explanation.
+- Updated the bilingual feature overview and release information. Local history formats, read-only monitoring and optional GitHub update behavior remain unchanged.
+
 ## 1.2.0-beta.6
 
 ### Added

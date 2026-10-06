@@ -7,7 +7,7 @@ struct ThermalAtlasApp: App {
 
     var body: some Scene {
         Settings {
-            EmptyView()
+            ThermalAtlasSettingsContent()
         }
     }
 }
@@ -25,6 +25,9 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
     private var miniPanel: NSPanel?
     private var miniImageView: NSImageView?
     private var miniControlsView: NSView?
+    private var miniImageSignature: String?
+    private var statusImageSignature: String?
+    private var statusDisplayMode: MenuBarDisplayMode?
 
     override init() {
         let savedInterval = UserDefaults.standard.object(forKey: "thermalatlas.refreshInterval") as? Double
@@ -46,6 +49,12 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
             self,
             selector: #selector(updateMiniDisplayVisibility),
             name: .thermalAtlasMiniDisplayVisibilityChanged,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(showMainWindowFromSettings(_:)),
+            name: .thermalAtlasShowMainWindow,
             object: nil
         )
         NotificationCenter.default.addObserver(
@@ -74,6 +83,7 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
         statusRefreshTimer?.invalidate()
         NotificationCenter.default.removeObserver(self, name: .thermalAtlasMiniDisplayVisibilityChanged, object: nil)
         NotificationCenter.default.removeObserver(self, name: .thermalAtlasMiniAlwaysOnTopChanged, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .thermalAtlasShowMainWindow, object: nil)
     }
 
     @objc private func showMainWindow() {
@@ -83,6 +93,10 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
         }
         panel.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    @objc private func showMainWindowFromSettings(_ notification: Notification) {
+        showMainWindow()
     }
 
     @objc private func refreshStatusItem() {
@@ -102,12 +116,33 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
             language: AppLanguage(rawValue: defaults.string(forKey: "thermalatlas.language") ?? "") ?? .defaultLanguage
         )
         let status = MenuBarTemperatureStatus.from(readings: readings, configuration: configuration)
-        button.image = displayMode == .symbolOnly
-            ? MenuBarStatusImage.symbolOnly()
-            : MenuBarStatusImage.make(
-                readings: readings,
-                status: status
-            )
+        let language = configuration.language
+        let accessibilityDescription = MenuBarStatusImage.accessibilityDescription(
+            readings: readings,
+            status: status,
+            language: language
+        )
+        if button.accessibilityValue() as? String != accessibilityDescription {
+            button.setAccessibilityLabel("ThermalAtlas")
+            button.setAccessibilityValue(accessibilityDescription)
+        }
+        let accessibilityHelp = language == .english
+            ? "Opens the ThermalAtlas temperature window"
+            : "Öffnet das ThermalAtlas-Temperaturfenster"
+        if button.accessibilityHelp() != accessibilityHelp {
+            button.setAccessibilityHelp(accessibilityHelp)
+        }
+        let imageSignature = MenuBarStatusImage.imageSignature(readings: readings, status: status)
+        if statusImageSignature != imageSignature || statusDisplayMode != displayMode {
+            button.image = displayMode == .symbolOnly
+                ? MenuBarStatusImage.symbolOnly()
+                : MenuBarStatusImage.make(
+                    readings: readings,
+                    status: status
+                )
+            statusImageSignature = imageSignature
+            statusDisplayMode = displayMode
+        }
         updateMiniDisplay(readings: readings, status: status)
     }
 
@@ -166,6 +201,7 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
         let imageView = DraggableMiniImageView(frame: .zero)
         imageView.imageScaling = .scaleNone
         imageView.imageAlignment = .alignCenter
+        imageView.setAccessibilityRole(.button)
         imageView.onRightClick = { [weak self] in self?.toggleMiniModePanel() }
 
         let panel = NSPanel(
@@ -259,10 +295,34 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
     }
 
     private func updateMiniDisplay(readings: [TemperatureReading], status: MenuBarTemperatureStatus) {
-        guard let panel = miniPanel, let imageView = miniImageView else { return }
-        let image = MenuBarStatusImage.make(readings: readings, status: status)
-        imageView.image = image
-        layoutMiniPanel(panel: panel, imageView: imageView)
+        guard let panel = miniPanel, panel.isVisible, let imageView = miniImageView else { return }
+        let signature = MenuBarStatusImage.imageSignature(readings: readings, status: status)
+        let imageChanged = miniImageSignature != signature
+        if imageChanged {
+            imageView.image = MenuBarStatusImage.make(readings: readings, status: status)
+            miniImageSignature = signature
+        }
+        let language = AppLanguage(
+            rawValue: UserDefaults.standard.string(forKey: "thermalatlas.language") ?? ""
+        ) ?? .defaultLanguage
+        let accessibilityValue = MenuBarStatusImage.accessibilityDescription(
+            readings: readings,
+            status: status,
+            language: language
+        )
+        if imageView.accessibilityValue() as? String != accessibilityValue {
+            imageView.setAccessibilityLabel("ThermalAtlas")
+            imageView.setAccessibilityValue(accessibilityValue)
+        }
+        let accessibilityHelp = language == .english
+            ? "Press Return or Space, or right-click, to choose a window size"
+            : "Mit Eingabe oder Leertaste oder per Rechtsklick die Fenstergröße wählen"
+        if imageView.accessibilityHelp() != accessibilityHelp {
+            imageView.setAccessibilityHelp(accessibilityHelp)
+        }
+        if imageChanged {
+            layoutMiniPanel(panel: panel, imageView: imageView)
+        }
     }
 
     private func layoutMiniPanel(panel: NSPanel, imageView: NSImageView) {
@@ -279,18 +339,24 @@ private final class ThermalAtlasApplicationDelegate: NSObject, NSApplicationDele
             height: imageSize.height
         )
         miniControlsView?.frame = NSRect(x: 6, y: 6, width: contentSize.width - 12, height: controlsHeight - 6)
-        panel.setContentSize(contentSize)
+        if panel.contentRect(forFrameRect: panel.frame).size != contentSize {
+            panel.setContentSize(contentSize)
+        }
     }
 
     private func hideMiniControls() {
         miniControlsView?.removeFromSuperview()
         miniControlsView = nil
+        if let panel = miniPanel, let imageView = miniImageView {
+            layoutMiniPanel(panel: panel, imageView: imageView)
+        }
     }
 }
 
 extension Notification.Name {
     static let thermalAtlasMiniDisplayVisibilityChanged = Notification.Name("thermalAtlasMiniDisplayVisibilityChanged")
     static let thermalAtlasMiniAlwaysOnTopChanged = Notification.Name("thermalAtlasMiniAlwaysOnTopChanged")
+    static let thermalAtlasShowMainWindow = Notification.Name("thermalAtlasShowMainWindow")
 }
 
 private final class DraggableMiniContentView: NSView {
@@ -301,9 +367,47 @@ private final class DraggableMiniImageView: NSImageView {
     var onRightClick: (() -> Void)?
 
     override var mouseDownCanMoveWindow: Bool { true }
+    override var acceptsFirstResponder: Bool { true }
+
+    override func accessibilityPerformPress() -> Bool {
+        onRightClick?()
+        return true
+    }
 
     override func rightMouseDown(with event: NSEvent) {
         onRightClick?()
+    }
+
+    override func keyDown(with event: NSEvent) {
+        guard event.keyCode == 36 || event.keyCode == 49 else {
+            super.keyDown(with: event)
+            return
+        }
+        onRightClick?()
+    }
+}
+
+private struct ThermalAtlasSettingsContent: View {
+    @AppStorage("thermalatlas.language") private var languageRawValue = AppLanguage.defaultLanguage.rawValue
+
+    private var language: AppLanguage {
+        AppLanguage(rawValue: languageRawValue) ?? .defaultLanguage
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("ThermalAtlas")
+                .font(.title2)
+            Text(language == .english
+                ? "Temperature readings and settings are available in the main window."
+                : "Temperaturmesswerte und Einstellungen finden Sie im Hauptfenster.")
+                .foregroundStyle(.secondary)
+            Button(language == .english ? "Open ThermalAtlas" : "ThermalAtlas öffnen") {
+                NotificationCenter.default.post(name: .thermalAtlasShowMainWindow, object: nil)
+            }
+        }
+        .padding(20)
+        .frame(minWidth: 340, alignment: .leading)
     }
 }
 

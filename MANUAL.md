@@ -1,6 +1,6 @@
 # ThermalAtlas - User Manual
 
-Version: 1.2.0-beta.6
+Version: 1.2.0-beta.7
 
 <p align="center">
   <img src="Resources/IconSource/ThermalAtlas-LiquidGlass.png" width="150" alt="ThermalAtlas app icon">
@@ -86,6 +86,8 @@ Below the temperature cards, ThermalAtlas shows CPU load, the actual speed of ea
 
 System Context is separate from the temperature sensors. It refreshes about every 0.5 seconds, independently of the selectable temperature refresh interval. CPU load needs two successive snapshots before it appears. Fan minute averages are stored locally for at most 24 hours; the other context values are displayed only. ThermalAtlas does not change fan or power settings.
 
+The context tiles reflow to keep their readings visible in Standard and Compact sizes. Use the info button beside **System Context** for a short explanation of CPU load, fan speed, memory and power status. These are operating details; temperature readings remain in the cards above. If the macOS Settings window shows the notice that readings and settings are in the main window, choose **Open ThermalAtlas**.
+
 Memory status follows the used share of installed RAM: **Normal** below 70%, **Elevated** from 70% to below 85%, and **High** from 85%. This is a memory-usage indicator, not macOS memory pressure.
 
 <p align="center">
@@ -145,7 +147,7 @@ Choose **Themes** in the shared menu to select an appearance. The selected item 
 
 Changing the theme affects appearance only, not sensor logic. The selection is stored locally. All four appearances show the same sensor data.
 
-Temperature cards announce their history controls and state through VoiceOver. ThermalAtlas follows macOS **Reduce Motion** for card and chart-opening animations and **Reduce Transparency** for glass surfaces. In Liquid Glass on macOS 27 or later, the thermometer button uses the interactive system glass style; earlier versions use the standard button.
+Temperature cards are native buttons: VoiceOver announces each card's temperature and whether its history is open, and the card can be activated with the standard button action. The Mini Display accepts **Return** and **Space** as well as VoiceOver's press action to open its Window Size controls. ThermalAtlas follows macOS **Reduce Motion** when cards appear, histories open and the window resizes. It follows **Reduce Transparency** for glass surfaces. In Liquid Glass on macOS 27 or later, the thermometer button uses the interactive system glass style; earlier versions use the standard button.
 
 From Beta 1.2.0-beta.6, Adaptive uses neutral macOS surfaces in light and dark mode. Drive names in the screenshots are anonymized.
 
@@ -215,7 +217,9 @@ Choose **Menu Bar Display** to decide how much space ThermalAtlas uses in the ma
 
 Click a temperature card to open its local **Temperature History**. Choose **1 h**, **3 h**, **6 h**, **12 h** or **24 h**; the orange dashed line marks that sensor group's selected warning threshold. ThermalAtlas stores minute averages for real, readable values only and keeps at most 24 hours. Right after launch, the chart needs two separate minutes before it can draw a line. A temporarily retained GPU value is clearly marked and is not recorded as a new measurement.
 
-Click or drag inside the chart to select the nearest recorded point. A marker shows its position, and the text below shows its time and minute-average temperature. Changing the time range clears the selection. Click elsewhere on the card to close the history. History and CSV use the average temperature; CPU and GPU warning thresholds use the Hotspot when available, so a warning can occur while the plotted average remains below the threshold line.
+Click or drag inside the chart to select the nearest recorded point. A marker shows its position, and the text below shows its time and minute-average temperature. Use the left and right arrow keys or the Previous minute and Next minute buttons to move between points; press Escape to clear the selection. The chart's time labels follow the selected app language. A lone reading remains visible as a point, including a genuine 0 RPM reading in fan history. Changing the time range clears the selection. Click elsewhere on the card to close the history. History and CSV use the average temperature; CPU and GPU warning thresholds use the Hotspot when available, so a warning can occur while the plotted average remains below the threshold line.
+
+When you open or close a temperature history, the main window adjusts its height to the cards. Reduce Motion disables the resizing animation.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/temperature-history-card.png" width="430" alt="Illustrative GPU history with sample data, a selected point and warning threshold">
@@ -232,7 +236,7 @@ To open the view:
 3. Click **Fan** or **Fan 1/2** with its **RPM value**. Each displayed fan opens its own history.
 4. Choose **1 h**, **3 h**, **6 h**, **12 h** or **24 h** at the top. Click outside to close the view.
 
-Initially, the view says “Collecting local history…” until two minute points are available. A single recorded point already provides Min/Max/average. If no fan speed is readable, “Not available” appears and there is no clickable fan value.
+Initially, the view says “Collecting local history…” until two minute points are available. A single recorded point already provides Min/Max/average and is drawn on its own. A real 0 RPM value remains a valid point. If no fan speed is readable, “Not available” appears and there is no clickable fan value.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/fan-history.png" width="600" alt="ThermalAtlas Fan 1 history with five time ranges and Min, Max and average readings of 1,000 RPM">
@@ -244,6 +248,8 @@ The screenshot shows **Fan 1** with **1 h** selected. The other buttons select *
 
 Click or drag in the graph to select a recorded point and see its time and minute-average RPM. Changing the range clears that selection. Close the popover by clicking outside it. History stays local for at most 24 hours. Missing fan readings do not become zero values; gaps interrupt the curve. A genuinely reported **0 RPM** is a valid stopped-fan reading. ThermalAtlas reads fan speeds and does not control them.
 
+Use the left and right arrow keys or the **Previous minute** and **Next minute** buttons to move through recorded points. Press **Escape** to clear the selection. Time labels use the selected app language. The same keyboard and button controls work in Temperature History.
+
 The temperature chart also shows Min, Max and Ø for its minute averages. Sensor Details show the age of the last valid reading; temporarily retained GPU values show their age directly on the card. After the existing 15-second retention limit, the temperature becomes unavailable while the last valid GPU timestamp remains visible in the details.
 
 ### Temperature Alerts
@@ -252,6 +258,8 @@ Choose **Temperature Alerts** to enable or disable local macOS notifications. CP
 
 CPU and GPU alerts use their Hotspot when available, otherwise their average. SSD alerts use the reported SSD temperature. The default thresholds are 95 °C for CPU/GPU and 70 °C for SSDs. The menu bar frame is green below the warning range, yellow within 10 °C below a selected threshold, and red at or above it. This frame uses the same temperature basis as alerts and updates even when notifications are disabled.
 
+The 60-second warning timer starts again if a sensor disappears and returns or if you change its threshold. This prevents a new or changed reading from inheriting time from the previous warning episode.
+
 <p align="center">
   <img src="Resources/ManualScreenshots/temperature-alerts-menu.png" width="230" alt="ThermalAtlas Temperature Alerts menu with separate CPU, GPU and SSD threshold submenus">
   <img src="Resources/ManualScreenshots/temperature-alert-thresholds.png" width="130" alt="ThermalAtlas CPU temperature alert threshold submenu with 95 degrees Celsius selected">
@@ -259,7 +267,7 @@ CPU and GPU alerts use their Hotspot when available, otherwise their average. SS
 
 ### Export
 
-Choose **Export** to prepare local diagnostic data on demand. **Copy Current Readings** places the current snapshot as text on the clipboard. **Copy Diagnostic Report** copies the Mac model, macOS version, chip name and current readable or unavailable sensor states. **Export CSV** opens a normal macOS save dialog and writes a CSV containing the available minute averages from the local history plus the current snapshot. ThermalAtlas creates no export file until you choose a location.
+Choose **Export** to prepare local diagnostic data on demand. **Copy Current Readings** places the current snapshot as text on the clipboard. **Copy Diagnostic Report** copies the Mac model, macOS version, chip name and current readable or unavailable sensor states. **Export CSV** opens a normal macOS save dialog and writes a CSV containing the available minute averages from the local history plus the current snapshot. ThermalAtlas creates no export file until you choose a location. If saving fails, an alert shows the macOS error description and offers **Try Again…** or **Close**. Try Again opens the save dialog again so you can choose a location.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/export-menu.png" width="394" alt="ThermalAtlas Export submenu">

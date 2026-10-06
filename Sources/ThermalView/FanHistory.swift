@@ -92,3 +92,29 @@ struct HistorySummary {
         self.average = valid.reduce(0, +) / Double(valid.count)
     }
 }
+
+/// Searches chronologically ordered minute points without scanning every point
+/// on each pointer movement. Ties select the earlier minute.
+enum HistoryPointSelection {
+    static func nearestIndex(to date: Date, in points: [HistoryChartPoint]) -> Int? {
+        guard !points.isEmpty else { return nil }
+        var lower = 0
+        var upper = points.count
+        while lower < upper {
+            let middle = lower + (upper - lower) / 2
+            if points[middle].date < date { lower = middle + 1 } else { upper = middle }
+        }
+        if lower == 0 { return 0 }
+        if lower == points.count { return points.count - 1 }
+        return date.timeIntervalSince(points[lower - 1].date) <= points[lower].date.timeIntervalSince(date)
+            ? lower - 1 : lower
+    }
+
+    static func movedIndex(from date: Date?, offset: Int, in points: [HistoryChartPoint]) -> Int? {
+        guard !points.isEmpty else { return nil }
+        guard let date, let current = nearestIndex(to: date, in: points) else {
+            return offset < 0 ? points.count - 1 : 0
+        }
+        return min(points.count - 1, max(0, current + offset))
+    }
+}

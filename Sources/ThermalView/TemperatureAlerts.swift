@@ -72,12 +72,27 @@ struct TemperatureAlert: Sendable {
 struct TemperatureAlertEngine {
     static let requiredDuration: TimeInterval = 60
 
+    private struct Thresholds: Equatable {
+        let cpu: Double
+        let gpu: Double
+        let internalSSD: Double
+        let externalSSD: Double
+
+        init(_ configuration: TemperatureAlertConfiguration) {
+            cpu = configuration.cpuThreshold
+            gpu = configuration.gpuThreshold
+            internalSSD = configuration.internalSSDThreshold
+            externalSSD = configuration.externalSSDThreshold
+        }
+    }
+
     private struct ActiveEpisode {
         let beganAt: Date
         var wasReported: Bool
     }
 
     private var episodes: [String: ActiveEpisode] = [:]
+    private var previousThresholds: Thresholds?
 
     mutating func evaluate(
         readings: [TemperatureReading],
@@ -86,8 +101,21 @@ struct TemperatureAlertEngine {
     ) -> [TemperatureAlert] {
         guard configuration.isEnabled else {
             episodes.removeAll()
+            previousThresholds = nil
             return []
         }
+
+        let thresholds = Thresholds(configuration)
+        if let previousThresholds, previousThresholds != thresholds {
+            episodes.removeAll()
+        }
+        previousThresholds = thresholds
+
+        // SSD values are cached between physical reads. Keep those IDs while
+        // they are still present, but drop episodes as soon as a device leaves
+        // the published reading set.
+        let presentReadingIDs = Set(readings.map(\.id))
+        episodes = episodes.filter { presentReadingIDs.contains($0.key) }
 
         var alerts: [TemperatureAlert] = []
         for reading in readings {

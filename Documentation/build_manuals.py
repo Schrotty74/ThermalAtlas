@@ -313,6 +313,26 @@ def build(language, output):
           "Niedrigster, höchster und durchschnittlicher Minutenmittelwert im gewählten Zeitraum; jede vorhandene Minute zählt gleich. Keine kurzzeitigen RPM-Spitzen. Hier sind alle Angaben auf 1.000 RPM gerundet. Klicke oder ziehe für Uhrzeit und Wert eines Punktes. Bereichswechsel löscht die Auswahl; außerhalb klicken schließt. Speicherung: lokal, höchstens 24 Stunden. Fehlende Werte bilden Lücken, echte 0 RPM bleiben gültig. Keine Lüftersteuerung." if de else "Lowest, highest and mean minute average in the selected period; each recorded minute has equal weight. These are not instantaneous RPM peaks. All figures here round to 1,000 RPM. Click or drag for a point's time and value. Changing range clears selection; click outside to close. Storage is local for at most 24 hours. Missing values leave gaps; real 0 RPM remains valid. No fan control.")
     lines(c, "Messwertalter: Sensor-Details zeigen das Alter; überbrückte GPU-Werte auch direkt auf der Karte." if de else "Reading age appears in Sensor Details; retained GPU values also show it directly on the card.",
           55, 57, W - 110, 9, 12, MUTED)
+    c.showPage()
+
+    # 15 Keyboard access and status details
+    base(c, 14, "Bedienung" if de else "Access", "Tastatur & Bedienung" if de else "Keyboard & controls",
+         "Neu in Beta 1.2.0-beta.7." if de else "New in Beta 1.2.0-beta.7.", 15)
+    panel(c, 55, 555, W - 110, 115, CYAN,
+          "Diagrammpunkte wählen" if de else "Select chart points",
+          "Klicke oder ziehe im Temperatur- oder Lüfterdiagramm, um einen Messpunkt auszuwählen. Pfeiltasten links/rechts sowie Vorherige Minute / Nächste Minute wechseln zwischen Punkten; Escape hebt die Auswahl auf. Zeitlabels richten sich nach der App-Sprache. Einzelne Messpunkte bleiben sichtbar, auch echte 0 RPM." if de else "Click or drag in a temperature or fan chart to select a reading. Use the left/right arrow keys or Previous minute / Next minute buttons to move between points; Escape clears the selection. Time labels follow the app language. Isolated readings remain visible, including genuine 0 RPM.")
+    panel(c, 55, 405, 235, 120, GREEN,
+          "Karten & Mini-Anzeige" if de else "Cards & Mini Display",
+          "Temperaturkarten sind native Buttons; VoiceOver liest Temperatur und Verlaufsstatus vor. Return, Leertaste und VoiceOver-Aktivieren öffnen in der Mini-Anzeige die Größensteuerung." if de else "Temperature cards are native buttons; VoiceOver announces their reading and history state. Return, Space and VoiceOver's press action open Mini Display's size controls.")
+    panel(c, 303, 405, 235, 120, VIOLET,
+          "Systemkontext" if de else "System Context",
+          "Der Info-Button erklärt Auslastung, Lüfter, RAM und Energie; Temperaturen stehen in den Karten darüber. Die Felder passen sich Standard und Kompakt an." if de else "Info explains CPU load, fans, memory and power; temperatures are in the cards above. Tiles reflow in Standard and Compact.")
+    panel(c, 55, 255, W - 110, 115, ORANGE,
+          "CSV-Speicherfehler" if de else "CSV save errors",
+          "Kann ThermalAtlas die CSV nicht schreiben, zeigt der Fehlerdialog auch die macOS-Fehlerbeschreibung. Erneut versuchen öffnet den Speicherdialog erneut; Schließen beendet den Exportversuch." if de else "If ThermalAtlas cannot write the CSV, the alert includes the macOS error description. Try Again reopens the save dialog; Close ends the export attempt.")
+    panel(c, 55, 105, W - 110, 115, CYAN,
+          "Warnfrist, Bewegung & Einstellungen" if de else "Alerts, motion & Settings",
+          "Die 60-Sekunden-Frist beginnt nach einer Sensorunterbrechung oder einem Schwellenwechsel neu. Bewegung reduzieren schaltet Animationen beim Einblenden von Karten, Öffnen des Verlaufs und Anpassen der Fensterhöhe aus. Die macOS-Einstellungen bieten „ThermalAtlas öffnen“ für das Hauptfenster." if de else "The 60-second timer restarts after a sensor disappears and returns or its threshold changes. Reduce Motion disables animations as cards appear, history opens and the window resizes. macOS Settings offers Open ThermalAtlas for the main window.")
     c.save()
 
 
