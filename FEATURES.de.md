@@ -2,7 +2,7 @@
 
 [English](FEATURES.md)
 
-Diese Seite beschreibt die Funktionen dieses Builds ausführlich. Installation und tägliche Nutzung erklärt das [Benutzerhandbuch](MANUAL.de.md).
+Diese Seite beschreibt die Funktionen von Beta 1.2.0-beta.7 ausführlich. Installation und tägliche Nutzung erklärt das [Benutzerhandbuch](MANUAL.de.md).
 
 ## Temperaturüberwachung
 
@@ -39,11 +39,11 @@ Diese Seite beschreibt die Funktionen dieses Builds ausführlich. Installation u
 
 - Öffnet von jeder Temperaturkarte einen lokalen Verlauf für 1, 3, 6, 12 oder 24 Stunden.
 - Zeigt beim Anklicken oder Ziehen im Graphen Uhrzeit und Minutenmittelwert des nächsten aufgezeichneten Punktes.
-- Wechselt mit den Pfeiltasten links/rechts oder den Buttons Vorherige/Nächste Minute zwischen Punkten; Escape hebt die Auswahl auf. Zeitlabels richten sich nach der App-Sprache. Einzelne Punkte bleiben sichtbar, auch 0 RPM.
+- Wechselt mit den Pfeiltasten links/rechts oder den Buttons Vorherige/Nächste Minute zwischen Punkten; Escape hebt die Auswahl auf. Diagrammbeschriftungen, Uhrzeiten und Zahlen richten sich nach der gewählten App-Sprache. Einzelne Punkte bleiben sichtbar und auswählbar, auch 0 RPM.
 - Speichert nur lokale Minutenmittelwerte für höchstens 24 Stunden; vorübergehend gehaltene GPU-Werte werden nicht als neue Messung aufgezeichnet.
 - Bietet getrennte Warnschwellen für CPU, GPU, interne SSD und externe SSDs. CPU-/GPU-Warnungen verwenden den gemessenen Hotspot; SSD-Warnungen die angezeigte Temperatur. Eine Mitteilung benötigt mindestens 60 Sekunden an oder über der Schwelle und wird erst nach einer Abkühlung erneut gesendet. Nach Entfernen und Wiederanschließen eines Sensors oder einer Schwellenänderung beginnt die Frist neu.
 - Exportiert einen kopierbaren aktuellen Snapshot, einen kopierbaren Diagnosebericht mit Mac-Modell, macOS-Version, Chipbezeichnung und Sensorstatus oder lokalen Verlauf plus aktuellen Snapshot als CSV; CSV entsteht erst nach der Auswahl eines Speicherorts.
-- Zeigt bei einem fehlgeschlagenen CSV-Schreibvorgang den macOS-Fehler. Erneut versuchen öffnet den Speicherdialog wieder, damit du den Speicherort neu wählen kannst.
+- Zeigt bei einem fehlgeschlagenen CSV-Schreibvorgang den macOS-Fehler. Erneut versuchen öffnet den Speicherdialog wieder, damit du den Speicherort neu wählen kannst; Schließen beendet den Exportversuch.
 
 - Öffnet über jeden lesbaren Lüfterwert einen separaten RPM-Verlauf mit denselben fünf Zeiträumen und Punktwahl.
 - Zeigt in beiden Diagrammarten Min/Max/Ø der vorhandenen Minutenmittelwerte. Jede aufgezeichnete Minute zählt gleich; fehlende Minuten bilden Lücken.
@@ -61,13 +61,14 @@ Diese Seite beschreibt die Funktionen dieses Builds ausführlich. Installation u
 
 - Bietet Standard- und Kompaktgröße für das Fenster; Kompakt ist rund 40 % schmaler und hält die Bedienelemente lesbar.
 - Bietet zusätzlich eine verschiebbare Mini-Anzeige der gewählten Temperaturen. Rechtsklick öffnet Standard und Kompakt; der Modus wird lokal gespeichert.
-- Mit „Immer im Vordergrund“ kann die Mini-Anzeige andere Vollbildbereiche nutzen. Die Sichtbarkeit über einzelnen Vollbildspielen ist noch zu prüfen.
+- Mit „Immer im Vordergrund“ kann die Mini-Anzeige andere Vollbildbereiche nutzen.
 - Lässt CPU-, GPU-, interne SSD- und externe SSD-Gruppen für Popover und Menüleiste wählen.
 - Bietet Menüleistenmodi für **Alle Werte** oder **Nur Symbol**.
 - Trennt CPU-, GPU- und SSD-Werte im Modus **Alle Werte** farblich und ergänzt eine kontrastreiche Statusfläche: grün im Normalbereich, gelb nahe einer Schwelle und rot ab der gewählten Warnschwelle.
 - Enthält vier native Themes: Adaptiv, Liquid Glass, Aurora und Ember. Adaptiv verwendet neutrale macOS-Fenster- und Kontrollflächen im Hell- und Dunkelmodus.
-- Temperaturkarten sind native Buttons und geben ihren Verlaufsstatus an VoiceOver aus. Die Mini-Anzeige reagiert auf Return, Leertaste und VoiceOver-Aktivieren. „Bewegung reduzieren“ wirkt beim Einblenden von Karten, beim Öffnen eines Verlaufs und beim Anpassen der Fensterhöhe; „Transparenz reduzieren“ passt Glasflächen an.
+- Temperaturkarten lassen sich per Tastatur aktivieren und geben Messwert und Verlaufsstatus an VoiceOver aus. Menüleiste und Mini-Anzeige stellen VoiceOver lokalisierte Messwerte, nicht verfügbare Werte und den Temperaturwarnstatus bereit. Die Mini-Anzeige reagiert auf Return, Leertaste und VoiceOver-Aktivieren. „Bewegung reduzieren“ wirkt beim Einblenden von Karten, beim Öffnen eines Verlaufs und beim Anpassen der Fensterhöhe; „Transparenz reduzieren“ passt Glasflächen an.
 - Die Felder im Systemkontext ordnen sich in Standard und Kompakt passend an. Der Info-Button erklärt CPU-Auslastung, Lüfterdrehzahlen, Arbeitsspeicher und Energiezustand und verweist für Temperaturen auf die Karten darüber. Die macOS-Einstellungen zeigen einen Hinweis und den Button „ThermalAtlas öffnen“.
+- Passt die Fensterhöhe an geöffnete Temperaturverläufe an; Fensterbreite und obere Fensterkante bleiben erhalten.
 - Das mehrschichtige Icon-Composer-App-Icon bietet auf unterstützten macOS-Versionen die Erscheinungen Standard, Dunkel und Monochrom sowie einen Fallback für ältere Versionen.
 - Startet auf Englisch und bietet eine lokale deutsche Oberfläche.
 - Bietet eine optionale macOS-Registrierung für **Bei Anmeldung starten**.

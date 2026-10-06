@@ -191,3 +191,8 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - Am 6. Oktober 2026 über `Scripts/build-release-package.sh beta 1.2.0-beta.7 --publish` veröffentlicht. Release-Commit `3d2fda3`, Tag `v1.2.0-beta.7`: https://github.com/Schrotty74/ThermalAtlas/releases/tag/v1.2.0-beta.7.
 - Alle 61 Tests einschließlich Live-GitHub-Abfrage bestanden. Datenschutz- und Release-Vorprüfung, App-Signatur, ZIP-Integrität, Kennung/Version/Build, DMG-Applications-Link und SHA-256-Prüfsummen bestanden auch für die endgültigen Pakete. Alle vier GitHub-Dateien sind vollständig hochgeladen; ihre Digests entsprechen den lokalen Dateien. Remote-Branch und Tag zeigten beim Releaseabgleich auf den Release-Commit.
 - Beide Handbücher und PDFs enthalten die neuen Bedienwege; die PDFs haben je 15 Seiten. Die gezielten praktischen Bedienprüfungen aus `NEXT_STEPS.md` bleiben offen. Der lokale Hauptcheckout und dessen Handbücher wurden weder committet noch gepusht; keine Rückübernahme der Beta-Handbücher.
+
+## Ergänzung der Feature-Listen nach Beta.7
+
+- `FEATURES.md` und `FEATURES.de.md` wurden am 6. Oktober 2026 mit dem veröffentlichten Beta.7-Stand abgeglichen. Bereits beschriebene Neuerungen bleiben erhalten; ergänzt sind Tastaturaktivierung der Karten, VoiceOver-Messwerte und Warnstatus der Menüleiste/Mini-Anzeige, vollständige Diagrammlokalisierung, Schließen des CSV-Fehlerdialogs und die am Verlaufsinhalt ausgerichtete Fensterhöhe.
+- Der pauschale offene Hinweis zur Mini-Anzeige über Vollbildspielen wurde entsprechend der bestätigten Funktion entfernt. Eine Zusage für alle Spiele wird nicht ergänzt. Die Feature-Listen nennen ausdrücklich Beta.7. Offene Bedienprüfungen in `NEXT_STEPS.md`, App-Quellen, Release-Tag und Downloads bleiben unverändert.
