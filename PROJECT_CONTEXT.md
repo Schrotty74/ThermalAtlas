@@ -185,3 +185,9 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - Bei der Vorbereitung bestanden alle 60 lokalen Tests sowie die separat aktivierte Live-GitHub-Prüfung. Die acht CSV-Fehlerszenarien bestanden erneut mit dem übernommenen Beta-Code. Der Beta-Build, Quellen-Datenschutzprüfung und Release-Vorprüfung waren erfolgreich. Das vorbereitete ZIP ist intakt und enthält keine AppleDouble-Dateien; Kennung, Version/Build 1.2.0/7, DMG-Signatur, Applications-Verknüpfung und beide SHA-256-Prüfsummen wurden geprüft.
 
 - Beide ergänzten Handbücher und PDFs haben 15 Seiten. Alle 30 PDF-Seiten wurden visuell geprüft, die neue Seite 15 in größerer Darstellung. Die 33 PNGs für Handbücher und README wurden visuell und auf Metadaten geprüft. Keine privaten Pfade, Nutzernamen, Kontakte, Seriennummern oder UUIDs wurden gefunden; vorhandene Systeminfo-Beispielwerte belegen keine zusätzliche Hardware-Kompatibilität.
+
+## Veröffentlichung von Beta 1.2.0-beta.7
+
+- Am 6. Oktober 2026 über `Scripts/build-release-package.sh beta 1.2.0-beta.7 --publish` veröffentlicht. Release-Commit `3d2fda3`, Tag `v1.2.0-beta.7`: https://github.com/Schrotty74/ThermalAtlas/releases/tag/v1.2.0-beta.7.
+- Alle 61 Tests einschließlich Live-GitHub-Abfrage bestanden. Datenschutz- und Release-Vorprüfung, App-Signatur, ZIP-Integrität, Kennung/Version/Build, DMG-Applications-Link und SHA-256-Prüfsummen bestanden auch für die endgültigen Pakete. Alle vier GitHub-Dateien sind vollständig hochgeladen; ihre Digests entsprechen den lokalen Dateien. Remote-Branch und Tag zeigten beim Releaseabgleich auf den Release-Commit.
+- Beide Handbücher und PDFs enthalten die neuen Bedienwege; die PDFs haben je 15 Seiten. Die gezielten praktischen Bedienprüfungen aus `NEXT_STEPS.md` bleiben offen. Der lokale Hauptcheckout und dessen Handbücher wurden weder committet noch gepusht; keine Rückübernahme der Beta-Handbücher.
