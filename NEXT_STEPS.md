@@ -15,7 +15,7 @@
 - GPU-Verfügbarkeit weiter beobachten: Laut Rückmeldung vom 6. Oktober 2026 sind aktuell keine weiteren Ausfälle aufgefallen. Nur bei einem erneuten Ausfall gezielt in einem Debug-Dev-Lauf die IOKit-Rückgabecodes und verfügbaren Antworten je GPU-Schlüssel erfassen; keine erfundenen Ersatzwerte anzeigen.
 - Falls wiederholbare SwiftUI-Previews für die Temperaturansicht benötigt werden, zuerst ausdrücklich entscheiden, ob das Xcode-Build-Layout des Executable-Targets mit `ENABLE_DEBUG_DYLIB=YES` angepasst werden darf. Ohne diese Änderung kann Xcode die Previews nicht ausführen.
 
-- Öffentlichen Final-/Beta-Status im Schrotty74-Profil und Portfolio nach der Veröffentlichung abgleichen; die Prüfung am 11. Oktober 2026 vor der Veröffentlichung nennt Final 1.1.0 und Beta 1.2.0-beta.7.
+- Öffentlichen Final-/Beta-Status im Schrotty74-Profil und Portfolio nach der Veröffentlichung abgleichen; die Prüfung am 11. Oktober 2026 nach der Veröffentlichung nennt dort noch Final 1.1.0 und Beta 1.2.0-beta.7.
 
 ## Spätere Wartungsaufgabe
 

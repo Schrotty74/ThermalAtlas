@@ -9,7 +9,7 @@
 
 ## Aktueller Final-Stand
 
-- Final 1.2.0 wird aus dem veröffentlichten Beta.7-Quellstand vorbereitet. Quellen und Tests entsprechen Beta-Commit `ec8cac0`; Final verwendet Version 1.2.0, Build 1 und die eigene Bundle-Kennung.
+- Final 1.2.0 ist seit dem 11. Oktober 2026 veröffentlicht und basiert auf dem veröffentlichten Beta.7-Quellstand. Quellen und Tests entsprechen Beta-Commit `ec8cac0`; Final verwendet Version 1.2.0, Build 1 und die eigene Bundle-Kennung.
 - Die Vorbereitung erfolgt in einem getrennten Checkout von `main`. Der lokale Dev-Stand wird nicht committet oder zurückgesetzt.
 - Der zuvor auf `main` dokumentierte breite `system_profiler`-Aufruf ist durch die gezielten Systemabfragen des Beta-Stands ersetzt. Die früheren GPU-Last-Prozentwerte entfallen; Lüfterwerte und Lüfterverläufe sind enthalten.
 - Die unten benannten Beta-Veröffentlichungen dokumentieren die Herkunft dieser Funktionen; die aktuellen offenen Bedienprüfungen stehen in `NEXT_STEPS.md`.
@@ -220,3 +220,12 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - Die vorbereiteten Pakete bestanden die SHA-256-Prüfungen, ZIP-Integritätsprüfung ohne AppleDouble-Dateien und die Kontrolle von Bundle-Kennung, Version 1.2.0 und Build 1. Im schreibgeschützt bereitgestellten DMG wurden die strenge App-Signatur und der Applications-Link geprüft. Die endgültigen Upload-Dateien werden nach der Veröffentlichung nochmals gegen GitHub geprüft.
 
 - README, Features, Handbücher, Datenschutz, Sicherheitsrichtlinie und Changelog sind mit Final 1.2.0 abgeglichen. Beide PDFs wurden mit der bereitgestellten Codex-Python-Umgebung neu erzeugt; alle 30 Seiten sind visuell geprüft und tragen den Final-Stand im Footer. Bildreferenzen, interne Links sowie öffentliche Bildinhalte und Metadaten sind geprüft. Sichtbare Modell-/Konfigurationsbeispiele bestätigen keine weitere Hardware-Kompatibilität.
+
+## Veröffentlichung von Final 1.2.0
+
+- Am 11. Oktober 2026 über `Scripts/build-release-package.sh final 1.2.0 --publish` als reguläres GitHub-Release veröffentlicht: Tag `v1.2.0`, Release-Commit `c6ae86e` auf `main`, Version 1.2.0, Build 1. Release: https://github.com/Schrotty74/ThermalAtlas/releases/tag/v1.2.0.
+- Im Veröffentlichungsablauf bestanden nochmals alle 61 Debug-Tests einschließlich Live-GitHub-Abfrage. Die endgültigen Pakete bestanden SHA-256-, ZIP-, Kennungs-/Versions-/Build- und DMG-Signatur-/Applications-Link-Prüfungen. Alle vier GitHub-Dateien sind vollständig hochgeladen; ihre SHA-256-Digests stimmen mit den lokalen Dateien überein. Branch und Tag zeigten beim Releaseabgleich auf den Release-Commit.
+- README, Features, Markdown-Handbücher und beide PDFs wurden über ihre GitHub-Datei-Hashes auf `main` abgeglichen. Beide PDF-Handbücher haben je 15 Seiten. Praktische EN/DE-Bedienprüfungen und Instruments-Messungen aus `NEXT_STEPS.md` bleiben offen.
+- Die neueren Final-Handbücher wurden gemäß `AGENTS.md` als reiner Dokumentations-Commit `6d01eed` nach `beta` übernommen und gepusht: nur beide Markdown-Handbücher, beide PDFs und ihr Generator. Verwendete Bildressourcen waren bereits identisch. Beta-Quellen, Version/Build, Release-Tag und Downloads bleiben unverändert bei Beta.7.
+- Schrotty74-Profil und Portfolio wurden nach Veröffentlichung geprüft und nennen weiterhin Final 1.1.0 sowie Beta.7; deren Final-Statusabgleich bleibt offen. Andere Repositories wurden nicht verändert.
+- Der lokale Hauptcheckout mit Dev-Änderungen und seinen eigenen Handbüchern wurde weder zurückgesetzt noch committet oder gepusht. Der Final-Stand liegt im getrennten Final-Checkout; dieser Kontextnachtrag ändert den Release-Tag nicht.
