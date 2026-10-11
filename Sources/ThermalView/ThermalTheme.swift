@@ -30,6 +30,19 @@ enum ThermalTheme: String, CaseIterable, Identifiable {
 
     var usesFullWindowGlass: Bool { self == .milkGlass }
 
+    func palette(for colorScheme: ColorScheme) -> ThermalThemePalette {
+        guard self == .classic else { return palette }
+        return ThermalThemePalette(
+            windowBackground: Color(nsColor: .windowBackgroundColor),
+            cardBase: Color(nsColor: .controlBackgroundColor),
+            cardStrokeOpacity: colorScheme == .dark ? 0.10 : 0.08,
+            title: .primary,
+            secondary: .secondary,
+            cpu: .purple, gpu: .blue, internalSSD: .teal, externalSSD: .green,
+            usesNeutralSurfaces: true
+        )
+    }
+
     var palette: ThermalThemePalette {
         switch self {
         case .classic:
@@ -91,6 +104,13 @@ struct ThermalThemePalette {
     let gpu: Color
     let internalSSD: Color
     let externalSSD: Color
+    var usesNeutralSurfaces = false
+
+    func surfaceStroke(accent: Color, opacity: Double? = nil) -> Color {
+        usesNeutralSurfaces
+            ? Color.primary.opacity(cardStrokeOpacity)
+            : accent.opacity(opacity ?? cardStrokeOpacity)
+    }
 
     func componentColor(for kind: SensorKind) -> Color {
         switch kind {

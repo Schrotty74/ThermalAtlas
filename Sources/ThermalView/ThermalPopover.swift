@@ -35,18 +35,17 @@ struct MenuBarLabel: View {
     }
 }
 
-/// `MenuBarExtra` renders only the first direct child in its status item on
-/// this macOS version. Draw all symbols and values into one image so the native
-/// status item receives a single, compact label while keeping sensor groups
-/// visually distinct.
 struct ThermalPopover: View {
     let service: SensorService
+    let appUpdateService: AppUpdateService
     @Binding var selectedTheme: ThermalTheme
     @Binding var refreshInterval: Double
     @Binding var selectedLanguage: AppLanguage
     @Binding var visibleSensorKinds: Set<SensorKind>
     @Binding var menuBarDisplayMode: MenuBarDisplayMode
     @Binding var compactPopover: Bool
+    @Binding var miniDisplayVisible: Bool
+    @Binding var alwaysOnTop: Bool
     @Binding var alertsEnabled: Bool
     @Binding var cpuAlertThreshold: Double
     @Binding var gpuAlertThreshold: Double
@@ -57,7 +56,7 @@ struct ThermalPopover: View {
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.colorScheme) private var colorScheme
 
-    private var palette: ThermalThemePalette { selectedTheme.palette }
+    private var palette: ThermalThemePalette { selectedTheme.palette(for: colorScheme) }
     private var footerMenuForeground: Color { palette.title }
     private var footerMenuBackgroundOpacity: Double {
         selectedTheme == .classic && colorScheme == .light ? 0.10 : 0.16
@@ -81,7 +80,10 @@ struct ThermalPopover: View {
                             .foregroundStyle(palette.gpu)
                             .symbolRenderingMode(.hierarchical)
                     }
-                    .buttonStyle(.plain)
+                    .thermalGlassButtonStyle(
+                        isEnabled: selectedTheme.usesFullWindowGlass,
+                        tint: palette.gpu
+                    )
                     .accessibilityLabel(selectedLanguage.systemInformationButtonLabel)
                     .help(selectedLanguage.systemInformationButtonLabel)
                 }
@@ -115,14 +117,15 @@ struct ThermalPopover: View {
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(selectedTheme.usesFullWindowGlass ? Color.white.opacity(0.34) : palette.gpu.opacity(0.16), lineWidth: 1)
+                .stroke(selectedTheme.usesFullWindowGlass ? Color.white.opacity(0.34) : palette.surfaceStroke(accent: palette.gpu, opacity: 0.16), lineWidth: 1)
         }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.35), value: selectedTheme)
-        .background(PopoverWindowPositioner(upwardOffset: 32))
+        .background(ThermalWindowConfigurator())
         .onAppear {
             refreshInterval = selectedRefreshInterval.rawValue
             service.setRefreshInterval(refreshInterval)
             service.setAlertConfiguration(alertConfiguration)
+            PopoverWindowCoordinator.setAlwaysOnTop(alwaysOnTop)
         }
         .onChange(of: refreshInterval) { _, newValue in
             let normalizedInterval = RefreshIntervalOption.normalized(newValue).rawValue
@@ -130,6 +133,16 @@ struct ThermalPopover: View {
                 refreshInterval = normalizedInterval
             }
             service.setRefreshInterval(normalizedInterval)
+        }
+        .onChange(of: compactPopover) { _, isCompact in
+            PopoverWindowCoordinator.adjustForCompactMode(isCompact)
+        }
+        .onChange(of: miniDisplayVisible) { _, _ in
+            NotificationCenter.default.post(name: .thermalAtlasMiniDisplayVisibilityChanged, object: nil)
+        }
+        .onChange(of: alwaysOnTop) { _, isEnabled in
+            PopoverWindowCoordinator.setAlwaysOnTop(isEnabled)
+            NotificationCenter.default.post(name: .thermalAtlasMiniAlwaysOnTopChanged, object: nil)
         }
         .onChange(of: alertConfiguration) { _, configuration in
             service.setAlertConfiguration(configuration)
@@ -145,6 +158,8 @@ struct ThermalPopover: View {
                 colorScheme: colorScheme
             )
             .overlay { liquidGlassLightTint }
+        } else if palette.usesNeutralSurfaces {
+            palette.windowBackground
         } else if selectedTheme == .classic {
             RoundedRectangle(cornerRadius: 24, style: .continuous).fill(.regularMaterial)
         } else {
@@ -211,9 +226,11 @@ struct ThermalPopover: View {
             visibleTemperaturesMenu
             menuBarDisplayMenu
             temperatureAlertsMenu
-            startAtLoginMenu
             languageMenu
             exportMenu
+            alwaysOnTopMenuItem
+            startAtLoginMenu
+            AppUpdatesMenu(service: appUpdateService, language: selectedLanguage)
             Divider()
             Button(action: openGitHub) { Label("GitHub", systemImage: "chevron.left.forwardslash.chevron.right") }
             Button(action: openHomepage) { Label("Homepage", systemImage: "globe") }
@@ -283,15 +300,38 @@ struct ThermalPopover: View {
 
     private var windowSizeMenu: some View {
         Menu(selectedLanguage.windowSizeMenuTitle) {
-            Button { compactPopover = false } label: {
+            Button {
+                compactPopover = false
+                miniDisplayVisible = false
+            } label: {
                 Label(selectedLanguage.standardWindowSizeTitle, systemImage: compactPopover ? "rectangle" : "checkmark")
             }
             .menuActionDismissBehavior(.enabled)
-            Button { compactPopover = true } label: {
+            Button {
+                compactPopover = true
+                miniDisplayVisible = false
+            } label: {
                 Label(selectedLanguage.compactWindowSizeTitle, systemImage: compactPopover ? "checkmark" : "rectangle.compress.vertical")
             }
             .menuActionDismissBehavior(.enabled)
+            Button { miniDisplayVisible.toggle() } label: {
+                Label(
+                    selectedLanguage.miniDisplayTitle,
+                    systemImage: miniDisplayVisible ? "checkmark" : "rectangle"
+                )
+            }
+            .menuActionDismissBehavior(.enabled)
         }
+    }
+
+    private var alwaysOnTopMenuItem: some View {
+        Button { alwaysOnTop.toggle() } label: {
+            Label(
+                selectedLanguage.alwaysOnTopTitle,
+                systemImage: alwaysOnTop ? "checkmark" : "pin"
+            )
+        }
+        .menuActionDismissBehavior(.enabled)
     }
 
     private var visibleTemperaturesMenu: some View {
@@ -418,16 +458,29 @@ struct ThermalPopover: View {
     }
 
     private func exportCSV() {
-        let panel = NSSavePanel()
-        panel.nameFieldStringValue = "ThermalAtlas-Readings.csv"
-        panel.allowedContentTypes = [.commaSeparatedText]
-        guard panel.runModal() == .OK, let url = panel.url else { return }
-        let contents = TemperatureExport.csv(
-            snapshot: service.snapshot,
-            history: service.history,
-            language: selectedLanguage
-        )
-        try? contents.write(to: url, atomically: true, encoding: .utf8)
+        while true {
+            let panel = NSSavePanel()
+            panel.nameFieldStringValue = "ThermalAtlas-Readings.csv"
+            panel.allowedContentTypes = [.commaSeparatedText]
+            guard panel.runModal() == .OK, let url = panel.url else { return }
+            let contents = TemperatureExport.csv(
+                snapshot: service.snapshot,
+                history: service.history,
+                language: selectedLanguage
+            )
+            do {
+                try contents.write(to: url, atomically: true, encoding: .utf8)
+                return
+            } catch {
+                let alert = NSAlert()
+                alert.alertStyle = .warning
+                alert.messageText = selectedLanguage.csvSaveErrorTitle
+                alert.informativeText = selectedLanguage.csvSaveErrorMessage + "\n\n" + error.localizedDescription
+                alert.addButton(withTitle: selectedLanguage.retryTitle)
+                alert.addButton(withTitle: selectedLanguage.closeTitle)
+                guard alert.runModal() == .alertFirstButtonReturn else { return }
+            }
+        }
     }
 
     private func copyDiagnosticReport() {
@@ -448,13 +501,13 @@ private struct SystemInformationWindowContent: View {
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.colorScheme) private var colorScheme
 
-    private var palette: ThermalThemePalette { theme.palette }
+    private var palette: ThermalThemePalette { theme.palette(for: colorScheme) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             header
             if let systemInformation {
-                machineCard(systemInformation)
+                overviewCards(systemInformation)
                 hardwareCards(systemInformation)
                 operatingSystemCard(systemInformation)
             } else {
@@ -527,34 +580,50 @@ private struct SystemInformationWindowContent: View {
     }
 
     @ViewBuilder
+    private func overviewCards(_ information: SystemInformationSnapshot) -> some View {
+        LazyVGrid(columns: informationColumns, spacing: 8) {
+            machineCard(information)
+            thermalStateCard(information)
+        }
+    }
+
+    private var informationColumns: [GridItem] {
+        [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)]
+    }
+
+    @ViewBuilder
     private func machineCard(_ information: SystemInformationSnapshot) -> some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 9) {
+            Spacer(minLength: 0)
             Image(systemName: "desktopcomputer")
-                .font(.title2.weight(.medium))
+                .font(.headline.weight(.medium))
                 .foregroundStyle(palette.gpu)
-                .frame(width: 46, height: 46)
-                .background(palette.gpu.opacity(0.15), in: RoundedRectangle(cornerRadius: 13, style: .continuous))
-            VStack(alignment: .leading, spacing: 4) {
+                .frame(width: 28, height: 28)
+                .background(palette.gpu.opacity(0.15), in: Circle())
+            VStack(alignment: .leading, spacing: 1) {
                 Text(language.macModelTitle)
-                    .font(.caption.weight(.semibold))
+                    .font(.caption2.weight(.semibold))
                     .foregroundStyle(palette.secondary)
                 Text(information.macModel)
-                    .font(.body.weight(.semibold))
+                    .font(.caption.weight(.semibold))
                     .textSelection(.enabled)
-                Label(information.chip, systemImage: "cpu")
-                    .font(.caption.weight(.medium))
+                Text(information.chip)
+                    .font(.caption2.weight(.medium))
                     .foregroundStyle(palette.cpu)
                     .textSelection(.enabled)
             }
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
             Spacer(minLength: 0)
         }
-        .padding(15)
-        .systemInformationCardSurface(palette: palette, theme: theme)
+        .frame(maxWidth: .infinity, minHeight: 62, maxHeight: 62, alignment: .center)
+        .padding(.horizontal, 10)
+        .systemInformationCardSurface(palette: palette, theme: theme, cornerRadius: 31)
     }
 
     @ViewBuilder
     private func hardwareCards(_ information: SystemInformationSnapshot) -> some View {
-        LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
+        LazyVGrid(columns: informationColumns, spacing: 8) {
             informationCard(
                 title: language.cpuCoresTitle,
                 value: compactCPUCoreDescription(information),
@@ -580,6 +649,16 @@ private struct SystemInformationWindowContent: View {
                 color: palette.externalSSD
             )
         }
+    }
+
+    @ViewBuilder
+    private func thermalStateCard(_ information: SystemInformationSnapshot) -> some View {
+        informationCard(
+            title: language.thermalStateTitle,
+            value: language.thermalStateDescription(information.thermalState),
+            symbol: "thermometer.medium",
+            color: palette.cpu
+        )
     }
 
     @ViewBuilder
@@ -656,7 +735,7 @@ private extension View {
         }
         .overlay {
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .stroke(palette.gpu.opacity(theme.usesFullWindowGlass ? 0.30 : palette.cardStrokeOpacity), lineWidth: 1)
+                .stroke(palette.surfaceStroke(accent: palette.gpu, opacity: theme.usesFullWindowGlass ? 0.30 : palette.cardStrokeOpacity), lineWidth: 1)
         }
     }
 }
@@ -702,49 +781,37 @@ private enum SystemInformationWindow {
     }
 }
 
-/// Keeps the window-style menu extra close to its status item instead of
-/// leaving the large default vertical gap used by macOS for this style.
-private struct PopoverWindowPositioner: NSViewRepresentable {
-    let upwardOffset: CGFloat
-
-    func makeNSView(context: Context) -> PositioningView {
-        PositioningView(upwardOffset: upwardOffset)
+/// Connects the SwiftUI content to the independent AppKit window that owns its
+/// frame and size. It deliberately does not restore or move the window: macOS
+/// preserves an independent panel's position through minimize and restore.
+private struct ThermalWindowConfigurator: NSViewRepresentable {
+    func makeNSView(context: Context) -> ConfigurationView {
+        ConfigurationView(frame: .zero)
     }
 
-    func updateNSView(_ nsView: PositioningView, context: Context) {
-        nsView.upwardOffset = upwardOffset
-        nsView.positionIfNeeded()
+    func updateNSView(_ nsView: ConfigurationView, context: Context) {
+        nsView.configureWindow()
     }
 
-    final class PositioningView: NSView {
-        var upwardOffset: CGFloat
-        private var appliedInitialOffset = false
-
-        init(upwardOffset: CGFloat) {
-            self.upwardOffset = upwardOffset
-            super.init(frame: .zero)
+    @MainActor
+    final class ConfigurationView: NSView {
+        override init(frame frameRect: NSRect) {
+            super.init(frame: frameRect)
         }
 
         required init?(coder: NSCoder) { nil }
 
         override func viewDidMoveToWindow() {
             super.viewDidMoveToWindow()
-            appliedInitialOffset = false
-            positionIfNeeded()
+            configureWindow()
         }
 
-        func positionIfNeeded() {
+        func configureWindow() {
             DispatchQueue.main.async { [weak self] in
                 guard let self, let window = self.window else { return }
                 PopoverWindowCoordinator.window = window
-
-                guard !appliedInitialOffset, let screen = window.screen else { return }
-                let highestOriginY = screen.visibleFrame.maxY - window.frame.height
-                let raisedOriginY = min(window.frame.origin.y + upwardOffset, highestOriginY)
-                if raisedOriginY > window.frame.origin.y {
-                    window.setFrameOrigin(NSPoint(x: window.frame.origin.x, y: raisedOriginY))
-                }
-                appliedInitialOffset = true
+                window.isMovable = true
+                window.isMovableByWindowBackground = true
             }
         }
     }
@@ -754,21 +821,53 @@ private struct PopoverWindowPositioner: NSViewRepresentable {
 /// menu-bar window does not automatically adopt an asynchronously expanded
 /// card, so resize the actual AppKit window at the same interaction boundary.
 @MainActor
-private enum PopoverWindowCoordinator {
+enum PopoverWindowCoordinator {
     weak static var window: NSWindow?
 
     static func adjustForHistory(isOpening: Bool, compact: Bool) {
+        DispatchQueue.main.async {
+            guard let window else { return }
+            window.contentView?.layoutSubtreeIfNeeded()
+            let previousFrame = window.frame
+            let fallbackDelta: CGFloat = compact ? 126 : 178
+            let fittedHeight = window.contentView?.fittingSize.height ?? 0
+            let contentWidth = window.contentRect(forFrameRect: previousFrame).width
+            let newHeight = fittedHeight > 0
+                ? window.frameRect(forContentRect: NSRect(x: 0, y: 0, width: contentWidth, height: fittedHeight)).height
+                : max(1, previousFrame.height + (isOpening ? fallbackDelta : -fallbackDelta))
+            let newFrame = NSRect(
+                x: previousFrame.origin.x,
+                y: previousFrame.maxY - newHeight,
+                width: previousFrame.width,
+                height: newHeight
+            )
+            window.setFrame(newFrame, display: true, animate: !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)
+        }
+    }
+
+    static func adjustForCompactMode(_ isCompact: Bool) {
+        DispatchQueue.main.async {
+            guard let window else { return }
+            window.contentView?.layoutSubtreeIfNeeded()
+            let currentFrame = window.frame
+            let fittedContentSize = window.contentView?.fittingSize
+                ?? window.contentRect(forFrameRect: currentFrame).size
+            let contentSize = NSSize(
+                width: isCompact ? 230 : 370,
+                height: max(1, fittedContentSize.height)
+            )
+            var newFrame = window.frameRect(forContentRect: NSRect(origin: .zero, size: contentSize))
+            newFrame.origin = NSPoint(x: currentFrame.origin.x, y: currentFrame.maxY - newFrame.height)
+            window.setFrame(newFrame, display: true, animate: !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)
+        }
+    }
+
+    static func setAlwaysOnTop(_ isEnabled: Bool) {
         guard let window else { return }
-        let delta: CGFloat = compact ? 126 : 178
-        let previousFrame = window.frame
-        let newHeight = max(1, previousFrame.height + (isOpening ? delta : -delta))
-        let newFrame = NSRect(
-            x: previousFrame.origin.x,
-            y: previousFrame.maxY - newHeight,
-            width: previousFrame.width,
-            height: newHeight
-        )
-        window.setFrame(newFrame, display: true, animate: true)
+        window.level = isEnabled ? .floating : .normal
+        if isEnabled {
+            window.orderFrontRegardless()
+        }
     }
 }
 
@@ -830,19 +929,29 @@ private struct ThermalSystemContext: View {
     let language: AppLanguage
     let compact: Bool
 
+    @State private var selectedFanIndex: Int?
+    @State private var showsContextHint = false
+
     private var context: SystemContext { service.systemContext }
 
     var body: some View {
         VStack(alignment: .leading, spacing: compact ? 5 : 7) {
-            HStack(spacing: 5) {
-                Image(systemName: "bolt.circle")
-                Text(language.systemContextTitle)
+            HStack {
+                Label(language.systemContextTitle, systemImage: "bolt.circle")
                     .font(compact ? .caption.weight(.semibold) : .subheadline.weight(.semibold))
-                Spacer()
-                Text(language.systemContextHint)
-                    .font(.caption2)
-                    .foregroundStyle(palette.secondary.opacity(0.75))
-                    .lineLimit(1)
+                Spacer(minLength: 4)
+                Button { showsContextHint = true } label: {
+                    Image(systemName: "info.circle")
+                }
+                .buttonStyle(.borderless)
+                .accessibilityLabel(language.systemContextHint)
+                .help(language.systemContextHint)
+                .popover(isPresented: $showsContextHint) {
+                    Text(language.systemContextHint)
+                        .padding(12)
+                        .frame(width: 260, alignment: .leading)
+                        .fixedSize()
+                }
             }
             .foregroundStyle(palette.secondary)
 
@@ -857,12 +966,18 @@ private struct ThermalSystemContext: View {
                     symbol: "chart.bar.fill",
                     tint: palette.cpu
                 )
-                contextItem(
-                    title: language.gpuLoadTitle,
-                    value: gpuUsageText,
-                    symbol: "rectangle.3.group.fill",
-                    tint: palette.gpu
-                )
+                if context.fanSpeeds.isEmpty {
+                    contextItem(
+                        title: language.fanSpeedTitle,
+                        value: language.notAvailable,
+                        symbol: "fanblades.fill",
+                        tint: palette.secondary
+                    )
+                } else {
+                    ForEach(context.fanSpeeds, id: \.index) { fan in
+                        fanButton(fan)
+                    }
+                }
                 contextItem(
                     title: memoryTitle,
                     value: memoryUsageText,
@@ -870,13 +985,13 @@ private struct ThermalSystemContext: View {
                     tint: memoryTint
                 )
                 contextItem(
-                    title: language.powerSourceTitle,
+                    title: language == .german ? "Stromquelle" : language.powerSourceTitle,
                     value: powerText,
                     symbol: powerSymbol,
                     tint: palette.gpu
                 )
                 contextItem(
-                    title: language.lowPowerModeTitle,
+                    title: language == .german ? "Sparmodus" : "Low Power",
                     value: context.isLowPowerModeEnabled ? language.enabledTitle : language.disabledTitle,
                     symbol: "leaf.fill",
                     tint: context.isLowPowerModeEnabled ? .green : palette.secondary
@@ -884,36 +999,52 @@ private struct ThermalSystemContext: View {
             }
         }
         .padding(.horizontal, compact ? 9 : 12)
-        .padding(.vertical, compact ? 8 : 10)
+        .padding(.vertical, 8)
         .background(palette.title.opacity(0.055), in: RoundedRectangle(cornerRadius: compact ? 11 : 14, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: compact ? 11 : 14, style: .continuous)
                 .stroke(palette.secondary.opacity(0.18), lineWidth: 1)
         }
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
+    }
+
+    private func fanButton(_ fan: SMCFanSpeedReader.Fan) -> some View {
+        let title = context.fanSpeeds.count == 1 ? language.fanSpeedTitle : "\(language.fanSpeedTitle) \(fan.index + 1)"
+        return Button { selectedFanIndex = fan.index } label: {
+            contextItem(title: title, value: "\(fan.rpm.formatted(.number.locale(language.locale))) RPM",
+                        symbol: "fanblades.fill", tint: palette.secondary)
+        }
+        .buttonStyle(.plain)
+        .help(language.fanHistoryTitle)
+        .accessibilityLabel("\(title), \(fan.rpm) RPM")
+        .accessibilityHint(language.fanHistoryTitle)
+        .popover(isPresented: Binding(get: { selectedFanIndex == fan.index }, set: { if !$0 { selectedFanIndex = nil } })) {
+            FanHistoryView(history: service.fanHistory, index: fan.index, title: title, palette: palette, language: language)
+        }
     }
 
     private func contextItem(title: String, value: String, symbol: String, tint: Color) -> some View {
-        HStack(spacing: compact ? 4 : 6) {
-            Image(systemName: symbol)
+        VStack(alignment: .leading, spacing: 2) {
+            Label(title, systemImage: symbol)
+                .font(.caption2)
                 .foregroundStyle(tint)
-            VStack(alignment: .leading, spacing: 1) {
-                Text(title).font(.caption2).foregroundStyle(palette.secondary)
-                Text(value)
-                    .font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
-                    .lineLimit(1)
-            }
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+            Text(value)
+                .font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
+                .foregroundStyle(palette.title)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(title), \(value)")
+        .help("\(title): \(value)")
     }
 
     private var cpuUsageText: String {
         guard let usage = context.cpuUsagePercent else { return language.calculatingTitle }
-        return usage.formatted(.number.precision(.fractionLength(0))) + " %"
-    }
-
-    private var gpuUsageText: String {
-        guard let usage = context.gpuUsagePercent else { return language.notAvailable }
         return usage.formatted(.number.precision(.fractionLength(0))) + " %"
     }
 
@@ -930,7 +1061,7 @@ private struct ThermalSystemContext: View {
 
     private var memoryTitle: String {
         guard let memory = context.memoryUsage else { return language.memoryUsageTitle }
-        return "\(language.memoryUsageTitle) · \(memory.loadStatus.title(for: language))"
+        return "RAM · \(memory.loadStatus.title(for: language))"
     }
 
     private var memoryTint: Color {
@@ -976,95 +1107,117 @@ private struct SensorCard: View {
     @State private var showsDetails = false
     @State private var historyRange: TemperatureHistoryRange = .oneHour
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
 
-    private var palette: ThermalThemePalette { selectedTheme.palette }
+    private var palette: ThermalThemePalette { selectedTheme.palette(for: colorScheme) }
     private var componentColor: Color { palette.componentColor(for: reading.kind) }
 
-    var body: some View {
+    private var cardContent: some View {
         VStack(alignment: .leading, spacing: compact ? 7 : 10) {
-            HStack(spacing: compact ? 8 : 12) {
-            Image(systemName: reading.kind.symbol)
-                .font(compact ? .subheadline.weight(.semibold) : .headline.weight(.semibold))
-                .frame(width: compact ? 24 : 30, height: compact ? 24 : 30)
-                .foregroundStyle(componentColor)
-                .background(componentColor.opacity(0.14), in: RoundedRectangle(cornerRadius: compact ? 7 : 9, style: .continuous))
-            VStack(alignment: .leading, spacing: compact ? 1 : 3) {
-                Text(reading.title ?? reading.kind.title(for: language))
-                    .font(compact ? .subheadline.weight(.medium) : .body.weight(.medium))
-                    .foregroundStyle(palette.title)
-                if let subtitle {
-                    HStack(spacing: compact ? 2 : 4) {
-                        if reading.isLastVerifiedValue {
-                            Image(systemName: "clock.arrow.circlepath")
+            HStack(alignment: .bottom, spacing: compact ? 3 : 5) {
+                Button(action: toggleHistory) {
+                    HStack(spacing: compact ? 8 : 12) {
+                        Image(systemName: reading.kind.symbol)
+                            .font(compact ? .subheadline.weight(.semibold) : .headline.weight(.semibold))
+                            .frame(width: compact ? 24 : 30, height: compact ? 24 : 30)
+                            .foregroundStyle(componentColor)
+                            .background(componentColor.opacity(0.14), in: RoundedRectangle(cornerRadius: compact ? 7 : 9, style: .continuous))
+                        VStack(alignment: .leading, spacing: compact ? 1 : 3) {
+                            Text(reading.title ?? reading.kind.title(for: language))
+                                .font(compact ? .subheadline.weight(.medium) : .body.weight(.medium))
+                                .foregroundStyle(palette.title)
+                            if let subtitle {
+                                HStack(spacing: compact ? 2 : 4) {
+                                    if reading.isLastVerifiedValue {
+                                        Image(systemName: "clock.arrow.circlepath")
+                                    }
+                                    if reading.isLastVerifiedValue, let date = reading.lastVerifiedAt ?? reading.measuredAt {
+                                        TimelineView(.periodic(from: .now, by: 1)) { timeline in
+                                            Text("\(language.measurementAge(since: date, now: timeline.date)) · \(language == .english ? "Last reading" : "Letzter Wert")")
+                                        }
+                                    } else {
+                                        Text(subtitle)
+                                    }
+                                }
+                                .font(compact ? .caption2.weight(.medium) : .caption.weight(.medium))
+                                .foregroundStyle(reading.isLastVerifiedValue ? .orange : palette.title.opacity(0.76))
+                                .lineLimit(1)
+                            }
+                            if let smartStatus = reading.smartStatus {
+                                Text(smartStatus.localized(for: language))
+                                    .font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
+                                    .foregroundStyle(smartStatusColor(for: smartStatus))
+                                    .lineLimit(1)
+                                if let smartHealthPercentage = reading.smartHealthPercentage {
+                                    Text("\(language.healthPrefix): \(smartHealthPercentage) %")
+                                        .font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
+                                        .foregroundStyle(palette.title.opacity(0.90))
+                                        .lineLimit(1)
+                                }
+                            }
                         }
-                        Text(subtitle)
-                    }
-                    .font(compact ? .caption2.weight(.medium) : .caption.weight(.medium))
-                    .foregroundStyle(reading.isLastVerifiedValue ? .orange : palette.title.opacity(0.76))
-                    .lineLimit(1)
-                }
-                if let smartStatus = reading.smartStatus {
-                    Text(smartStatus.localized(for: language))
-                        .font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
-                        .foregroundStyle(smartStatusColor(for: smartStatus))
-                        .lineLimit(1)
-                    if let smartHealthPercentage = reading.smartHealthPercentage {
-                        Text("\(language.healthPrefix): \(smartHealthPercentage) %")
-                            .font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
-                            .foregroundStyle(palette.title.opacity(0.90))
-                            .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        VStack(alignment: .trailing, spacing: compact ? 2 : 4) {
+                            Text(temperatureText)
+                                .font(compact ? .title3.weight(.semibold) : .title2.weight(.semibold))
+                                .monospacedDigit()
+                                .contentTransition(.numericText())
+                            statusIndicator
+                        }
                     }
                 }
+                .buttonStyle(.plain)
+                .accessibilityLabel(reading.title ?? reading.kind.title(for: language))
+                .accessibilityValue("\(temperatureText), \(showsHistory ? language.sensorHistoryShownAccessibilityValue : language.sensorHistoryHiddenAccessibilityValue)")
+                .accessibilityHint(language.sensorHistoryAccessibilityHint)
+                sensorDetailsButton
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            VStack(alignment: .trailing, spacing: compact ? 2 : 4) {
-                Text(temperatureText)
-                    .font(compact ? .title3.weight(.semibold) : .title2.weight(.semibold))
-                    .monospacedDigit()
-                    .contentTransition(.numericText())
-                statusAndDetails
-            }
-        }
             if showsHistory {
-                TemperatureHistoryChart(
-                    points: history.points(for: reading.id, range: historyRange),
+                HistoryChart(
+                    points: history.points(for: reading.id, range: historyRange).map { HistoryChartPoint(date: $0.date, value: $0.averageTemperature) },
                     range: $historyRange,
                     threshold: alertThreshold,
                     componentColor: componentColor,
                     palette: palette,
                     language: language,
-                    compact: compact
+                    compact: compact,
+                    title: language.temperatureHistoryTitle,
+                    unit: "°C",
+                    fractionDigits: 1
                 )
             }
         }
-        .padding(.horizontal, compact ? 9 : 13).padding(.vertical, compact ? 8 : 12)
-        .background {
-            cardBackground
-        }
-        .overlay {
-            RoundedRectangle(cornerRadius: compact ? 12 : 16, style: .continuous)
-                .stroke(componentColor.opacity(palette.cardStrokeOpacity), lineWidth: 1)
-        }
-        .shadow(color: componentColor.opacity(0.09), radius: compact ? 6 : 10, y: compact ? 2 : 4)
-        .opacity(hasAppeared ? 1 : 0)
-        .offset(y: hasAppeared ? 0 : 7)
-        .task {
-            guard !hasAppeared else { return }
-            withAnimation(.easeOut(duration: 0.35)) { hasAppeared = true }
-        }
-        .animation(.easeInOut(duration: 0.3), value: reading.temperatureCelsius)
-        .contentShape(RoundedRectangle(cornerRadius: compact ? 12 : 16, style: .continuous))
-        .onTapGesture {
-            let isOpening = !showsHistory
-            withAnimation(.easeInOut(duration: 0.2)) { showsHistory.toggle() }
-            PopoverWindowCoordinator.adjustForHistory(isOpening: isOpening, compact: compact)
-        }
+    }
+
+    var body: some View {
+        styledCard
+            .opacity(hasAppeared ? 1 : 0)
+            .offset(y: hasAppeared ? 0 : 7)
+            .task { revealCard() }
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.3), value: reading.temperatureCelsius)
+            .contentShape(RoundedRectangle(cornerRadius: compact ? 12 : 16, style: .continuous))
+
+    }
+
+    private var styledCard: some View {
+        cardContent
+            .padding(.horizontal, compact ? 9 : 13)
+            .padding(.vertical, compact ? 8 : 12)
+            .background { cardBackground }
+            .overlay {
+                RoundedRectangle(cornerRadius: compact ? 12 : 16, style: .continuous)
+                    .stroke(palette.surfaceStroke(accent: componentColor), lineWidth: 1)
+            }
+            .shadow(color: palette.usesNeutralSurfaces ? .black.opacity(colorScheme == .dark ? 0.12 : 0.06) : componentColor.opacity(0.09), radius: compact ? 6 : 10, y: compact ? 2 : 4)
     }
 
     @ViewBuilder
     private var cardBackground: some View {
-        if selectedTheme == .classic {
+        if palette.usesNeutralSurfaces {
+            RoundedRectangle(cornerRadius: compact ? 12 : 16, style: .continuous)
+                .fill(palette.cardBase)
+        } else if selectedTheme == .classic {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(.thinMaterial)
                 .overlay { cardTint }
@@ -1117,27 +1270,46 @@ private struct SensorCard: View {
         }
     }
 
-    private var statusAndDetails: some View {
+    private func toggleHistory() {
+        let isOpening = !showsHistory
+        if reduceMotion {
+            showsHistory.toggle()
+        } else {
+            withAnimation(.easeInOut(duration: 0.2)) { showsHistory.toggle() }
+        }
+        PopoverWindowCoordinator.adjustForHistory(isOpening: isOpening, compact: compact)
+    }
+
+    private func revealCard() {
+        guard !hasAppeared else { return }
+        if reduceMotion {
+            hasAppeared = true
+        } else {
+            withAnimation(.easeOut(duration: 0.35)) { hasAppeared = true }
+        }
+    }
+
+    private var statusIndicator: some View {
         HStack(spacing: compact ? 3 : 5) {
             Circle().fill(statusColor).frame(width: compact ? 4 : 6, height: compact ? 4 : 6)
             Capsule().fill(statusColor).frame(width: compact ? 16 : 23, height: compact ? 3 : 4)
-            Button {
-                showsDetails = true
-            } label: {
-                Image(systemName: "info.circle")
-                    .font(compact ? .caption : .caption.weight(.semibold))
-            }
-            .buttonStyle(.borderless)
-            .foregroundStyle(palette.secondary)
-            .accessibilityLabel(language.sensorDetailsTitle)
-            .popover(isPresented: $showsDetails, arrowEdge: .trailing) {
-                SensorDetailsView(
-                    reading: reading,
-                    snapshotUpdatedAt: snapshotUpdatedAt,
-                    language: language,
-                    palette: palette
-                )
-            }
+        }
+        .accessibilityHidden(true)
+    }
+
+    private var sensorDetailsButton: some View {
+        Button { showsDetails = true } label: {
+            Image(systemName: "info.circle")
+                .font(compact ? .caption : .caption.weight(.semibold))
+                .padding(2)
+        }
+        .buttonStyle(.borderless)
+        .foregroundStyle(palette.secondary)
+        .accessibilityLabel("\(reading.title ?? reading.kind.title(for: language)): \(language.sensorDetailsTitle)")
+        .help(language.sensorDetailsTitle)
+        .popover(isPresented: $showsDetails, arrowEdge: .trailing) {
+            SensorDetailsView(reading: reading, snapshotUpdatedAt: snapshotUpdatedAt,
+                              language: language, palette: palette)
         }
     }
 
@@ -1160,90 +1332,14 @@ private struct SensorCard: View {
     }
 }
 
-private struct TemperatureHistoryChart: View {
-    let points: [TemperatureHistoryPoint]
-    @Binding var range: TemperatureHistoryRange
-    let threshold: Double
-    let componentColor: Color
-    let palette: ThermalThemePalette
-    let language: AppLanguage
-    let compact: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: compact ? 4 : 6) {
-            if compact {
-                Text(language.temperatureHistoryTitle)
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(palette.title.opacity(0.9))
-                historyRangePicker
-                    .frame(maxWidth: .infinity)
-            } else {
-                HStack {
-                    Text(language.temperatureHistoryTitle)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(palette.title.opacity(0.9))
-                    Spacer()
-                    historyRangePicker
-                        .frame(width: 172)
-                }
-            }
-
-            if points.count < 2 {
-                Text(language.collectingHistoryTitle)
-                    .font(compact ? .caption2 : .caption)
-                    .foregroundStyle(palette.secondary)
-                    .frame(maxWidth: .infinity, minHeight: compact ? 42 : 58, alignment: .center)
-            } else {
-                Chart {
-                    ForEach(points) { point in
-                        LineMark(
-                            x: .value("Time", point.date),
-                            y: .value("Temperature", point.averageTemperature)
-                        )
-                        .interpolationMethod(.catmullRom)
-                        .foregroundStyle(componentColor)
-                        .lineStyle(StrokeStyle(lineWidth: compact ? 1.5 : 2, lineCap: .round, lineJoin: .round))
-                    }
-                    RuleMark(y: .value("Warning threshold", threshold))
-                        .foregroundStyle(.orange.opacity(0.65))
-                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
-                }
-                .chartXAxis {
-                    AxisMarks(values: .automatic(desiredCount: 3)) { _ in
-                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0.4))
-                            .foregroundStyle(palette.secondary.opacity(0.25))
-                        AxisValueLabel(format: .dateTime.hour().minute())
-                            .foregroundStyle(palette.secondary)
-                    }
-                }
-                .chartYAxis {
-                    AxisMarks(position: .leading, values: .automatic(desiredCount: 3)) { _ in
-                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0.4))
-                            .foregroundStyle(palette.secondary.opacity(0.25))
-                        AxisValueLabel()
-                            .foregroundStyle(palette.secondary)
-                    }
-                }
-                .chartLegend(.hidden)
-                .frame(height: compact ? 72 : 96)
-            }
-
-            Text(language.historyHint)
-                .font(.caption2)
-                .foregroundStyle(palette.secondary.opacity(0.8))
+private extension View {
+    @ViewBuilder
+    func thermalGlassButtonStyle(isEnabled: Bool, tint: Color) -> some View {
+        if isEnabled, #available(macOS 27.0, *) {
+            buttonStyle(.glass(.regular.tint(tint).interactive()))
+        } else {
+            buttonStyle(.plain)
         }
-        .padding(.top, compact ? 1 : 2)
-    }
-
-    private var historyRangePicker: some View {
-        Picker(language.temperatureHistoryTitle, selection: $range) {
-            ForEach(TemperatureHistoryRange.allCases) { value in
-                Text(value.title(for: language)).tag(value)
-            }
-        }
-        .labelsHidden()
-        .pickerStyle(.segmented)
-        .controlSize(.small)
     }
 }
 
@@ -1258,8 +1354,9 @@ private struct SensorDetailsView: View {
         AppleSiliconSMCTemperatureBackend.detectedChipNameForDiagnostics()
     }
     private var lastValidAt: Date? {
+        if let lastVerifiedAt = reading.lastVerifiedAt { return lastVerifiedAt }
         guard reading.temperatureCelsius != nil else { return nil }
-        return reading.lastVerifiedAt ?? snapshotUpdatedAt
+        return reading.measuredAt ?? snapshotUpdatedAt
     }
 
     var body: some View {
@@ -1274,9 +1371,22 @@ private struct SensorDetailsView: View {
             if let sourceIdentifier = reading.sourceIdentifier {
                 detailRow("ID", sourceIdentifier)
             }
-            detailRow(language.lastValidValueTitle, temperatureText)
+            if reading.kind == .cpu || reading.kind == .gpu {
+                detailRow(language.averageTemperatureTitle, temperatureText)
+                detailRow(language.hotspotTemperatureTitle, hotspotText)
+                if let validSensorCount = reading.validSensorCount {
+                    detailRow(language.validSensorCountTitle, language.sensorCountDescription(validSensorCount))
+                }
+            } else {
+                detailRow(language.lastValidValueTitle, temperatureText)
+            }
             detailRow(language.lastValidTimeTitle, timeText)
-            if let detail = reading.detail {
+            if let lastValidAt {
+                TimelineView(.periodic(from: .now, by: 1)) { timeline in
+                    detailRow(language.measurementAgeTitle, language.measurementAge(since: lastValidAt, now: timeline.date))
+                }
+            }
+            if let detail = reading.detail, reading.kind != .cpu && reading.kind != .gpu {
                 detailRow(language == .english ? "Reading" : "Messwert", detail)
             }
         }
@@ -1287,6 +1397,11 @@ private struct SensorDetailsView: View {
     private var temperatureText: String {
         guard let temperature = reading.temperatureCelsius else { return language.notAvailable }
         return "\(temperature.formatted(.number.precision(.fractionLength(1)))) °C"
+    }
+
+    private var hotspotText: String {
+        guard let hotspot = reading.hotspotTemperatureCelsius else { return language.notAvailable }
+        return "\(hotspot.formatted(.number.precision(.fractionLength(1)))) °C"
     }
 
     private var timeText: String {

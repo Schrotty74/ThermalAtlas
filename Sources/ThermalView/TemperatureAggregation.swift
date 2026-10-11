@@ -8,6 +8,10 @@ enum TemperatureAggregation {
         return values.reduce(0, +) / Double(values.count)
     }
 
+    static func maximum(_ values: [Double]) -> Double? {
+        values.max()
+    }
+
     static func median(_ values: [Double]) -> Double? {
         guard !values.isEmpty else { return nil }
         let ordered = values.sorted()

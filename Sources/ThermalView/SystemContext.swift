@@ -48,14 +48,14 @@ struct SystemContext: Sendable, Equatable {
     }
 
     let cpuUsagePercent: Double?
-    let gpuUsagePercent: Double?
+    let fanSpeeds: [SMCFanSpeedReader.Fan]
     let memoryUsage: MemoryUsage?
     let powerSource: PowerSource
     let isLowPowerModeEnabled: Bool
 
     static let unavailable = SystemContext(
         cpuUsagePercent: nil,
-        gpuUsagePercent: nil,
+        fanSpeeds: [],
         memoryUsage: nil,
         powerSource: .unavailable,
         isLowPowerModeEnabled: false
@@ -121,7 +121,7 @@ struct SystemContextReader {
     mutating func read() -> SystemContext {
         SystemContext(
             cpuUsagePercent: cpuUsageSampler.sample(),
-            gpuUsagePercent: GPUUsageReader.currentUsagePercent(),
+            fanSpeeds: SMCFanSpeedReader().currentSpeeds(),
             memoryUsage: MemoryUsageReader.currentUsage(),
             powerSource: Self.powerSource(),
             isLowPowerModeEnabled: ProcessInfo.processInfo.isLowPowerModeEnabled
@@ -183,43 +183,5 @@ enum MemoryUsageReader {
             usedBytes: min(totalBytes, usedPages * UInt64(pageSize)),
             totalBytes: totalBytes
         )
-    }
-}
-
-/// Reads the aggregate utilization currently published by Apple's integrated
-/// GPU driver. This is observational only; the registry value is not present
-/// on every macOS or Apple-silicon generation, so absence is represented by
-/// `nil` rather than an estimate.
-enum GPUUsageReader {
-    static func currentUsagePercent() -> Double? {
-        guard let matching = IOServiceMatching("AGXAccelerator") else { return nil }
-        var iterator: io_iterator_t = 0
-        guard IOServiceGetMatchingServices(kIOMainPortDefault, matching, &iterator) == KERN_SUCCESS else {
-            return nil
-        }
-        defer { IOObjectRelease(iterator) }
-
-        while true {
-            let service = IOIteratorNext(iterator)
-            guard service != 0 else { return nil }
-            defer { IOObjectRelease(service) }
-
-            guard let statistics = IORegistryEntryCreateCFProperty(
-                service,
-                "PerformanceStatistics" as CFString,
-                kCFAllocatorDefault,
-                0
-            )?.takeRetainedValue() as? [String: Any] else {
-                continue
-            }
-            if let usage = usagePercent(from: statistics) {
-                return usage
-            }
-        }
-    }
-
-    static func usagePercent(from statistics: [String: Any]) -> Double? {
-        guard let number = statistics["Device Utilization %"] as? NSNumber else { return nil }
-        return min(100, max(0, number.doubleValue))
     }
 }

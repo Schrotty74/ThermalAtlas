@@ -35,6 +35,7 @@ Die Anweisung **„Projektkontext aktualisieren“** bedeutet stets, diesen voll
 ## Projekt- und Branchgrenzen
 
 - ThermalAtlas ist eine reine, lokale Temperaturanzeige. Keine Lüfter-, Energie- oder sonstigen Systemeinstellungen verändern.
+- Optionale GitHub-Updateprüfungen für Final- und Beta-Releases sind erlaubt: automatisch zunächst aus, keine Sensor-/Gerätedaten senden und keine automatische Installation. Temperaturabfragen bleiben lokal.
 - Sensorzugriffe defensiv kapseln; fehlende oder nicht lesbare Sensoren stets korrekt als `Nicht verfügbar` behandeln.
 - Dev bleibt lokal und ist von Beta und Final getrennt.
 - Beta-Quellstände und Beta-Veröffentlichungen gehören auf den Git-Branch `beta`. Finale Quellstände und finale Veröffentlichungen gehören auf `main`. Dev wird niemals gepusht.

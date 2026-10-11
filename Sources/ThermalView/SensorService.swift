@@ -16,6 +16,7 @@ final class SensorService {
     private(set) var systemContext = SystemContext.unavailable
     private(set) var refreshInterval: TimeInterval
     let history = TemperatureHistoryStore()
+    let fanHistory = FanHistoryStore()
     private var refreshTask: Task<Void, Never>?
     private var systemContextRefreshTask: Task<Void, Never>?
     private var topologyRefreshTask: Task<Void, Never>?
@@ -38,7 +39,7 @@ final class SensorService {
         TemperatureReading(kind: .externalSSD, temperatureCelsius: nil, detail: nil, unavailableReason: .checking)
     ]
     @ObservationIgnored private var diskTopologyNotifier: DiskTopologyNotifier?
-    private var lastVerifiedGPU: (temperature: Double, measuredAt: Date)?
+    private var lastVerifiedGPU: (temperature: Double, hotspot: Double?, validSensorCount: Int?, measuredAt: Date)?
     private var alertConfiguration = TemperatureAlertConfiguration(
         isEnabled: false,
         cpuThreshold: TemperatureAlertSettings.defaultThreshold(for: .cpu),
@@ -158,6 +159,7 @@ final class SensorService {
 
     private func refreshSystemContext() async {
         let updatedContext = await systemContextSampler.read()
+        fanHistory.record(updatedContext.fanSpeeds)
         guard updatedContext != systemContext else { return }
         systemContext = updatedContext
     }
@@ -262,19 +264,25 @@ final class SensorService {
             guard reading.kind == .gpu else { return reading }
 
             if let temperature = reading.temperatureCelsius {
-                lastVerifiedGPU = (temperature, now)
+                lastVerifiedGPU = (temperature, reading.hotspotTemperatureCelsius, reading.validSensorCount, now)
                 return reading
             }
 
-            guard let lastVerifiedGPU,
-                  now.timeIntervalSince(lastVerifiedGPU.measuredAt) <= 15 else {
-                return reading
+            guard let lastVerifiedGPU else { return reading }
+            guard now.timeIntervalSince(lastVerifiedGPU.measuredAt) <= 15 else {
+                return TemperatureReading(
+                    kind: .gpu, temperatureCelsius: nil, detail: reading.detail,
+                    unavailableReason: reading.unavailableReason,
+                    measuredAt: reading.measuredAt, lastVerifiedAt: lastVerifiedGPU.measuredAt
+                )
             }
 
             let seconds = max(0, Int(now.timeIntervalSince(lastVerifiedGPU.measuredAt).rounded()))
             return TemperatureReading(
                 kind: .gpu,
                 temperatureCelsius: lastVerifiedGPU.temperature,
+                hotspotTemperatureCelsius: lastVerifiedGPU.hotspot,
+                validSensorCount: lastVerifiedGPU.validSensorCount,
                 detail: "Last verified GPU reading is \(seconds) seconds old",
                 unavailableReason: nil,
                 measuredAt: lastVerifiedGPU.measuredAt,
@@ -318,6 +326,8 @@ private enum SensorProbe {
             return TemperatureReading(
                 kind: kind,
                 temperatureCelsius: result.celsius,
+                hotspotTemperatureCelsius: result.hotspotCelsius,
+                validSensorCount: result.validSensorCount,
                 detail: result.detail,
                 unavailableReason: result.celsius == nil ? .gpuSensorUnavailable : nil,
                 measuredAt: measuredAt
@@ -328,6 +338,8 @@ private enum SensorProbe {
         return TemperatureReading(
             kind: kind,
             temperatureCelsius: result.celsius,
+            hotspotTemperatureCelsius: result.hotspotCelsius,
+            validSensorCount: result.validSensorCount,
             detail: result.detail,
             unavailableReason: result.celsius == nil ? .cpuSensorUnavailable : nil,
             measuredAt: measuredAt

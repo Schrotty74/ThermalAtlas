@@ -2,10 +2,10 @@ import Darwin
 import Foundation
 import IOKit
 
-/// Read-only access to private Apple Silicon SMC temperature keys.
+/// Read-only access to private Apple Silicon SMC temperature and fan keys.
 ///
 /// This adapter only uses the SMC read-key-info and read-bytes commands. It
-/// contains no write command, fan operation, or energy-management operation.
+/// contains no write command, fan control, or energy-management operation.
 struct AppleSiliconSMCTemperatureBackend {
     struct SensorKeySet: Equatable {
         let cpu: [String]
@@ -14,6 +14,8 @@ struct AppleSiliconSMCTemperatureBackend {
 
     struct Result {
         let celsius: Double?
+        let hotspotCelsius: Double?
+        let validSensorCount: Int?
         let detail: String?
         let unavailableReason: String
     }
@@ -45,6 +47,8 @@ struct AppleSiliconSMCTemperatureBackend {
         let chipName = Self.detectedChipName() ?? "unbekannter Chip"
         return Result(
             celsius: nil,
+            hotspotCelsius: nil,
+            validSensorCount: nil,
             detail: nil,
             unavailableReason: "Keine unterstützte Apple-Silicon-Sensorzuordnung für \(component) (\(chipName))"
         )
@@ -69,6 +73,10 @@ struct AppleSiliconSMCTemperatureBackend {
 
     static func detectedChipNameForDiagnostics() -> String? {
         detectedChipName()
+    }
+
+    static func isValidSMCTemperature(_ value: Double) -> Bool {
+        value.isFinite && (15...125).contains(value)
     }
 
     private static func detectedChipName() -> String? {
@@ -96,10 +104,13 @@ struct AppleSiliconSMCTemperatureBackend {
                 keys: keys,
                 retryEmptyBatchAfterReconnect: retryEmptyBatchAfterReconnect
             )
-            if let average = TemperatureAggregation.arithmeticMean(sample.values) {
+            if let average = TemperatureAggregation.arithmeticMean(sample.values),
+               let hotspot = TemperatureAggregation.maximum(sample.values) {
                 return Result(
                     celsius: average,
-                    detail: "Apple-Silicon \(label) · Mittelwert aus \(sample.values.count) Sensoren",
+                    hotspotCelsius: hotspot,
+                    validSensorCount: sample.values.count,
+                    detail: "Apple-Silicon \(label) · Durchschnitt \(Int(average.rounded())) °C · Hotspot \(Int(hotspot.rounded())) °C · \(sample.values.count) Sensoren",
                     unavailableReason: ""
                 )
             }
@@ -107,7 +118,7 @@ struct AppleSiliconSMCTemperatureBackend {
         }
 
         let reason = SMCConnection.shared.lastFailureDescription ?? "SMC-Sensorzugriff nicht verfügbar"
-        return Result(celsius: nil, detail: nil, unavailableReason: "\(unavailablePrefix) (\(reason))")
+        return Result(celsius: nil, hotspotCelsius: nil, validSensorCount: nil, detail: nil, unavailableReason: "\(unavailablePrefix) (\(reason))")
     }
 
     // The private keys below are grouped by Apple-silicon generation. Each
@@ -137,6 +148,41 @@ struct AppleSiliconSMCTemperatureBackend {
     )
 }
 
+/// Actual fan speeds reported by the SMC. Missing keys are never estimated.
+struct SMCFanSpeedReader {
+    struct Fan: Sendable, Equatable {
+        let index: Int
+        let rpm: Int
+    }
+
+    func currentSpeeds() -> [Fan] {
+        SMCConnection.shared.fanSpeeds()
+    }
+}
+
+enum SMCFanValueDecoder {
+    static func fanCount(bytes: [UInt8], type: String) -> Int? {
+        guard type == "ui8 ", let count = bytes.first, count <= 8 else { return nil }
+        return Int(count)
+    }
+
+    static func rpm(bytes: [UInt8], type: String) -> Int? {
+        let value: Double
+        switch type {
+        case "flt ":
+            guard bytes.count >= 4 else { return nil }
+            value = Double(bytes.withUnsafeBytes { $0.loadUnaligned(as: Float.self) })
+        case "fpe2":
+            guard bytes.count >= 2 else { return nil }
+            value = Double(Int(bytes[0]) << 8 | Int(bytes[1])) / 4
+        default:
+            return nil
+        }
+        guard value.isFinite, (0...20_000).contains(value) else { return nil }
+        return Int(value.rounded())
+    }
+}
+
 private final class SMCReader: @unchecked Sendable {
     private let connection: io_connect_t
 
@@ -162,7 +208,27 @@ private final class SMCReader: @unchecked Sendable {
     deinit { IOServiceClose(connection) }
 
     func temperature(for key: String) -> SMCReadResult {
-        guard key.utf8.count == 4 else { return SMCReadResult(value: nil, failure: .invalidKey) }
+        let raw = readValue(for: key)
+        guard let value = raw.value else { return SMCReadResult(value: nil, failure: raw.failure) }
+        let temperature = decodeTemperature(bytes: value.bytes, type: value.type)
+        return SMCReadResult(value: temperature, failure: temperature == nil ? .unsupportedValue : nil)
+    }
+
+    func fanSpeeds() -> [SMCFanSpeedReader.Fan] {
+        let count = readValue(for: "FNum").value.flatMap {
+            SMCFanValueDecoder.fanCount(bytes: $0.bytes, type: $0.type)
+        }
+        // Some SMC implementations expose F0Ac without a readable FNum.
+        let indices = 0..<(count ?? 4)
+        return indices.compactMap { index in
+            guard let raw = readValue(for: "F\(index)Ac").value,
+                  let rpm = SMCFanValueDecoder.rpm(bytes: raw.bytes, type: raw.type) else { return nil }
+            return SMCFanSpeedReader.Fan(index: index, rpm: rpm)
+        }
+    }
+
+    private func readValue(for key: String) -> (value: SMCRawValue?, failure: SMCReadFailure?) {
+        guard key.utf8.count == 4 else { return (nil, .invalidKey) }
 
         var infoRequest = SMCKeyData()
         infoRequest.key = fourCharacterCode(key)
@@ -170,13 +236,13 @@ private final class SMCReader: @unchecked Sendable {
         var infoResponse = SMCKeyData()
         let infoStatus = call(input: &infoRequest, output: &infoResponse)
         guard infoStatus == KERN_SUCCESS else {
-            return SMCReadResult(value: nil, failure: .transport(infoStatus))
+            return (nil, .transport(infoStatus))
         }
         guard infoResponse.result == 0 else {
-            return SMCReadResult(value: nil, failure: .firmware(infoResponse.result))
+            return (nil, .firmware(infoResponse.result))
         }
         guard infoResponse.keyInfo.dataSize > 0, infoResponse.keyInfo.dataSize <= 32 else {
-            return SMCReadResult(value: nil, failure: .invalidResponse)
+            return (nil, .invalidResponse)
         }
 
         var readRequest = SMCKeyData()
@@ -186,17 +252,17 @@ private final class SMCReader: @unchecked Sendable {
         var readResponse = SMCKeyData()
         let readStatus = call(input: &readRequest, output: &readResponse)
         guard readStatus == KERN_SUCCESS else {
-            return SMCReadResult(value: nil, failure: .transport(readStatus))
+            return (nil, .transport(readStatus))
         }
         guard readResponse.result == 0 else {
-            return SMCReadResult(value: nil, failure: .firmware(readResponse.result))
+            return (nil, .firmware(readResponse.result))
         }
 
-        let value = decodeTemperature(
-            bytes: bytes(of: readResponse.bytes),
+        let value = SMCRawValue(
+            bytes: Array(bytes(of: readResponse.bytes).prefix(Int(infoResponse.keyInfo.dataSize))),
             type: fourCharacterString(infoResponse.keyInfo.dataType)
         )
-        return SMCReadResult(value: value, failure: value == nil ? .unsupportedValue : nil)
+        return (value, nil)
     }
 
     private func call(input: inout SMCKeyData, output: inout SMCKeyData) -> kern_return_t {
@@ -222,7 +288,7 @@ private final class SMCReader: @unchecked Sendable {
             value = Double(float)
         default: value = nil
         }
-        guard let value, value.isFinite, (15...125).contains(value) else { return nil }
+        guard let value, AppleSiliconSMCTemperatureBackend.isValidSMCTemperature(value) else { return nil }
         return value
     }
 
@@ -248,6 +314,12 @@ private final class SMCConnection: @unchecked Sendable {
     private let lock = NSLock()
     private var reader: SMCReader? = SMCReader()
     private(set) var lastFailureDescription: String?
+
+    func fanSpeeds() -> [SMCFanSpeedReader.Fan] {
+        lock.lock()
+        defer { lock.unlock() }
+        return reader?.fanSpeeds() ?? []
+    }
 
     func sample(keys: [String], retryEmptyBatchAfterReconnect: Bool) -> SMCBatch {
         lock.lock()
@@ -292,6 +364,11 @@ private struct SMCBatch {
 private struct SMCReadResult {
     let value: Double?
     let failure: SMCReadFailure?
+}
+
+private struct SMCRawValue {
+    let bytes: [UInt8]
+    let type: String
 }
 
 private enum SMCReadFailure {

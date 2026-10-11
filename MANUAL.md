@@ -1,5 +1,7 @@
 # ThermalAtlas - User Manual
 
+Version: 1.2.0 (Final)
+
 <p align="center">
   <img src="Resources/IconSource/ThermalAtlas-LiquidGlass.png" width="150" alt="ThermalAtlas app icon">
 </p>
@@ -27,21 +29,24 @@ The app is deliberately focused on monitoring. It changes **no fan control, perf
 | --- | --- |
 | CPU | Read-only Apple-silicon SMC sensors; readable sensors are averaged |
 | GPU | Read-only Apple-silicon SMC sensors; readable zones are averaged |
+| Fans | Actual RPM for each fan whose speed the SMC exposes; no fan control |
 | Internal SSD | SMART temperature, status and health only when macOS exposes real data |
 | External SSDs | Each physical external SSD is shown separately when macOS identifies it |
-| Refresh | User-selectable every 1, 2, 3 or 4 seconds; default: 2 seconds |
+| Temperature refresh | CPU/GPU: every 1, 2, 3 or 4 seconds; default: 2 seconds. SSDs: every minute |
 | Storage | Local settings, warning thresholds and a maximum of 24 hours of minute-averaged temperature history are stored locally |
-| Network | No network feature is required for temperature monitoring |
+| Network | Temperature monitoring stays local; optional GitHub update checks |
 | Telemetry | No telemetry or analytics services |
 
 ---
 
 ## 2. The app interface
 
-The screenshots in this manual show the current ThermalAtlas interface. The displayed SSD names, temperatures and health figures are examples from the captured Mac; the number and names of external SSD cards vary by connected hardware.
+The screenshots use sample drive names, temperatures and health figures. The number and names of external SSD cards depend on the connected hardware.
+
+From Beta 1.2.0-beta.6, Adaptive uses neutral macOS surfaces in light and dark mode. Drive names in the screenshots are anonymized.
 
 <p align="center">
-  <img src="Resources/Screenshots/classic.png" width="430" alt="ThermalAtlas Adaptive interface with CPU, GPU, internal SSD and two external SSD cards">
+  <img src="Resources/ManualScreenshots/full-adaptive-fans.png" width="430" alt="ThermalAtlas Adaptive interface with temperature cards and two fan speed readings">
 </p>
 
 ### What you see in the window
@@ -52,11 +57,14 @@ CPU and GPU cards show the average of the readable matching sensors. Each SSD ca
 **SSD status and health**
 When macOS supplies it, an SSD card shows `SMART: Verified` and a separate remaining-health percentage. The percentage is derived only from the drive's NVMe `PERCENTAGE_USED` data. If SMART data or that field is absent, ThermalAtlas does not invent a status or percentage.
 
+**Sensor Details**
+Click the info symbol on a card to see its source, last valid temperature and time. CPU and GPU details also show the chip, the average, the **Hotspot** (the highest readable sensor temperature) and the number of valid sensors. SSD details include the local drive ID and available reading information. Clicking the info symbol opens these details; clicking the card opens its history.
+
 **Last real GPU value**
-If a short GPU SMC read fails, ThermalAtlas can retain the last previously verified real GPU reading briefly. The orange label in the Aurora screenshot makes this explicit; it is not an estimate and expires after a short period.
+If a short GPU SMC read fails, ThermalAtlas can retain the last previously verified real GPU reading briefly. An orange label makes this explicit; it is not an estimate and expires after a short period.
 
 <p align="center">
-  <img src="Resources/Screenshots/liquid-glass.png" width="430" alt="ThermalAtlas Liquid Glass interface marking a last verified real GPU value">
+  <img src="Resources/ManualScreenshots/full-liquid-glass-fans.png" width="430" alt="ThermalAtlas Liquid Glass interface with temperature cards and fan speeds in System Context">
 </p>
 
 **Color status indicator**
@@ -74,10 +82,16 @@ The colors are a quick visual guide only. ThermalAtlas does not change anything 
 The bottom of the window shows the time of the latest accepted sensor snapshot.
 
 **System context**
-Below the temperature cards, ThermalAtlas shows CPU and GPU load, used memory in relation to installed RAM, power source or battery, and Low Power Mode. It is explicitly marked as context rather than a temperature sensor. These values update independently every 0.5 seconds; CPU load is calculated from two successive system snapshots, so it appears after the second context update. These read-only values never change macOS energy settings and are not stored.
+Below the temperature cards, ThermalAtlas shows CPU load, the actual speed of each readable fan in revolutions per minute (RPM), used memory in relation to installed RAM, power source or battery, and Low Power Mode. On a Mac with two readable fans, the speeds appear separately as Fan 1 and Fan 2. If a fan speed cannot be read, the app does not invent an RPM value. GPU load percentages are no longer displayed; the GPU temperature card remains available.
+
+System Context is separate from the temperature sensors. It refreshes about every 0.5 seconds, independently of the selectable temperature refresh interval. CPU load needs two successive snapshots before it appears. Fan minute averages are stored locally for at most 24 hours; the other context values are displayed only. ThermalAtlas does not change fan or power settings.
+
+The context tiles reflow to keep their readings visible in Standard and Compact sizes. Use the info button beside **System Context** for a short explanation of CPU load, fan speed, memory and power status. These are operating details; temperature readings remain in the cards above. If the macOS Settings window shows the notice that readings and settings are in the main window, choose **Open ThermalAtlas**.
+
+Memory status follows the used share of installed RAM: **Normal** below 70%, **Elevated** from 70% to below 85%, and **High** from 85%. This is a memory-usage indicator, not macOS memory pressure.
 
 <p align="center">
-  <img src="Resources/ManualScreenshots/system-context-load.png" width="620" alt="ThermalAtlas System Context with CPU load, GPU load, memory use, power source and Low Power Mode">
+  <img src="Resources/ManualScreenshots/system-context-fans.png" width="620" alt="ThermalAtlas System Context with CPU load, two fan speeds in RPM, memory, power source and Low Power Mode">
 </p>
 
 ### System Information
@@ -89,6 +103,12 @@ Select the thermometer in the upper-right corner of the ThermalAtlas window to o
 </p>
 
 The information is read only when you open this window. ThermalAtlas does not collect or display serial numbers, UUIDs, or other hardware identifiers. Use **Close** or the macOS window close button to dismiss it.
+
+The **Thermal State** tile shows macOS's assessment: **Normal**, **Elevated**, **High** or **Critical**. It is a system assessment, not a temperature in degrees. Reopen System Information to read the current state.
+
+### Moving and closing the window
+
+Drag the title bar or window background to move the main window. The title-bar controls close or minimize it. Closing the window keeps the app and temperature collection running; click the menu bar item to show it again. To stop the app, choose **Quit ThermalAtlas**.
 
 ---
 
@@ -109,7 +129,7 @@ The displayed groups are controlled through **Visible Temperatures** in the shar
 The circular **ellipsis** button in the footer opens one shared menu. It keeps all secondary actions together without adding extra buttons to the temperature display.
 
 <p align="center">
-  <img src="Resources/ManualScreenshots/shared-menu.png" width="330" alt="ThermalAtlas shared menu in English with Themes, Scan Refresh, Window Size, Visible Temperatures, Menu Bar Display, Temperature Alerts, Start at Login, Language, Export, links, manuals, Activity Monitor and quit">
+  <img src="Resources/ManualScreenshots/shared-menu.png" width="330" alt="ThermalAtlas shared menu in English with Themes, Scan Refresh, Window Size, Visible Temperatures, Menu Bar Display, Temperature Alerts, Language, Export, Always on Top, Start at Login, links, manuals, Activity Monitor and quit">
 </p>
 
 ### Themes
@@ -127,32 +147,54 @@ Choose **Themes** in the shared menu to select an appearance. The selected item 
 
 Changing the theme affects appearance only, not sensor logic. The selection is stored locally. All four appearances show the same sensor data.
 
-| Adaptive | Liquid Glass |
+Temperature cards are native buttons: VoiceOver announces each card's temperature and whether its history is open, and the card can be activated with the standard button action. The Mini Display accepts **Return** and **Space** as well as VoiceOver's press action to open its Window Size controls. ThermalAtlas follows macOS **Reduce Motion** when cards appear, histories open and the window resizes. It follows **Reduce Transparency** for glass surfaces. In Liquid Glass on macOS 27 or later, the thermometer button uses the interactive system glass style; earlier versions use the standard button.
+
+From Beta 1.2.0-beta.6, Adaptive uses neutral macOS surfaces in light and dark mode. Drive names in the screenshots are anonymized.
+
+| Adaptive – Light | Adaptive – Dark |
 | --- | --- |
-| <img src="Resources/Screenshots/classic.png" width="300" alt="ThermalAtlas Adaptive theme"> | <img src="Resources/Screenshots/liquid-glass.png" width="300" alt="ThermalAtlas Liquid Glass theme"> |
-| **Aurora** | **Ember** |
-| <img src="Resources/Screenshots/aurora.png" width="300" alt="ThermalAtlas Aurora theme"> | <img src="Resources/Screenshots/ember.png" width="300" alt="ThermalAtlas Ember theme"> |
+| <img src="Resources/ManualScreenshots/full-adaptive-light.png" width="300" alt="ThermalAtlas Adaptive Light"> | <img src="Resources/ManualScreenshots/full-adaptive-fans.png" width="300" alt="ThermalAtlas Adaptive Dark"> |
+
+| Liquid Glass | Aurora |
+| --- | --- |
+| <img src="Resources/ManualScreenshots/full-liquid-glass-fans.png" width="300" alt="ThermalAtlas Liquid Glass theme with fan speeds"> | <img src="Resources/ManualScreenshots/full-aurora-fans.png" width="300" alt="ThermalAtlas Aurora theme with fan speeds"> |
+| **Ember** | |
+| <img src="Resources/ManualScreenshots/full-ember-fans.png" width="300" alt="ThermalAtlas Ember theme with fan speeds"> | |
 
 ### Scan Refresh
 
 Choose **Scan Refresh** to select 1, 2, 3 or 4 seconds. The default is 2 seconds and the current choice has a checkmark.
 
+This choice controls CPU and GPU temperatures. SSD temperatures are read separately every minute.
+
 <p align="center">
   <img src="Resources/ManualScreenshots/scan-refresh-menu.png" width="238" alt="ThermalAtlas Scan Refresh menu with one to four second options">
 </p>
 
-A shorter interval makes the display react sooner to real changes, but asks the read-only sensor sources more often. A longer interval reduces those checks. The interval affects only how often ThermalAtlas asks for new readings; it does not alter the Mac's cooling, power settings or hardware behavior.
+A shorter interval makes temperature readings react sooner to real changes, but asks the read-only temperature sources more often. A longer interval reduces those checks. Fan speeds and the other System Context values refresh separately about every 0.5 seconds. These intervals do not alter the Mac's cooling, power settings or hardware behavior.
 
 ### Window Size
 
-Choose **Window Size** and then **Standard** or **Compact (about 40% smaller)**. Compact mode reduces the window width by about 40% and also uses denser cards, smaller spacing and smaller type so the display remains practical rather than merely squeezed. The chosen size is stored locally.
+Under **Window Size**, choose **Standard**, **Compact (about 40% smaller)** or **Mini Display**. Standard shows the full card view. Compact mode reduces the window width by about 40% and uses denser cards, smaller spacing and smaller type. Mini Display replaces the window with a narrow, movable strip showing the selected temperatures. These choices are stored locally.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/compact-view.png" width="300" alt="ThermalAtlas compact view with temperature cards and System Context">
 </p>
 
+Compact mode also keeps the temperature-history chart available when you select a card.
+
 <p align="center">
-  <img src="Resources/ManualScreenshots/window-size-menu.png" width="360" alt="ThermalAtlas Window Size menu with Compact about 40 percent smaller selected">
+  <img src="Resources/ManualScreenshots/window-size-menu.png" width="360" alt="ThermalAtlas Window Size menu with Standard, Compact and Mini Display; Standard and Mini Display are checked">
+</p>
+
+The same menu also includes **Mini Display**. It replaces the large window with a narrow floating strip that shows the selected readable sensor values in the same order and colours as the menu bar. Drag the strip to place it. Right-click it to reveal **Window Size**, then choose **Standard** or **Compact** without reopening the main window. The Mini Display choice is stored locally.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/mini-display.png" width="500" alt="ThermalAtlas Mini Display with synthetic sample temperatures">
+</p>
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/mini-display-controls.png" width="430" alt="ThermalAtlas Mini Display with its expanded Window Size controls and synthetic sample temperatures">
 </p>
 
 ### Visible Temperatures
@@ -173,32 +215,100 @@ Choose **Menu Bar Display** to decide how much space ThermalAtlas uses in the ma
 
 ### Temperature History
 
-Click a temperature card to open its local **Temperature History**. Choose **1 Hour**, **6 Hours** or **24 Hours**; the orange dashed line marks that sensor group's selected warning threshold. ThermalAtlas stores minute averages for real, readable values only and keeps at most 24 hours. Right after launch, the chart needs two separate minutes before it can draw a line. A temporarily retained GPU value is clearly marked and is not recorded as a new measurement.
+Click a temperature card to open its local **Temperature History**. Choose **1 h**, **3 h**, **6 h**, **12 h** or **24 h**; the orange dashed line marks that sensor group's selected warning threshold. ThermalAtlas stores minute averages for real, readable values only and keeps at most 24 hours. Right after launch, the chart needs two separate minutes before it can draw a line. A temporarily retained GPU value is clearly marked and is not recorded as a new measurement.
+
+Click or drag inside the chart to select the nearest recorded point. A marker shows its position, and the text below shows its time and minute-average temperature. Use the left and right arrow keys or the Previous minute and Next minute buttons to move between points; press Escape to clear the selection. The chart's time labels follow the selected app language. A lone reading remains visible as a point, including a genuine 0 RPM reading in fan history. Changing the time range clears the selection. Click elsewhere on the card to close the history. History and CSV use the average temperature; CPU and GPU warning thresholds use the Hotspot when available, so a warning can occur while the plotted average remains below the threshold line.
+
+When you open or close a temperature history, the main window adjusts its height to the cards. Reduce Motion disables the resizing animation.
 
 <p align="center">
-  <img src="Resources/ManualScreenshots/temperature-history-card.png" width="430" alt="ThermalAtlas SSD card with a one-hour local temperature history and warning threshold line">
+  <img src="Resources/ManualScreenshots/temperature-history-card.png" width="430" alt="Illustrative GPU history with sample data, a selected point and warning threshold">
 </p>
+
+### Fan History
+
+Fan History is available from Beta 1.2.0-beta.6. Click a readable fan's RPM value in **System Context** to open its local **Fan History**. The chart opens separately and does not enlarge the main window.
+
+To open the view:
+
+1. Click the ThermalAtlas icon or temperature display in the macOS menu bar to open the main window. If Mini Display is active, first right-click it and choose Standard or Compact.
+2. Find **System Context** below the temperature cards.
+3. Click **Fan** or **Fan 1/2** with its **RPM value**. Each displayed fan opens its own history.
+4. Choose **1 h**, **3 h**, **6 h**, **12 h** or **24 h** at the top. Click outside to close the view.
+
+Initially, the view says “Collecting local history…” until two minute points are available. A single recorded point already provides Min/Max/average and is drawn on its own. A real 0 RPM value remains a valid point. If no fan speed is readable, “Not available” appears and there is no clickable fan value.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/fan-history.png" width="600" alt="ThermalAtlas Fan 1 history with five time ranges and Min, Max and average readings of 1,000 RPM">
+</p>
+
+The screenshot shows **Fan 1** with **1 h** selected. The other buttons select **3 h**, **6 h**, **12 h** or **24 h**; the same five ranges are available for temperature history. The horizontal axis shows time, and the vertical axis shows revolutions per minute (**RPM**). The curve uses one average per recorded minute. A selected hour range limits how far back the chart looks; it does not mean a full hour has already been recorded.
+
+**Min**, **Max** and **Ø** summarize the available minute averages in the selected period. They show the lowest minute average, highest minute average and arithmetic mean of those averages, with each recorded minute given equal weight. They do not show instantaneous RPM peaks. In this capture all three figures round to **1,000 RPM**, and the curve is flat at that display scale. Both visible time labels read **07:29** because the short recorded interval is labelled without seconds.
+
+Click or drag in the graph to select a recorded point and see its time and minute-average RPM. Changing the range clears that selection. Close the popover by clicking outside it. History stays local for at most 24 hours. Missing fan readings do not become zero values; gaps interrupt the curve. A genuinely reported **0 RPM** is a valid stopped-fan reading. ThermalAtlas reads fan speeds and does not control them.
+
+Use the left and right arrow keys or the **Previous minute** and **Next minute** buttons to move through recorded points. Press **Escape** to clear the selection. Time labels use the selected app language. The same keyboard and button controls work in Temperature History.
+
+The temperature chart also shows Min, Max and Ø for its minute averages. Sensor Details show the age of the last valid reading; temporarily retained GPU values show their age directly on the card. After the existing 15-second retention limit, the temperature becomes unavailable while the last valid GPU timestamp remains visible in the details.
 
 ### Temperature Alerts
 
 Choose **Temperature Alerts** to enable or disable local macOS notifications. CPU, GPU, Internal SSD and External SSD each have their own threshold submenu. CPU and GPU offer 85, 90, 95 or 100 °C; SSDs offer 60, 65, 70 or 75 °C. A notification is sent only after a genuine value has remained at or above its threshold for at least one minute. The same temperature episode does not notify again until the sensor has cooled below the threshold. macOS may ask for notification permission when alerts are first enabled.
+
+CPU and GPU alerts use their Hotspot when available, otherwise their average. SSD alerts use the reported SSD temperature. The default thresholds are 95 °C for CPU/GPU and 70 °C for SSDs. The menu bar frame is green below the warning range, yellow within 10 °C below a selected threshold, and red at or above it. This frame uses the same temperature basis as alerts and updates even when notifications are disabled.
+
+The 60-second warning timer starts again if a sensor disappears and returns or if you change its threshold. This prevents a new or changed reading from inheriting time from the previous warning episode.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/temperature-alerts-menu.png" width="230" alt="ThermalAtlas Temperature Alerts menu with separate CPU, GPU and SSD threshold submenus">
   <img src="Resources/ManualScreenshots/temperature-alert-thresholds.png" width="130" alt="ThermalAtlas CPU temperature alert threshold submenu with 95 degrees Celsius selected">
 </p>
 
-### Start at Login
-
-Choose **Start at Login** to let macOS launch ThermalAtlas after you sign in. Choosing it again disables the registration. This changes only the app's own login-item registration; it does not alter any power, performance or sensor setting.
-
 ### Export
 
-Choose **Export** to prepare local diagnostic data on demand. **Copy Current Readings** places the current snapshot as text on the clipboard. **Copy Diagnostic Report** copies the Mac model, macOS version, chip name and current readable or unavailable sensor states. **Export CSV** opens a normal macOS save dialog and writes a CSV containing the available minute averages from the local history plus the current snapshot. ThermalAtlas creates no export file until you choose a location.
+Choose **Export** to prepare local diagnostic data on demand. **Copy Current Readings** places the current snapshot as text on the clipboard. **Copy Diagnostic Report** copies the Mac model, macOS version, chip name and current readable or unavailable sensor states. **Export CSV** opens a normal macOS save dialog and writes a CSV containing the available minute averages from the local history plus the current snapshot. ThermalAtlas creates no export file until you choose a location. If saving fails, an alert shows the macOS error description and offers **Try Again…** or **Close**. Try Again opens the save dialog again so you can choose a location.
 
 <p align="center">
   <img src="Resources/ManualScreenshots/export-menu.png" width="394" alt="ThermalAtlas Export submenu">
 </p>
+
+### Always on Top
+
+Choose **Always on Top** below **Export** to keep the ThermalAtlas window visible above other apps and while you use the macOS menu bar. Choose it again to restore the normal window order. This local setting affects only the window's stacking order.
+
+For **Mini Display**, enabling this option also lets the strip appear in other apps' full-screen spaces. Its behavior over a particular full-screen game still needs to be checked in that game. Turning the option off restores the mini strip's usual floating-window behavior.
+
+### Start at Login
+
+Choose **Start at Login** below **Always on Top** to let macOS launch ThermalAtlas after you sign in. Choosing it again disables the registration. This changes only the app's own login-item registration; it does not alter any power, performance or sensor setting.
+
+### App Updates
+
+Choose **App Updates** below **Start at Login** to check the official ThermalAtlas GitHub releases for a newer Final or Beta version. This option is included in Beta 1.2.0-beta.5.
+
+<p align="center">
+  <img src="Resources/ManualScreenshots/app-updates-menu.png" width="760" alt="ThermalAtlas App Updates menu with Check Now, Automatic Checks, installed version, last successful check and a Beta release; Off, Daily, Weekly and Monthly intervals">
+</p>
+
+**Check Now…** checks GitHub immediately, even when automatic checks are off. The result window shows newer versions or reports that none are available. If GitHub cannot be reached or the request fails, the app reports a failed check; this does not mean your version is up to date.
+
+Under **Automatic Checks**, choose how often the running app should check:
+
+| Option | Behavior |
+| --- | --- |
+| Off | Default. No automatic checks; Check Now remains available |
+| Daily | Check after one calendar day |
+| Weekly | Check after seven calendar days |
+| Monthly | Check after one calendar month |
+
+The interval starts from the last successful check, including a manual check. Checks run while ThermalAtlas is open, even with the main window closed or Mini Display active. An overdue check runs after the next app launch or timer check. After a failed request, automatic retries wait at least one hour. The interval is stored locally.
+
+**Installed version** is the version of the running app. **Last successful check** shows when GitHub was last checked successfully. The version, timestamp and Beta tag in the screenshot are values from that capture, not a statement about the latest release.
+
+A **Final** or **Beta** entry links to the corresponding GitHub release page. ThermalAtlas compares release versions with the installed version and lists the highest newer version in each channel. A Final is newer than a Beta with the same version number; an older or identical version is not offered as an update. New finds also open a separate notice window. Each release is reported automatically only once; Check Now can show it again. Download and installation remain your choice on the release page.
+
+Update checks contact GitHub over HTTPS. They send no sensor, drive or device data and no installed version. GitHub receives normal connection information, including your IP address. The app uses no stored cookies or credentials. Check timestamps and already reported release tags are stored locally.
 
 ### Language
 
@@ -216,7 +326,7 @@ The same menu provides direct links to the public **GitHub repository**, the **T
   <img src="Resources/ManualScreenshots/manuals-menu.png" width="324" alt="ThermalAtlas Manuals submenu with English Manual and Deutsches Handbuch">
 </p>
 
-Opening a public link happens only after you select it and hands its public URL to your default browser. Temperature monitoring itself has no network feature.
+Opening a public link happens only after you select it and hands its public URL to your default browser. Temperature monitoring stays local. The separate App Updates option contacts GitHub as described above.
 
 ---
 
@@ -289,7 +399,7 @@ ThermalAtlas is privacy-friendly and local by design:
 - no network feature required for temperature monitoring
 - no third-party dependencies
 
-Only the selected theme, scan-refresh interval, visible temperature groups, menu bar display mode, window size, display language and warning thresholds are stored locally. ThermalAtlas also keeps no more than 24 hours of local, minute-averaged temperature history. CPU load, power source or battery, and Low Power Mode are displayed only and are not stored. No accounts, telemetry, analytics services or cloud synchronization are involved. See the [privacy report](PRIVACY.md) and [security review](SECURITY.md) for more detail.
+The selected theme, scan-refresh interval, visible temperature groups, menu bar display mode, window size, Mini Display choice, always-on-top choice, display language and warning thresholds are stored locally. Update-check intervals, check timestamps and already reported release tags are also stored locally. Optional update checks contact GitHub without sending sensor or device data; GitHub receives normal connection information, including your IP address. ThermalAtlas also keeps no more than 24 hours of local, minute-averaged temperature history. Fan minute averages are stored separately from temperature history for at most 24 hours. CPU load, memory usage, power source or battery, and Low Power Mode are displayed only and are not stored. No accounts, telemetry, analytics services or cloud synchronization are involved. See the [privacy report](PRIVACY.md) and [security review](SECURITY.md) for more detail.
 
 ---
 
@@ -305,7 +415,7 @@ ThermalAtlas is architecturally compact: a menu bar app, one sensor snapshot at 
 - Apple silicon
 - For local builds: Xcode Command Line Tools including Swift and `actool`
 
-ThermalAtlas v1.0.0 is the first stable release. Future stable releases and prereleases are published through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
+ThermalAtlas v1.2.0 is the current stable release. Future stable releases and prereleases are published through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
 
 ---
 

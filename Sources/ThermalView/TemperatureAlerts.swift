@@ -26,12 +26,12 @@ enum MenuBarTemperatureStatus: Sendable, Equatable {
 
     static func from(readings: [TemperatureReading], configuration: TemperatureAlertConfiguration) -> Self {
         for reading in readings {
-            guard let temperature = reading.temperatureCelsius,
+            guard let temperature = reading.alertTemperatureCelsius,
                   temperature >= configuration.threshold(for: reading.kind) else { continue }
             return .warning
         }
         for reading in readings {
-            guard let temperature = reading.temperatureCelsius,
+            guard let temperature = reading.alertTemperatureCelsius,
                   temperature >= configuration.threshold(for: reading.kind) - 10 else { continue }
             return .warm
         }
@@ -72,12 +72,27 @@ struct TemperatureAlert: Sendable {
 struct TemperatureAlertEngine {
     static let requiredDuration: TimeInterval = 60
 
+    private struct Thresholds: Equatable {
+        let cpu: Double
+        let gpu: Double
+        let internalSSD: Double
+        let externalSSD: Double
+
+        init(_ configuration: TemperatureAlertConfiguration) {
+            cpu = configuration.cpuThreshold
+            gpu = configuration.gpuThreshold
+            internalSSD = configuration.internalSSDThreshold
+            externalSSD = configuration.externalSSDThreshold
+        }
+    }
+
     private struct ActiveEpisode {
         let beganAt: Date
         var wasReported: Bool
     }
 
     private var episodes: [String: ActiveEpisode] = [:]
+    private var previousThresholds: Thresholds?
 
     mutating func evaluate(
         readings: [TemperatureReading],
@@ -86,15 +101,28 @@ struct TemperatureAlertEngine {
     ) -> [TemperatureAlert] {
         guard configuration.isEnabled else {
             episodes.removeAll()
+            previousThresholds = nil
             return []
         }
+
+        let thresholds = Thresholds(configuration)
+        if let previousThresholds, previousThresholds != thresholds {
+            episodes.removeAll()
+        }
+        previousThresholds = thresholds
+
+        // SSD values are cached between physical reads. Keep those IDs while
+        // they are still present, but drop episodes as soon as a device leaves
+        // the published reading set.
+        let presentReadingIDs = Set(readings.map(\.id))
+        episodes = episodes.filter { presentReadingIDs.contains($0.key) }
 
         var alerts: [TemperatureAlert] = []
         for reading in readings {
             let identifier = reading.id
             guard reading.isFreshMeasurement else { continue }
             guard !reading.isLastVerifiedValue,
-                  let temperature = reading.temperatureCelsius,
+                  let temperature = reading.alertTemperatureCelsius,
                   temperature >= configuration.threshold(for: reading.kind) else {
                 episodes.removeValue(forKey: identifier)
                 continue
@@ -123,7 +151,7 @@ enum TemperatureAlertNotifier {
     static func send(_ alert: TemperatureAlert, language: AppLanguage) async {
         let content = UNMutableNotificationContent()
         let title = alert.reading.title ?? alert.reading.kind.title(for: language)
-        let value = Int(alert.reading.temperatureCelsius?.rounded() ?? alert.threshold)
+        let value = Int(alert.reading.alertTemperatureCelsius?.rounded() ?? alert.threshold)
         if language == .german {
             content.title = "Temperaturwarnung: \(title)"
             content.body = "Seit mindestens einer Minute bei oder über \(Int(alert.threshold)) °C (aktuell \(value) °C)."

@@ -2,7 +2,7 @@
 
 [English](FEATURES.md)
 
-Diese Seite beschreibt die stabilen Funktionen ausführlich. Installation und tägliche Nutzung erklärt das [Benutzerhandbuch](MANUAL.de.md).
+Diese Seite beschreibt die Funktionen der finalen Veröffentlichung ThermalAtlas 1.2.0. Installation und tägliche Nutzung erklärt das [Benutzerhandbuch](MANUAL.de.md).
 
 ## Temperaturüberwachung
 
@@ -11,6 +11,7 @@ Diese Seite beschreibt die stabilen Funktionen ausführlich. Installation und t�
 - Verwendet einen defensiven, rein lesenden SMC-Adapter. Fehlende oder unplausible Werte erscheinen als `Nicht verfügbar`.
 - Ermöglicht ein Temperaturintervall von 1, 2, 3 oder 4 Sekunden; Standard sind zwei Sekunden.
 - Zeigt Quelle, letzten gültigen Wert und Aktualisierungszeit in den Sensor-Details.
+- Zeigt in den CPU-/GPU-Sensor-Details den gemessenen Hotspot und die Anzahl gültiger Sensoren. Karten, Menüleiste und Verlauf zeigen weiterhin den Durchschnitt.
 
 ## Laufwerke und SMART
 
@@ -23,39 +24,61 @@ Diese Seite beschreibt die stabilen Funktionen ausführlich. Installation und t�
 
 ## Systemkontext
 
-- Zeigt getrennt CPU- und GPU-Gesamtlast, belegten Arbeitsspeicher im Verhältnis zum installierten RAM mit dem Status Normal, Erhöht oder Hoch, Stromquelle/Akku und Energiesparmodus.
-- Aktualisiert CPU-/GPU-Last und belegten Speicher alle 0,5 Sekunden, unabhängig vom gewählten Temperaturintervall.
+- Zeigt getrennt CPU-Gesamtlast, die Drehzahl jedes lesbaren Lüfters, belegten Arbeitsspeicher im Verhältnis zum installierten RAM mit dem Status Normal, Erhöht oder Hoch, Stromquelle/Akku und Energiesparmodus.
+- Aktualisiert CPU-Last, Lüfterdrehzahlen und belegten Speicher alle 0,5 Sekunden, unabhängig vom gewählten Temperaturintervall.
 - Behandelt diese Werte als rein lesenden Kontext, niemals als Temperaturmessungen oder Systemsteuerung.
 
 ## Systeminformationen
 
 - Öffnen sich über das Thermometer im App-Kopf in einem eigenen lokalen Fenster.
-- Zeigen Mac-Modell, Apple-Chip, CPU- und GPU-Kerne, Arbeitsspeicher, internen Speicher und macOS-Version.
-- Der sichtbare Snapshot zeigt oder speichert keine Seriennummern oder UUIDs. Die aktuelle breite Hardware-Profilabfrage soll ersetzt werden; siehe `NEXT_STEPS.md`.
+- Zeigen Mac-Modell und Apple-Chip neben dem macOS-Wert für den thermischen Zustand. Darunter folgen CPU- und GPU-Kernzahlen, Arbeitsspeicher, interner Speicher sowie macOS-Version und Buildnummer.
+- Kennzeichnen den thermischen Zustand als macOS-Systembewertung und nicht als zusätzlichen Temperatursensor.
+- Liest ausschließlich die angezeigten lokalen Werte und fragt, zeigt oder speichert keine Seriennummern oder UUIDs.
 
 ## Verlauf, Warnungen und Export
 
-- Öffnet von jeder Temperaturkarte einen lokalen Verlauf für 1, 6 oder 24 Stunden.
+- Öffnet von jeder Temperaturkarte einen lokalen Verlauf für 1, 3, 6, 12 oder 24 Stunden.
+- Zeigt beim Anklicken oder Ziehen im Graphen Uhrzeit und Minutenmittelwert des nächsten aufgezeichneten Punktes.
+- Wechselt mit den Pfeiltasten links/rechts oder den Buttons Vorherige/Nächste Minute zwischen Punkten; Escape hebt die Auswahl auf. Diagrammbeschriftungen, Uhrzeiten und Zahlen richten sich nach der gewählten App-Sprache. Einzelne Punkte bleiben sichtbar und auswählbar, auch 0 RPM.
 - Speichert nur lokale Minutenmittelwerte für höchstens 24 Stunden; vorübergehend gehaltene GPU-Werte werden nicht als neue Messung aufgezeichnet.
-- Bietet getrennte Warnschwellen für CPU, GPU, interne SSD und externe SSDs. Eine Mitteilung benötigt mindestens 60 Sekunden über der Schwelle und wird erst nach einer Abkühlung erneut gesendet.
+- Bietet getrennte Warnschwellen für CPU, GPU, interne SSD und externe SSDs. CPU-/GPU-Warnungen verwenden den gemessenen Hotspot; SSD-Warnungen die angezeigte Temperatur. Eine Mitteilung benötigt mindestens 60 Sekunden an oder über der Schwelle und wird erst nach einer Abkühlung erneut gesendet. Nach Entfernen und Wiederanschließen eines Sensors oder einer Schwellenänderung beginnt die Frist neu.
 - Exportiert einen kopierbaren aktuellen Snapshot, einen kopierbaren Diagnosebericht mit Mac-Modell, macOS-Version, Chipbezeichnung und Sensorstatus oder lokalen Verlauf plus aktuellen Snapshot als CSV; CSV entsteht erst nach der Auswahl eines Speicherorts.
+- Zeigt bei einem fehlgeschlagenen CSV-Schreibvorgang den macOS-Fehler. Erneut versuchen öffnet den Speicherdialog wieder, damit du den Speicherort neu wählen kannst; Schließen beendet den Exportversuch.
+- Öffnet über jeden lesbaren Lüfterwert einen separaten RPM-Verlauf mit denselben fünf Zeiträumen und Punktwahl.
+- Zeigt in beiden Diagrammarten Min/Max/Ø der vorhandenen Minutenmittelwerte. Jede aufgezeichnete Minute zählt gleich; fehlende Minuten bilden Lücken.
+- Zeigt das Messwertalter in den Sensor-Details und direkt auf Karten mit kurz überbrückten GPU-Werten. Die bisherige GPU-Überbrückungsgrenze von 15 Sekunden bleibt bestehen.
+
+## App-Updates
+
+- Prüft die offiziellen GitHub-Releases auf die höchste neuere Final- und Beta-Version. Final ist neuer als Beta derselben Versionsnummer.
+- Bietet Jetzt prüfen und optionale tägliche, wöchentliche oder monatliche Prüfungen. Automatische Prüfungen sind zunächst aus und laufen bei geöffneter App auch mit geschlossenen Fenstern.
+- Zeigt installierte Version und letzte erfolgreiche Prüfung, meldet neue Releases automatisch einmal und öffnet auf Wunsch deren GitHub-Release-Seiten.
+- Speichert Auswahl und Prüfstatus lokal. Fehlgeschlagene automatische Prüfungen werden höchstens stündlich wiederholt; ein Fehler bestätigt keinen aktuellen Versionsstand.
+- Überlässt dir Download und Installation. Prüfungen senden keine Sensor- oder Gerätedaten; GitHub erhält die IP-Adresse der Verbindung.
 
 ## Oberfläche und Anzeige
 
-- Bietet Standard- und Kompaktgröße für das Popover; Kompakt ist rund 40 % schmaler und hält die Bedienelemente lesbar.
+- Bietet Standard- und Kompaktgröße für das Fenster; Kompakt ist rund 40 % schmaler und hält die Bedienelemente lesbar.
+- Bietet zusätzlich eine verschiebbare Mini-Anzeige der gewählten Temperaturen. Rechtsklick öffnet Standard und Kompakt; der Modus wird lokal gespeichert.
+- Mit „Immer im Vordergrund“ kann die Mini-Anzeige andere Vollbildbereiche nutzen.
 - Lässt CPU-, GPU-, interne SSD- und externe SSD-Gruppen für Popover und Menüleiste wählen.
 - Bietet Menüleistenmodi für **Alle Werte** oder **Nur Symbol**.
 - Trennt CPU-, GPU- und SSD-Werte im Modus **Alle Werte** farblich und ergänzt eine kontrastreiche Statusfläche: grün im Normalbereich, gelb nahe einer Schwelle und rot ab der gewählten Warnschwelle.
-- Enthält vier native Themes: Adaptiv, Liquid Glass, Aurora und Ember.
+- Enthält vier native Themes: Adaptiv, Liquid Glass, Aurora und Ember. Adaptiv verwendet neutrale macOS-Fenster- und Kontrollflächen im Hell- und Dunkelmodus.
+- Temperaturkarten lassen sich per Tastatur aktivieren und geben Messwert und Verlaufsstatus an VoiceOver aus. Menüleiste und Mini-Anzeige stellen VoiceOver lokalisierte Messwerte, nicht verfügbare Werte und den Temperaturwarnstatus bereit. Die Mini-Anzeige reagiert auf Return, Leertaste und VoiceOver-Aktivieren. „Bewegung reduzieren“ wirkt beim Einblenden von Karten, beim Öffnen eines Verlaufs und beim Anpassen der Fensterhöhe; „Transparenz reduzieren“ passt Glasflächen an.
+- Die Felder im Systemkontext ordnen sich in Standard und Kompakt passend an. Der Info-Button erklärt CPU-Auslastung, Lüfterdrehzahlen, Arbeitsspeicher und Energiezustand und verweist für Temperaturen auf die Karten darüber. Die macOS-Einstellungen zeigen einen Hinweis und den Button „ThermalAtlas öffnen“.
+- Passt die Fensterhöhe an geöffnete Temperaturverläufe an; Fensterbreite und obere Fensterkante bleiben erhalten.
+- Das mehrschichtige Icon-Composer-App-Icon bietet auf unterstützten macOS-Versionen die Erscheinungen Standard, Dunkel und Monochrom sowie einen Fallback für ältere Versionen.
 - Startet auf Englisch und bietet eine lokale deutsche Oberfläche.
 - Bietet eine optionale macOS-Registrierung für **Bei Anmeldung starten**.
-- Bündelt Erscheinungsbild, Aktualisierung, Anzeige, Warnungen, Bei Anmeldung starten, Sprache, Export, Handbücher, Links, Aktivitätsanzeige und Beenden in einem Footer-Menü.
+- Kann das Fenster mit der optionalen Einstellung **Immer im Vordergrund** über anderen Apps halten.
+- Bündelt Erscheinungsbild, Aktualisierung, Anzeige, Warnungen, Sprache, Export, Immer im Vordergrund, Bei Anmeldung starten, App-Updates, Handbücher, Links, Aktivitätsanzeige und Beenden in einem Footer-Menü.
 
 ## Datenschutz und Sicherheit
 
 - Liest nur lokale Sensor- und Laufwerksinformationen; Lüfter, Energieoptionen und andere Systemeinstellungen werden niemals verändert.
 - Enthält keine Konten, Telemetrie, Analysedienste, Cloud-Synchronisation, Werbe-SDKs oder Drittanbieter-Abhängigkeiten.
-- Speichert ausschließlich gewählte Anzeigeeinstellungen, Warnschwellen und den lokalen Temperaturverlauf in `UserDefaults`.
+- Speichert ausschließlich gewählte Anzeigeeinstellungen, Warnschwellen, Updateintervalle, Prüfzeitpunkte, gemeldete Release-Tags und lokale Temperatur- und Lüfterverläufe in `UserDefaults`.
 - Öffnet öffentliche Links oder erstellt Exporte nur nach einer ausdrücklichen Nutzeraktion.
 
 ## Hardware-Kompatibilität

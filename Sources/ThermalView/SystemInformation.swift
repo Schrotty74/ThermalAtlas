@@ -1,4 +1,6 @@
+import Darwin
 import Foundation
+import IOKit
 
 struct SystemInformationSnapshot: Sendable {
     let macModel: String
@@ -10,83 +12,73 @@ struct SystemInformationSnapshot: Sendable {
     let memory: String
     let storage: String
     let operatingSystem: String
+    let thermalState: ProcessInfo.ThermalState
 }
 
 enum SystemInformationReader {
     static func read() -> SystemInformationSnapshot {
-        let profiler = profilerData()
-        let hardware = firstDictionary(in: profiler, key: "SPHardwareDataType")
-        let display = firstDictionary(in: profiler, key: "SPDisplaysDataType")
-
-        let machineName = stringValue("machine_name", in: hardware)
-        let machineIdentifier = stringValue("machine_model", in: hardware)
-        let macModel = [machineName, machineIdentifier]
-            .compactMap { $0 }
-            .joined(separator: " · ")
-        let cpuCounts = cpuCoreCounts(from: stringValue("number_processors", in: hardware))
-
         return SystemInformationSnapshot(
-            macModel: macModel.isEmpty ? localizedHardwareModel() : macModel,
-            chip: stringValue("chip_type", in: hardware) ?? localizedHardwareModel(),
-            cpuCoreCount: cpuCounts.total,
-            performanceCoreCount: cpuCounts.performance,
-            efficiencyCoreCount: cpuCounts.efficiency,
-            gpuCoreCount: Int(stringValue("sppci_cores", in: display) ?? ""),
-            memory: stringValue("physical_memory", in: hardware) ?? memoryDescription(),
+            macModel: systemString(named: "hw.model") ?? "Mac",
+            chip: systemString(named: "machdep.cpu.brand_string") ?? "Apple silicon",
+            cpuCoreCount: systemInteger(named: "hw.physicalcpu"),
+            performanceCoreCount: systemInteger(named: "hw.perflevel0.physicalcpu"),
+            efficiencyCoreCount: systemInteger(named: "hw.perflevel1.physicalcpu"),
+            gpuCoreCount: gpuCoreCount(),
+            memory: memoryDescription(),
             storage: storageDescription(),
-            operatingSystem: ProcessInfo.processInfo.operatingSystemVersionString
+            operatingSystem: ProcessInfo.processInfo.operatingSystemVersionString,
+            thermalState: ProcessInfo.processInfo.thermalState
         )
     }
 
-    private static func profilerData() -> [String: Any] {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/sbin/system_profiler")
-        process.arguments = ["SPHardwareDataType", "SPDisplaysDataType", "-json"]
-        let output = Pipe()
-        process.standardOutput = output
-        process.standardError = Pipe()
+    private static func systemString(named name: String) -> String? {
+        var size = 0
+        guard sysctlbyname(name, nil, &size, nil, 0) == 0, size > 1 else { return nil }
+        var value = [CChar](repeating: 0, count: size)
+        guard sysctlbyname(name, &value, &size, nil, 0) == 0 else { return nil }
+        return String(decoding: value.map { UInt8(bitPattern: $0) }.prefix(while: { $0 != 0 }), as: UTF8.self)
+    }
 
-        do {
-            try process.run()
-            process.waitUntilExit()
-            guard process.terminationStatus == 0 else { return [:] }
-            let data = output.fileHandleForReading.readDataToEndOfFile()
-            return (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] ?? [:]
-        } catch {
-            return [:]
+    private static func systemInteger(named name: String) -> Int? {
+        var value: Int32 = 0
+        var size = MemoryLayout<Int32>.size
+        guard sysctlbyname(name, &value, &size, nil, 0) == 0, value > 0 else { return nil }
+        return Int(value)
+    }
+
+    private static func gpuCoreCount() -> Int? {
+        guard let matching = IOServiceMatching("AGXAccelerator") else { return nil }
+        var iterator: io_iterator_t = 0
+        guard IOServiceGetMatchingServices(kIOMainPortDefault, matching, &iterator) == KERN_SUCCESS else {
+            return nil
+        }
+        defer { IOObjectRelease(iterator) }
+
+        while true {
+            let service = IOIteratorNext(iterator)
+            guard service != 0 else { return nil }
+            defer { IOObjectRelease(service) }
+            guard let value = IORegistryEntryCreateCFProperty(
+                service,
+                "gpu-core-count" as CFString,
+                kCFAllocatorDefault,
+                0
+            )?.takeRetainedValue() as? NSNumber else { continue }
+            let count = value.intValue
+            if count > 0 { return Int(count) }
         }
     }
 
-    private static func firstDictionary(in profiler: [String: Any], key: String) -> [String: Any] {
-        (profiler[key] as? [[String: Any]])?.first ?? [:]
-    }
-
-    private static func stringValue(_ key: String, in dictionary: [String: Any]) -> String? {
-        dictionary[key] as? String
-    }
-
-    private static func cpuCoreCounts(from value: String?) -> (total: Int?, performance: Int?, efficiency: Int?) {
-        guard let value else { return (nil, nil, nil) }
-        let counts = value
-            .split(whereSeparator: { !$0.isNumber })
-            .compactMap { Int($0) }
-        guard let total = counts.first else { return (nil, nil, nil) }
-        return (total, counts.count > 1 ? counts[1] : nil, counts.count > 2 ? counts[2] : nil)
-    }
-
-    private static func localizedHardwareModel() -> String {
-        var size = MemoryLayout<Int>.size
-        var value = [CChar](repeating: 0, count: 256)
-        guard sysctlbyname("hw.model", &value, &size, nil, 0) == 0 else { return "Mac" }
-        let bytes = value.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }
-        return String(decoding: bytes, as: UTF8.self)
-    }
-
     private static func memoryDescription() -> String {
-        var memoryBytes: UInt64 = 0
-        var size = MemoryLayout<UInt64>.size
-        guard sysctlbyname("hw.memsize", &memoryBytes, &size, nil, 0) == 0 else { return "—" }
+        guard let memoryBytes = systemMemoryBytes() else { return "—" }
         return ByteCountFormatter.string(fromByteCount: Int64(memoryBytes), countStyle: .memory)
+    }
+
+    private static func systemMemoryBytes() -> UInt64? {
+        var value: UInt64 = 0
+        var size = MemoryLayout<UInt64>.size
+        guard sysctlbyname("hw.memsize", &value, &size, nil, 0) == 0, value > 0 else { return nil }
+        return value
     }
 
     private static func storageDescription() -> String {

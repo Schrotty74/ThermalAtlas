@@ -74,7 +74,7 @@ def base(c, number, section, title, subtitle, page):
     c.drawString(42, H - 120, subtitle)
     c.setFillColor(MUTED)
     c.setFont("Helvetica", 8)
-    c.drawString(42, 25, "ThermalAtlas · local, read-only temperature monitoring")
+    c.drawString(42, 25, "ThermalAtlas 1.2.0 · Final · local, read-only temperature monitoring")
     c.drawRightString(W - 42, 25, str(page))
 
 
@@ -112,7 +112,7 @@ def build(language, output):
 
     # 1 Cover
     base(c, 0, "ThermalAtlas", t["cover"], t["cover_sub"], 1)
-    image(c, ASSETS / "Screenshots" / "liquid-glass.png", 110, 210, 375, 410)
+    image(c, ASSETS / "ManualScreenshots" / "full-liquid-glass-fans.png", 110, 210, 375, 410)
     panel(c, 70, 82, W - 140, 82, VIOLET,
           "CPU · GPU · SSD",
           "Echte, lokal gelesene Temperaturen für Apple-Silicon-Macs." if de else "Real, locally read temperatures for Apple-silicon Macs.")
@@ -120,14 +120,14 @@ def build(language, output):
 
     # 2 Readings
     base(c, 1, "Messwerte" if de else "Readings", t["readings"], t["interface"], 2)
-    image(c, ASSETS / "Screenshots" / "classic.png", 48, 180, 220, 490)
-    image(c, ASSETS / "ManualScreenshots" / "system-context-load.png", 290, 555, 260, 105)
+    image(c, ASSETS / "ManualScreenshots" / "full-adaptive-fans.png", 48, 180, 220, 490)
+    image(c, ASSETS / "ManualScreenshots" / "system-context-fans.png", 290, 555, 260, 105)
     panel(c, 290, 415, 260, 110, VIOLET, "CPU / GPU",
           "Mittelwert der aktuell lesbaren passenden Sensoren." if de else "Average of matching sensors that are readable right now.")
     panel(c, 290, 275, 260, 110, GREEN, "SSD / SMART",
-          "Temperatur, SMART-Status und Gesundheit erscheinen nur bei echten macOS-Daten." if de else "Temperature, SMART status and health appear only when macOS supplies real data.")
-    panel(c, 290, 120, 260, 125, CYAN, "Systemkontext" if de else "System Context",
-          "CPU- und GPU-Last, Arbeitsspeicher, Stromquelle und Energiesparmodus aktualisieren sich unabhängig alle 0,5 Sekunden." if de else "CPU and GPU load, memory, power source and Low Power Mode update independently every 0.5 seconds.")
+          "Temperatur, SMART-Status und Gesundheit erscheinen nur bei echten macOS-Daten. Externe Gehäuse müssen SMART weiterreichen; fehlt die Temperatur, erscheint Nicht verfügbar." if de else "Temperature, SMART status and health appear only when macOS supplies real data. External enclosures must pass SMART through; missing temperatures show Not available.")
+    panel(c, 290, 85, 260, 160, CYAN, "Systemkontext" if de else "System Context",
+          "CPU-Last, Lüfter 1 und 2 in RPM, Arbeitsspeicher, Stromquelle und Energiesparmodus. GPU-Last wird nicht angezeigt. Die Kontextwerte aktualisieren sich etwa alle 0,5 Sekunden." if de else "CPU load, Fan 1 and 2 in RPM, memory, power source and Low Power Mode. GPU load is not shown. Context values refresh about every 0.5 seconds.")
     c.showPage()
 
     # 3 Menu bar and shared menu
@@ -139,28 +139,41 @@ def build(language, output):
     image(c, ASSETS / "ManualScreenshots" / "shared-menu.png", 70, 105, 250, 345)
     panel(c, 345, 310, 200, 140, VIOLET, "Themes / Scan Refresh",
           "Darstellung und Aktualisierungsintervall ändern nur die Oberfläche beziehungsweise die Häufigkeit der lesenden Abfragen." if de else "Appearance and refresh interval change only the interface or the frequency of read-only checks.")
-    panel(c, 345, 145, 200, 135, GREEN, "Alerts / Start at Login",
-          "Warnungen, Start bei Anmeldung, Diagnosebericht, Export, Sprache, Handbücher, öffentliche Links, Aktivitätsanzeige und Beenden bleiben zusammen im Footer-Menü." if de else "Alerts, Start at Login, diagnostic report, export, language, manuals, public links, Activity Monitor and quit remain together in the footer menu.")
+    panel(c, 345, 145, 200, 135, GREEN, "Export / Fenster",
+          "Unter Export folgen Immer im Vordergrund und Start bei Anmeldung. Immer im Vordergrund hält das Fenster über anderen Apps sichtbar." if de else "Below Export are Always on Top and Start at Login. Always on Top keeps the window visible above other apps.")
     c.showPage()
 
     # 4 New options
     base(c, 3, "Neue Optionen" if de else "New options", "Fenstergröße & sichtbare Werte" if de else "Window size & visible values",
          "Beide Einstellungen gelten sofort und werden lokal gespeichert." if de else "Both settings take effect immediately and are stored locally.", 4)
     image(c, ASSETS / "ManualScreenshots" / "window-size-menu.png", 70, 560, 455, 110)
-    panel(c, 70, 425, 455, 100, VIOLET, t["size"],
-          "Standard zeigt die großzügige Kartenansicht. Kompakt ist rund 40 % schmaler und nutzt dichtere Karten, kleinere Abstände und kleinere Schrift." if de else "Standard keeps the generous card layout. Compact is about 40% narrower and uses denser cards, smaller spacing and smaller type.")
-    image(c, ASSETS / "ManualScreenshots" / "visible-temperatures-menu.png", 70, 140, 210, 230)
-    image(c, ASSETS / "ManualScreenshots" / "menu-bar-display-menu.png", 310, 300, 215, 68)
-    panel(c, 310, 140, 215, 135, GREEN, "Menüleistenanzeige" if de else "Menu Bar Display",
-          "Alle Werte zeigt die gewählten Gruppen. Nur Symbol spart Platz und lässt die Auswahl im Fenster unverändert." if de else "All Values shows the selected groups. Symbol Only saves space and leaves the window selection unchanged.")
+    panel(c, 70, 410, 455, 115, VIOLET, t["size"],
+          "Standard zeigt die großzügige Kartenansicht. Kompakt ist rund 40 % schmaler und nutzt dichtere Karten, kleinere Abstände und kleinere Schrift. Mini Display ersetzt das Fenster durch eine verschiebbare Leiste mit den ausgewählten Temperaturwerten. Mehr dazu auf Seite 5." if de else "Standard keeps the generous card layout. Compact is about 40% narrower and uses denser cards, smaller spacing and smaller type. Mini Display replaces the window with a movable strip showing the selected temperatures. See page 5 for details.")
+    image(c, ASSETS / "ManualScreenshots" / "compact-view.png", 70, 110, 180, 280)
+    panel(c, 280, 255, 245, 135, GREEN, "Kompakt & Verlauf" if de else "Compact & history",
+          "Die kompakte Ansicht behält den Temperaturverlauf mit 1, 3, 6, 12 und 24 Stunden bei." if de else "The compact view retains the 1-, 3-, 6-, 12- and 24-hour temperature history.")
+    image(c, ASSETS / "ManualScreenshots" / "menu-bar-display-menu.png", 310, 150, 215, 68)
+    panel(c, 280, 75, 245, 60, CYAN, None,
+          "Menüleistenmodus und sichtbare Temperaturgruppen werden ebenfalls lokal gespeichert." if de else "Menu bar mode and visible temperature groups are also stored locally.")
     c.showPage()
 
-    # 5 History and alerts
-    base(c, 4, "Verlauf" if de else "History", "Temperaturverlauf & Warnungen" if de else "Temperature history & alerts",
-         "Lokale Minutenmittelwerte und zurückhaltende macOS-Mitteilungen." if de else "Local minute averages and restrained macOS notifications.", 5)
+    # 5 Mini display
+    base(c, 4, "Mini-Anzeige" if de else "Mini Display", "Kompakte schwebende Anzeige" if de else "Compact floating display",
+         "Ausgewählte Werte bleiben sichtbar, ohne das große Fenster zu öffnen." if de else "Selected values stay visible without opening the large window.", 5)
+    panel(c, 55, 555, W - 110, 115, GREEN, "Mini Display",
+          "Die Auswahl ersetzt das große Fenster durch eine schmale, verschiebbare Leiste mit den ausgewählten lesbaren Temperaturen. Aktiviere Immer im Vordergrund, damit die Leiste auch Vollbildbereiche anderer Apps betreten kann. Das Verhalten über einem bestimmten Vollbildspiel muss noch dort geprüft werden." if de else "This choice replaces the large window with a narrow, movable strip showing the selected readable temperatures. Enable Always on Top to let it join other apps' full-screen spaces. Its behavior over a particular full-screen game still needs to be checked in that game.")
+    image(c, ASSETS / "ManualScreenshots" / "mini-display.png", 55, 430, W - 110, 58)
+    panel(c, 55, 325, W - 110, 75, CYAN, "Rechtsklick" if de else "Right-click",
+          "Die Leiste klappt Window Size mit Standard und Compact direkt darunter auf." if de else "The strip expands Window Size with Standard and Compact directly below it.")
+    image(c, ASSETS / "ManualScreenshots" / "mini-display-controls.png", 55, 62, W - 110, 235)
+    c.showPage()
+
+    # 6 History and alerts
+    base(c, 5, "Verlauf" if de else "History", "Temperaturverlauf & Warnungen" if de else "Temperature history & alerts",
+         "Lokale Minutenmittelwerte und zurückhaltende macOS-Mitteilungen." if de else "Local minute averages and restrained macOS notifications.", 6)
     image(c, ASSETS / "ManualScreenshots" / "temperature-history-card.png", 70, 385, 455, 285)
-    panel(c, 70, 295, 455, 65, CYAN, t["history"],
-          "1, 6 oder 24 Stunden; die gestrichelte Linie markiert die lokale Warnschwelle. Erst zwei Minuten liefern eine sichtbare Kurve." if de else "1, 6 or 24 hours; the dashed line marks the local warning threshold. A visible curve starts after two minutes.")
+    panel(c, 70, 270, 455, 110, CYAN, t["history"],
+          "Wähle 1, 3, 6, 12 oder 24 Stunden. Klicke oder ziehe im Graphen: Die Markierung zeigt den nächsten gespeicherten Messpunkt mit Uhrzeit und Minutenmittelwert. Ein Bereichswechsel löscht die Auswahl. Ein Klick auf die Karte außerhalb des Graphen schließt den Verlauf. Die gestrichelte Linie zeigt die Warnschwelle." if de else "Choose 1, 3, 6, 12 or 24 hours. Click or drag in the chart to mark the nearest recorded point and show its time and minute average. Changing the range clears the selection. Click the card outside the chart to close history. The dashed line shows the warning threshold.")
     image(c, ASSETS / "ManualScreenshots" / "temperature-alerts-menu.png", 70, 78, 185, 190)
     image(c, ASSETS / "ManualScreenshots" / "temperature-alert-thresholds.png", 275, 78, 110, 155)
     image(c, ASSETS / "ManualScreenshots" / "export-menu.png", 400, 210, 125, 40)
@@ -168,39 +181,47 @@ def build(language, output):
           "Text kopieren oder CSV mit Verlauf und aktuellem Snapshot lokal speichern." if de else "Copy text or save a local CSV with history and the current snapshot.")
     c.showPage()
 
-    # 6 Themes
-    base(c, 5, "Darstellung" if de else "Appearance", t["themes"], t["theme_sub"], 6)
-    positions = [(55, 450), (312, 450), (55, 175), (312, 175)]
-    names = ["Adaptiv" if de else "Adaptive", "Liquid Glass", "Aurora", "Ember"]
-    files = ["classic.png", "liquid-glass.png", "aurora.png", "ember.png"]
-    colors = [CYAN, VIOLET, CYAN, ORANGE]
-    for (x, y), name, filename, color in zip(positions, names, files, colors):
-        panel(c, x, y, 225, 220, color, name)
-        image(c, ASSETS / "Screenshots" / filename, x + 15, y + 15, 195, 165)
+    # 7 Themes
+    base(c, 6, "Darstellung" if de else "Appearance", t["themes"], t["theme_sub"], 7)
+    lines(c, "Adaptiv: neutrale macOS-Flächen im Hell- und Dunkelmodus. Laufwerksnamen anonymisiert." if de else "Adaptive: neutral macOS surfaces in light and dark mode. Drive names anonymized.",
+          55, 700, W - 110, 9, 12, MUTED)
+    panel(c, 55, 365, W - 110, 310, CYAN, "Adaptiv" if de else "Adaptive")
+    for x, name, filename in [(85, "Hellmodus" if de else "Light", "full-adaptive-light.png"),
+                              (315, "Dunkelmodus" if de else "Dark", "full-adaptive-fans.png")]:
+        lines(c, name, x, 635, 190, 10, 12, MUTED)
+        image(c, ASSETS / "ManualScreenshots" / filename, x, 377, 190, 245)
+    for x, name, filename, color in [(55, "Liquid Glass", "full-liquid-glass-fans.png", VIOLET),
+                                      (222, "Aurora", "full-aurora-fans.png", CYAN),
+                                      (389, "Ember", "full-ember-fans.png", ORANGE)]:
+        panel(c, x, 55, 150, 275, color, name)
+        image(c, ASSETS / "ManualScreenshots" / filename, x + 10, 65, 130, 225)
     c.showPage()
 
-    # 7 Privacy and use
-    base(c, 6, "Datenschutz" if de else "Privacy", t["privacy"], t["privacy_sub"], 7)
+    # 8 Privacy and use
+    base(c, 7, "Datenschutz" if de else "Privacy", t["privacy"], t["privacy_sub"], 8)
     panel(c, 55, 560, W - 110, 105, GREEN,
-          "Nur lokal" if de else "Local only",
-          "Keine Konten, keine Telemetrie, keine Analyse-Dienste und keine Cloud-Synchronisierung. Der Verlauf bleibt lokal und ist auf 24 Stunden begrenzt." if de else "No accounts, telemetry, analytics services or cloud synchronization. History stays local and is limited to 24 hours.")
+          "Lokale Sensordaten" if de else "Local sensor data",
+          "Keine Konten, keine Telemetrie, keine Analyse-Dienste und keine Cloud-Synchronisierung. Temperatur- und Lüfterverläufe bleiben lokal für höchstens 24 Stunden." if de else "No accounts, telemetry, analytics services or cloud synchronization. Temperature and fan history stay local for at most 24 hours.")
     panel(c, 55, 415, W - 110, 105, CYAN,
           "Gespeicherte Auswahl" if de else "Stored choices",
-          "Theme, Aktualisierungsintervall, Sprache, sichtbare Temperaturgruppen, Menüleistenmodus, Fenstergröße, Warnschwellen und Minutenmittelwerte bleiben ausschließlich lokal." if de else "Theme, refresh interval, language, visible temperature groups, menu bar mode, window size, warning thresholds and minute averages remain only locally.")
+          "Theme, Scan Refresh, Sprache, sichtbare Sensorgruppen, Menüleistenmodus, Fenstergröße, Mini-Anzeige, Immer im Vordergrund, Warnschwellen und Minutenmittelwerte bleiben lokal. Das gilt auch für Updateintervalle, Prüfzeitpunkte und bereits gemeldete Release-Tags." if de else "Theme, Scan Refresh, language, visible sensor groups, menu bar mode, window size, Mini Display, Always on Top, warning thresholds and minute averages stay local. So do update intervals, check timestamps and already reported release tags.")
     panel(c, 55, 270, W - 110, 105, ORANGE,
           "Sicherer Umgang" if de else "Safe operation",
           "ThermalAtlas liest Temperaturen, Laufwerksinformationen und Systemkontext. Die App verändert keine Lüfter-, Energie- oder sonstigen Systemeinstellungen." if de else "ThermalAtlas reads temperatures, drive information and system context. It changes no fan, power or other system settings.")
     panel(c, 55, 125, W - 110, 105, VIOLET,
-          "Mehr Informationen" if de else "More information",
-          "README, Datenschutzbericht und Sicherheitsprüfung im offiziellen ThermalAtlas-Repository ergänzen dieses Handbuch." if de else "The README, privacy report and security review in the official ThermalAtlas repository complement this manual.")
+          "GitHub-Updateprüfung" if de else "GitHub update checks",
+          "Optionale Updateprüfungen kontaktieren GitHub über HTTPS. GitHub sieht die IP-Adresse, erhält aber keine Sensor- oder Gerätedaten und keine installierte Version. Automatische Prüfungen sind zunächst aus (Seite 13). README, Datenschutzbericht und Sicherheitsprüfung stehen im offiziellen Repository." if de else "Optional update checks contact GitHub over HTTPS. GitHub sees the IP address but receives no sensor or device data or installed version. Automatic checks are off by default (page 13). The README, privacy report and security review are in the official repository.")
     c.showPage()
 
-    # 8 System information
-    base(c, 7, "Systeminformationen" if de else "System Information",
+    # 9 System information
+    base(c, 8, "Systeminformationen" if de else "System Information",
          "Dieser Mac auf einen Blick" if de else "This Mac at a glance",
-         "Die Angaben bleiben lokal und werden nur beim Öffnen gelesen." if de else "The details stay local and are read only when opened.", 8)
-    image(c, ASSETS / "ManualScreenshots" / "system-information.png", 82, 225, W - 164, 470)
-    panel(c, 55, 125, W - 110, 72, CYAN,
+         "Die Angaben bleiben lokal und werden nur beim Öffnen gelesen." if de else "The details stay local and are read only when opened.", 9)
+    image(c, ASSETS / "ManualScreenshots" / "system-information.png", 82, 320, W - 164, 375)
+    panel(c, 55, 205, W - 110, 90, VIOLET,
+          "Thermischer Zustand" if de else "Thermal State",
+          "macOS meldet Normal, Erhöht, Hoch oder Kritisch. Diese Systembewertung ist keine Temperatur in Grad. Die Angaben werden beim Öffnen gelesen; öffne das Fenster erneut für den aktuellen Zustand." if de else "macOS reports Normal, Elevated, High or Critical. This system assessment is not a temperature in degrees. Details are read when the window opens; reopen it for the current state.")
+    panel(c, 55, 125, W - 110, 65, CYAN,
           "Thermometer im Kopf" if de else "Header thermometer",
           "Es öffnet Mac-Modell, Chip, CPU-/GPU-Kerne, Arbeitsspeicher, internen Speicher und macOS-Version." if de else "It opens the Mac model, chip, CPU/GPU cores, memory, internal storage and macOS version.")
     panel(c, 55, 48, W - 110, 55, GREEN,
@@ -208,10 +229,10 @@ def build(language, output):
           "Keine Seriennummern, UUIDs oder anderen Hardware-Kennungen." if de else "No serial numbers, UUIDs or other hardware identifiers.")
     c.showPage()
 
-    # 9 Gatekeeper
-    base(c, 8, "Installation" if de else "Installation",
+    # 10 Gatekeeper
+    base(c, 9, "Installation" if de else "Installation",
          "Sicher öffnen" if de else "Open safely",
-         "Freigabe nur für die offizielle App." if de else "Approve only the official app.", 9)
+         "Freigabe nur für die offizielle App." if de else "Approve only the official app.", 10)
     panel(c, 55, 515, W - 110, 145, CYAN,
           "Gatekeeper" if de else "Gatekeeper",
           "Öffentliche Builds sind ad-hoc signiert und nicht notarisiert. macOS kann den ersten Start deshalb blockieren." if de else "Public builds are ad-hoc signed and not notarized. macOS can therefore block the first launch.")
@@ -221,6 +242,97 @@ def build(language, output):
     panel(c, 55, 115, W - 110, 125, GREEN,
           "Nur diese App" if de else "Only this app",
           "Dennoch öffnen erscheint nur für begrenzte Zeit nach dem blockierten Startversuch. Dadurch wird nur für ThermalAtlas eine Ausnahme angelegt; Gatekeeper wird nicht systemweit deaktiviert. Die Freigabe nur für eine App aus dem offiziellen ThermalAtlas-GitHub-Release verwenden." if de else "Open Anyway is shown only for a limited time after the blocked launch attempt. This creates an exception only for ThermalAtlas and does not disable Gatekeeper system-wide. Use it only for an app obtained from the official ThermalAtlas GitHub release.")
+    c.showPage()
+
+    # 11 Menu settings and exports
+    base(c, 10, "Menüfunktionen" if de else "Menu functions",
+         "Einstellungen & Export" if de else "Settings & export",
+         "Wähle die Optionen im Dreipunkt-Menü unten im Hauptfenster." if de else "Choose these options in the ellipsis menu at the bottom of the main window.", 11)
+    panel(c, 55, 535, W - 110, 130, CYAN,
+          "Scan Refresh / Visible Temperatures",
+          "Scan Refresh wählt 1, 2, 3 oder 4 Sekunden für CPU und GPU; Standard sind 2 Sekunden. SSD-Temperaturen werden jede Minute gelesen, der Systemkontext etwa alle 0,5 Sekunden. Visible Temperatures schaltet CPU, GPU, interne SSD oder alle externen SSDs gemeinsam für Fenster, Menüleiste und Mini-Anzeige. Mindestens eine Gruppe bleibt ausgewählt." if de else "Scan Refresh selects 1, 2, 3 or 4 seconds for CPU and GPU; the default is 2 seconds. SSD temperatures are read every minute and System Context about every 0.5 seconds. Visible Temperatures switches CPU, GPU, Internal SSD or all External SSDs for the window, menu bar and mini strip. At least one group remains selected.")
+    panel(c, 55, 375, W - 110, 135, GREEN,
+          "Menu Bar Display / Always on Top",
+          "All Values zeigt die ausgewählten verfügbaren Temperaturen. Symbol Only zeigt nur das Thermometer in der Menüleiste. Immer im Vordergrund hält das Hauptfenster über normalen App-Fenstern; die Mini-Leiste erhält zusätzlich Vollbild-Unterstützung (Seite 5). Erneut auswählen schaltet die Option aus. Die Auswahl wird lokal gespeichert." if de else "All Values shows the selected available temperatures. Symbol Only leaves just the thermometer in the menu bar. Always on Top keeps the main window above normal app windows and adds full-screen support to the mini strip (page 5). Choose it again to turn it off. These choices are stored locally.")
+    panel(c, 55, 205, W - 110, 145, VIOLET,
+          "Export",
+          "Copy Current Readings kopiert die aktuellen Temperaturen als Text. Copy Diagnostic Report kopiert Mac-Modell, macOS-Version, Chip und Sensorstatus. Export CSV öffnet den Speicherdialog für bis zu 24 Stunden Minutenmittelwerte und den aktuellen Snapshot. Die CSV enthält Zeit, Sensor, Quelle, Temperatur und Wertstatus sowie vorhandene SMART-Daten. Hotspots werden nicht exportiert. Ohne deine Auswahl wird keine Datei erstellt." if de else "Copy Current Readings copies current temperatures as text. Copy Diagnostic Report copies the Mac model, macOS version, chip and sensor status. Export CSV opens a save dialog for up to 24 hours of minute averages and the current snapshot. CSV includes time, sensor, source, temperature and value status plus available SMART data. Hotspots are not exported. No file is created without your choice.")
+    panel(c, 55, 55, W - 110, 125, ORANGE,
+          "Language / Start at Login",
+          "Language wechselt zwischen English und Deutsch. Die Wahl wird gespeichert; Laufwerksnamen bleiben unverändert. Start at Login aktiviert den App-Start nach der macOS-Anmeldung. Erneut auswählen deaktiviert ihn. Es werden keine Energie- oder Leistungseinstellungen geändert." if de else "Language switches between English and Deutsch. The choice is stored; drive names stay unchanged. Start at Login enables app launch after signing in to macOS. Choose it again to disable it. Power and performance settings are unaffected.")
+    c.showPage()
+
+    # 12 Sensor details, warnings and accessibility
+    base(c, 11, "Bedienung" if de else "Operation",
+         "Details & Warnungen" if de else "Details & alerts",
+         "Temperatur, Verlauf und Systembewertung haben unterschiedliche Aufgaben." if de else "Temperature, history and system assessments serve different purposes.", 12)
+    panel(c, 55, 510, W - 110, 155, CYAN,
+          "Info-Symbol / Hotspot" if de else "Info symbol / Hotspot",
+          "Das Info-Symbol öffnet Quelle, letzten gültigen Wert und Zeitpunkt. CPU und GPU zeigen zusätzlich Chip, Durchschnitt, höchsten lesbaren Sensorwert (Hotspot) und Anzahl gültiger Sensoren. SSDs zeigen die Laufwerks-ID und vorhandene Messhinweise. Karte, Menüleiste, Mini-Anzeige und Verlauf zeigen den Durchschnitt. Bei einem kurzen GPU-Ausfall bleibt ein markierter echter Wert höchstens 15 Sekunden stehen; danach erscheint Nicht verfügbar." if de else "The info symbol opens the source, last valid value and time. CPU and GPU also show the chip, average, highest readable sensor value (Hotspot) and valid sensor count. SSDs show the drive ID and available reading details. Cards, menu bar, mini strip and history show the average. A short GPU failure can retain a marked real value for at most 15 seconds, then shows Not available.")
+    panel(c, 55, 345, W - 110, 140, ORANGE,
+          "Temperature Alerts",
+          "CPU/GPU: 85, 90, 95 oder 100 °C (Standard 95); SSDs: 60, 65, 70 oder 75 °C (Standard 70). CPU/GPU verwenden den Hotspot, falls vorhanden, sonst den Durchschnitt. Eine Mitteilung folgt erst nach mindestens einer Minute an oder über der Schwelle; eine neue Episode erfordert Abkühlung. Der Menüleistenrahmen wird zehn Grad unter der Schwelle gelb und ab der Schwelle rot, auch bei ausgeschalteten Mitteilungen. Der Verlauf bleibt ein Minutenmittelwert." if de else "CPU/GPU: 85, 90, 95 or 100 °C (default 95); SSDs: 60, 65, 70 or 75 °C (default 70). CPU/GPU use the Hotspot when available, otherwise the average. Notifications require at least one minute at or above the threshold; a new episode requires cooling. The menu bar frame turns yellow within ten degrees below the threshold and red at it, even with notifications disabled. History remains a minute average.")
+    panel(c, 55, 180, W - 110, 140, GREEN,
+          "VoiceOver / Darstellung" if de else "VoiceOver / appearance",
+          "Temperaturkarten geben Verlaufstatus und Bedienung über VoiceOver aus. Bewegung reduzieren begrenzt Kartenanimationen und Verlaufsexpansion; Transparenz reduzieren macht Glasflächen opaker. Im Liquid-Glass-Theme nutzt der Thermometer-Button ab macOS 27 den interaktiven Systemglasstil. Der RAM-Status ist Normal unter 70 %, Erhöht unter 85 % und Hoch ab 85 % Belegung; er ist keine Speicherdruckanzeige." if de else "Temperature cards announce history state and controls through VoiceOver. Reduce Motion limits card and history-opening animations; Reduce Transparency makes glass surfaces opaque. In Liquid Glass on macOS 27 or later, the thermometer button uses interactive system glass. Memory status is Normal below 70%, Elevated below 85% and High from 85% usage; it is not a memory-pressure indicator.")
+    panel(c, 55, 40, W - 110, 115, VIOLET,
+          "Fenster, Links & Beenden" if de else "Windows, links & quit",
+          "Ziehe Titelleiste oder Hintergrund zum Verschieben. Schließen verbirgt das Hauptfenster; die Erfassung läuft weiter. Der Menüleisteneintrag öffnet es erneut. GitHub, Homepage und Manuals öffnen Links im Browser. Open Activity Monitor öffnet die Aktivitätsanzeige. Quit ThermalAtlas beendet App und Erfassung." if de else "Drag the title bar or background to move the window. Closing hides the main window; collection continues. The menu bar item opens it again. GitHub, Homepage and Manuals open browser links. Open Activity Monitor opens Activity Monitor. Quit ThermalAtlas stops the app and collection.")
+    c.showPage()
+
+    # 13 App updates
+    base(c, 12, "App-Updates" if de else "App Updates",
+         "Final- und Beta-Versionen prüfen" if de else "Check Final and Beta versions",
+         "Verfügbar ab Beta 1.2.0-beta.5." if de else "Available from Beta 1.2.0-beta.5.", 13)
+    image(c, ASSETS / "ManualScreenshots" / "app-updates-menu.png", 55, 510, W - 110, 165)
+    lines(c, "Englisches Menü; Version, Zeitpunkt und Beta-Tag stammen aus dieser Aufnahme." if de else "English menu; version, timestamp and Beta tag are values from this capture.",
+          55, 491, W - 110, 9, 12, MUTED)
+    panel(c, 55, 370, W - 110, 100, CYAN,
+          "Check Now / Jetzt prüfen" if de else "Check Now",
+          "Öffne App Updates unter Start at Login. Check Now prüft sofort, auch bei Off. Das Ergebnisfenster zeigt neuere Versionen oder meldet, dass keine verfügbar sind. Eine fehlgeschlagene Prüfung ist keine Bestätigung, dass die App aktuell ist." if de else "Open App Updates below Start at Login. Check Now checks immediately, even with Off selected. The result window lists newer versions or reports none available. A failed check does not confirm that the app is up to date.")
+    panel(c, 55, 205, W - 110, 145, GREEN,
+          "Automatic Checks / Automatisch prüfen" if de else "Automatic Checks",
+          "Off ist der Standard. Daily prüft nach einem Kalendertag, Weekly nach sieben Tagen und Monthly nach einem Kalendermonat ab der letzten erfolgreichen Prüfung. Die App muss laufen; Hauptfenster und Mini-Anzeige dürfen geschlossen sein. Überfällige Prüfungen werden nachgeholt. Nach einem Fehler wartet ein automatischer Wiederholungsversuch mindestens eine Stunde. Die Auswahl bleibt lokal gespeichert." if de else "Off is the default. Daily checks after one calendar day, Weekly after seven days and Monthly after one calendar month from the last successful check. The app must be running; its main window and mini strip may be closed. Overdue checks are caught up. After a failure, an automatic retry waits at least one hour. The choice is stored locally.")
+    panel(c, 55, 45, W - 110, 140, VIOLET,
+          "Version, Zeitpunkt und Funde" if de else "Version, time and results",
+          "Installed version nennt die laufende App-Version, Last successful check den letzten erfolgreichen Abruf. Final und Beta öffnen je Kanal die höchste neuere Release-Version. Final ist neuer als Beta derselben Nummer. Neue Funde öffnen ein Hinweisfenster; automatisch wird jedes Release einmal gemeldet. Check Now zeigt es erneut. Download und Installation wählst du selbst. Keine Sensor- oder Gerätedaten werden gesendet; keine gespeicherten Cookies oder Zugangsdaten verwendet." if de else "Installed version identifies the running app. Last successful check shows the last successful GitHub check. Final and Beta open the highest newer release in each channel. A Final is newer than a Beta with the same version number. New finds open a notice window; each release is reported automatically once. Check Now can show it again. You choose download and installation. Checks send no sensor or device data and use no stored cookies or credentials.")
+    c.showPage()
+
+    # 14 Fan history
+    base(c, 13, "Lüfterverlauf" if de else "Fan History",
+         "Drehzahlen im Verlauf" if de else "Fan speeds over time",
+         "Verfügbar ab Beta 1.2.0-beta.6." if de else "Available from Beta 1.2.0-beta.6.", 14)
+    image(c, ASSETS / "ManualScreenshots" / "fan-history.png", 55, 395, W - 110, 280)
+    lines(c, "Englische Aufnahme: Lüfter 1, 1 h ausgewählt, gerundete Angaben von jeweils 1.000 RPM." if de else "English capture: Fan 1, 1 h selected, figures rounded to 1,000 RPM.",
+          55, 379, W - 110, 9, 12, MUTED)
+    panel(c, 55, 225, W - 110, 135, CYAN,
+          "Öffnen, Zeitraum und Achsen" if de else "Opening, range and axes",
+          "Öffne das Hauptfenster über die Menüleiste; bei Mini zuerst Standard/Kompakt wählen. Klicke im Systemkontext auf Lüfter oder Lüfter 1/2 mit RPM-Wert. Jeder Lüfter öffnet seinen eigenen Verlauf. 1/3/6/12/24 h begrenzen den Rückblick auch im Temperaturverlauf. Die waagrechte Achse zeigt Uhrzeit, die senkrechte RPM. Die Kurve zeigt Minutenmittelwerte. 07:29 steht hier zweimal, weil der kurze Ausschnitt ohne Sekunden beschriftet ist." if de else "Open the main window from the menu bar; in Mini, choose Standard/Compact first. In System Context, click Fan or Fan 1/2 with its RPM value. Each fan opens its own history. 1/3/6/12/24 h limit the lookback in both fan and temperature history. The horizontal axis shows time; the vertical axis shows RPM. The curve shows minute averages. Both labels read 07:29 because this short interval is labelled without seconds.")
+    panel(c, 55, 80, W - 110, 125, GREEN,
+          "Min / Max / Ø" if de else "Min / Max / average",
+          "Niedrigster, höchster und durchschnittlicher Minutenmittelwert im gewählten Zeitraum; jede vorhandene Minute zählt gleich. Keine kurzzeitigen RPM-Spitzen. Hier sind alle Angaben auf 1.000 RPM gerundet. Klicke oder ziehe für Uhrzeit und Wert eines Punktes. Bereichswechsel löscht die Auswahl; außerhalb klicken schließt. Speicherung: lokal, höchstens 24 Stunden. Fehlende Werte bilden Lücken, echte 0 RPM bleiben gültig. Keine Lüftersteuerung." if de else "Lowest, highest and mean minute average in the selected period; each recorded minute has equal weight. These are not instantaneous RPM peaks. All figures here round to 1,000 RPM. Click or drag for a point's time and value. Changing range clears selection; click outside to close. Storage is local for at most 24 hours. Missing values leave gaps; real 0 RPM remains valid. No fan control.")
+    lines(c, "Messwertalter: Sensor-Details zeigen das Alter; überbrückte GPU-Werte auch direkt auf der Karte." if de else "Reading age appears in Sensor Details; retained GPU values also show it directly on the card.",
+          55, 57, W - 110, 9, 12, MUTED)
+    c.showPage()
+
+    # 15 Keyboard access and status details
+    base(c, 14, "Bedienung" if de else "Access", "Tastatur & Bedienung" if de else "Keyboard & controls",
+         "Seit Beta 1.2.0-beta.7." if de else "Introduced in Beta 1.2.0-beta.7.", 15)
+    panel(c, 55, 555, W - 110, 115, CYAN,
+          "Diagrammpunkte wählen" if de else "Select chart points",
+          "Klicke oder ziehe im Temperatur- oder Lüfterdiagramm, um einen Messpunkt auszuwählen. Pfeiltasten links/rechts sowie Vorherige Minute / Nächste Minute wechseln zwischen Punkten; Escape hebt die Auswahl auf. Zeitlabels richten sich nach der App-Sprache. Einzelne Messpunkte bleiben sichtbar, auch echte 0 RPM." if de else "Click or drag in a temperature or fan chart to select a reading. Use the left/right arrow keys or Previous minute / Next minute buttons to move between points; Escape clears the selection. Time labels follow the app language. Isolated readings remain visible, including genuine 0 RPM.")
+    panel(c, 55, 405, 235, 120, GREEN,
+          "Karten & Mini-Anzeige" if de else "Cards & Mini Display",
+          "Temperaturkarten sind native Buttons; VoiceOver liest Temperatur und Verlaufsstatus vor. Return, Leertaste und VoiceOver-Aktivieren öffnen in der Mini-Anzeige die Größensteuerung." if de else "Temperature cards are native buttons; VoiceOver announces their reading and history state. Return, Space and VoiceOver's press action open Mini Display's size controls.")
+    panel(c, 303, 405, 235, 120, VIOLET,
+          "Systemkontext" if de else "System Context",
+          "Der Info-Button erklärt Auslastung, Lüfter, RAM und Energie; Temperaturen stehen in den Karten darüber. Die Felder passen sich Standard und Kompakt an." if de else "Info explains CPU load, fans, memory and power; temperatures are in the cards above. Tiles reflow in Standard and Compact.")
+    panel(c, 55, 255, W - 110, 115, ORANGE,
+          "CSV-Speicherfehler" if de else "CSV save errors",
+          "Kann ThermalAtlas die CSV nicht schreiben, zeigt der Fehlerdialog auch die macOS-Fehlerbeschreibung. Erneut versuchen öffnet den Speicherdialog erneut; Schließen beendet den Exportversuch." if de else "If ThermalAtlas cannot write the CSV, the alert includes the macOS error description. Try Again reopens the save dialog; Close ends the export attempt.")
+    panel(c, 55, 105, W - 110, 115, CYAN,
+          "Warnfrist, Bewegung & Einstellungen" if de else "Alerts, motion & Settings",
+          "Die 60-Sekunden-Frist beginnt nach einer Sensorunterbrechung oder einem Schwellenwechsel neu. Bewegung reduzieren schaltet Animationen beim Einblenden von Karten, Öffnen des Verlaufs und Anpassen der Fensterhöhe aus. Die macOS-Einstellungen bieten „ThermalAtlas öffnen“ für das Hauptfenster." if de else "The 60-second timer restarts after a sensor disappears and returns or its threshold changes. Reduce Motion disables animations as cards appear, history opens and the window resizes. macOS Settings offers Open ThermalAtlas for the main window.")
     c.save()
 
 

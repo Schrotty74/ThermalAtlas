@@ -1,6 +1,152 @@
 # Changelog
 
-All notable user-visible changes are documented here in English. Development builds remain local; public prereleases are announced through GitHub Releases.
+All notable user-visible changes are documented here in English. Development builds remain local; public releases and prereleases are announced through GitHub Releases.
+
+## 1.2.0
+
+### Added
+
+- Movable Mini Display with a right-click choice of Standard or Compact, plus Always on Top for the main window and Mini Display in other apps' full-screen spaces.
+- Read-only fan speeds and local fan histories. Temperature and fan charts offer 1, 3, 6, 12 and 24 hours, Min/Max/average summaries, and point selection by mouse or keyboard.
+- Optional GitHub checks for newer Final and Beta releases, manually or daily, weekly or monthly. Automatic checks are off by default; downloads and installation remain manual.
+- CPU/GPU Hotspot and valid sensor counts in Sensor Details, plus the macOS Thermal State in System Information. CPU/GPU alerts use the Hotspot; the main readings and history keep showing the average.
+
+### Improved
+
+- Adaptive uses neutral macOS surfaces in light and dark mode. The app icon includes appearance variants and a conventional fallback for older macOS versions.
+- Retained GPU readings show their age. Missing history minutes interrupt chart lines, and single recorded points remain visible and selectable, including 0 RPM.
+- Temperature cards and chart navigation support the keyboard. Menu bar and Mini Display readings have localized accessibility labels and values; charts follow the selected English or German language.
+- Windows have standard controls, retain their position, fit expanded history content and respect Reduce Motion. System Context gives values more room and offers a compact explanation.
+- History cleanup and point lookup avoid repeated work; hidden or unchanged Mini Display panels skip unnecessary updates.
+
+### Fixed
+
+- Reconnected drives and changed alert thresholds start a new warning period.
+- CSV save failures show a localized error with Try Again and Close actions. Try Again reopens the save dialog.
+- The System Context explanation no longer opens in an excessively tall popover. The macOS Settings window provides a button to open ThermalAtlas.
+
+### Changed
+
+- Removed unreliable GPU-load percentages; GPU temperatures remain available.
+- System Information reads only the displayed values through targeted local queries, without collecting serial numbers or UUIDs.
+
+### Documentation
+
+- Updated the bilingual README, feature overview, privacy and security descriptions, and manuals for Final 1.2.0. Both PDFs have fifteen pages and explain the new controls and recovery steps.
+
+## 1.2.0-beta.7
+
+### Improved
+
+- CSV save failures show a localized error with Try Again and Close actions. Try Again opens the save dialog again so you can choose another destination.
+- Temperature cards can be opened from the keyboard. Temperature and fan charts support previous/next point buttons, Left/Right arrow keys and Escape to clear the selection.
+- Charts show and allow selection of a single recorded point, including a fan reading of 0 RPM. Chart labels, times and numbers follow the selected English or German app language.
+- Menu bar and Mini Display readings have localized accessibility labels and values. Mini Display size selection also supports the accessibility press action, Return and Space.
+- Window resizing respects Reduce Motion and fits expanded history content while preserving the window width and top edge.
+- The macOS Settings window provides an explanation and a button to open the main ThermalAtlas window.
+- System Context gives its values more room within the existing window width. Its info button opens a compact explanation of CPU load, fans, memory and power status.
+- History cleanup and point lookup do less repeated work. Hidden or unchanged Mini Display panels skip unnecessary image and size updates.
+
+### Fixed
+
+- Removed drives no longer retain old temperature-warning episodes. A reconnected drive starts a new warning period; changing a threshold also resets its period.
+- The System Context explanation no longer opens in an excessively tall popover.
+
+### Documentation
+
+- Updated both manuals and fifteen-page PDFs with keyboard navigation, accessibility, CSV error recovery and the System Context explanation.
+- Updated the bilingual feature overview and release information. Local history formats, read-only monitoring and optional GitHub update behavior remain unchanged.
+
+## 1.2.0-beta.6
+
+### Added
+
+- Click a readable fan RPM value in System Context to open its local history in a separate chart.
+- Temperature and fan histories offer 1, 3, 6, 12 and 24 hours. Both show Min, Max and average of the recorded minute averages, plus the time and value of a selected point.
+
+### Improved
+
+- Adaptive uses neutral macOS window and control surfaces in light and dark mode, with subtle grey outlines and shadows.
+- Retained GPU readings show their age on the card. Sensor Details uses the actual reading timestamp, including separately refreshed SSD values; the last valid GPU timestamp remains visible after its 15-second retention limit expires.
+- Missing minutes interrupt chart lines instead of connecting across gaps.
+
+### Privacy
+
+- Fan history stays in local UserDefaults for at most 24 hours, separate from temperature history. Missing readings are not stored as zero. Fan control, temperature CSV format and network behavior remain unchanged.
+
+### Documentation
+
+- Updated both manuals and their fourteen-page PDFs with the fan-history screenshot, opening instructions, five time ranges and explanations of RPM axes, minute averages and reading age.
+- Updated the bilingual README, feature overview and privacy report for the new histories and Adaptive appearance.
+
+## 1.2.0-beta.5
+
+### Added
+
+- App Updates in the footer menu: check GitHub for newer Final and Beta releases manually, or enable daily, weekly or monthly checks. Automatic checks are off by default.
+- Update results show the installed version, the last successful check and links to newer releases. Each new release is reported automatically once; download and installation remain manual.
+
+### Privacy
+
+- Update checks use HTTPS without stored cookies or credentials. No sensor, drive, device or installed-version data is sent; GitHub receives the connection IP address. Monitoring continues to work offline.
+
+### Documentation
+
+- Updated English and German manuals with the App Updates screenshot, interval settings, version comparisons and privacy details. Both PDFs now have thirteen pages.
+- Completed the bilingual README and feature overview with update checks, icon appearance variants and Reduce Transparency support.
+
+## 1.2.0-beta.4
+
+### Added
+
+- Mini Display under Window Size shows the selected temperatures in a movable floating strip. Right-click the strip to return to Standard or Compact; the selected mode is saved locally.
+- Click or drag in a temperature chart to see the nearest recorded point, its time and minute-average temperature.
+
+### Improved
+
+- Always on Top lets Mini Display join other apps' full-screen spaces. Visibility over individual full-screen games still needs to be checked.
+- The app icon now uses an appearance-aware Icon Composer asset, with a conventional icon fallback for older macOS versions.
+
+### Documentation
+
+- Updated both manuals and their twelve-page PDFs with Mini Display, chart selection, sensor details, warnings, refresh intervals, exports and window controls.
+- Updated the public example images without changing their existing links.
+
+## 1.2.0-beta.3
+
+### Changed
+
+- System Context now shows the RPM of each readable fan. ThermalAtlas reads the speeds without controlling the fans.
+- Removed the GPU-load percentage after comparisons showed that it did not reliably reflect GPU activity. GPU temperature remains available.
+
+### Documentation
+
+- Updated the English and German manuals and PDFs for fan speeds, and replaced the four theme screenshots with examples using sample data.
+
+## 1.2.0-beta.2
+
+### Improved
+
+- Temperature cards tell VoiceOver whether their history is open and how to toggle it, in English and German.
+- Card entrance, number changes, and history expansion respect the macOS Reduce Motion setting.
+- On macOS 27, the System Information button uses the interactive system glass style in the Liquid Glass theme. Earlier macOS versions retain the plain button.
+
+## 1.2.0-beta.1
+
+### Added
+
+- Sensor Details now shows the measured Hotspot and valid sensor count for CPU and GPU. The cards, menu bar, and history continue to show the average. CPU/GPU warning thresholds use the Hotspot; SSD warnings still use the displayed SSD temperature.
+- System Information now shows the macOS Thermal State beside the Mac model. It is an overall system assessment, not another temperature sensor.
+- An optional Always on Top setting keeps the main window visible above other apps and when using the macOS menu bar.
+
+### Changed
+
+- The main window can be moved freely, retains its position after minimize and reopen, and has standard macOS window controls. Its width adjusts when switching between Standard and Compact.
+- System Information reads only the displayed local values through targeted system queries instead of processing a complete hardware profile. Its Mac and Thermal State tiles now share the top row.
+
+### Documentation
+
+- Updated the English and German manuals and PDFs with the current System Information screenshot, Thermal State, Hotspot details, and window controls.
 
 ## 1.1.0
 

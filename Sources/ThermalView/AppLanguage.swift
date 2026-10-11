@@ -38,9 +38,17 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var alertThresholdTitle: String { self == .english ? "Warning Threshold" : "Warnschwelle" }
     var temperatureHistoryTitle: String { self == .english ? "Temperature History" : "Temperaturverlauf" }
     var systemContextTitle: String { self == .english ? "System Context" : "Systemkontext" }
-    var systemContextHint: String { self == .english ? "Context only — not temperature sensors" : "Nur Kontext — keine Temperatursensoren" }
+    var systemContextHint: String { self == .english ? "This section shows CPU load, fan speeds, memory usage and power status on your Mac. Temperature readings are in the cards above." : "Dieser Bereich zeigt Auslastung, Lüfterdrehzahlen, Speicher und Energiezustand deines Macs. Temperaturwerte stehen in den Karten darüber." }
     var cpuLoadTitle: String { self == .english ? "CPU Load" : "CPU-Last" }
-    var gpuLoadTitle: String { self == .english ? "GPU Load" : "GPU-Last" }
+    var fanHistoryTitle: String { self == .english ? "Fan History" : "Lüfterverlauf" }
+    var minuteAveragesTitle: String { self == .english ? "Minute averages" : "Minutenmittelwerte" }
+    var measurementAgeTitle: String { self == .english ? "Reading age" : "Messwertalter" }
+    func measurementAge(since date: Date, now: Date = .now) -> String {
+        let seconds = max(0, Int(now.timeIntervalSince(date)))
+        let value = seconds < 60 ? "\(seconds) s" : seconds < 3600 ? "\(seconds / 60) min" : "\(seconds / 3600) h"
+        return self == .english ? "\(value) old" : "\(value) alt"
+    }
+    var fanSpeedTitle: String { self == .english ? "Fan" : "Lüfter" }
     var memoryUsageTitle: String { self == .english ? "Memory" : "Arbeitsspeicher" }
     var memoryLoadTitle: String { self == .english ? "Memory status" : "RAM-Status" }
     var powerSourceTitle: String { self == .english ? "Power" : "Stromversorgung" }
@@ -59,21 +67,56 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var memoryTitle: String { self == .english ? "Memory" : "Arbeitsspeicher" }
     var storageTitle: String { self == .english ? "Internal Storage" : "Interner Speicher" }
     var operatingSystemTitle: String { "macOS" }
+    var thermalStateTitle: String { self == .english ? "Thermal State" : "Thermischer Zustand" }
+    func thermalStateDescription(_ state: ProcessInfo.ThermalState) -> String {
+        switch (state, self) {
+        case (.nominal, .english): "Normal"
+        case (.nominal, .german): "Normal"
+        case (.fair, .english): "Elevated"
+        case (.fair, .german): "Erhöht"
+        case (.serious, .english): "High"
+        case (.serious, .german): "Hoch"
+        case (.critical, .english): "Critical"
+        case (.critical, .german): "Kritisch"
+        @unknown default: notAvailable
+        }
+    }
     var systemInformationButtonLabel: String { self == .english ? "Show system information" : "Systeminformationen anzeigen" }
     var closeTitle: String { self == .english ? "Close" : "Schließen" }
     var sourceTitle: String { self == .english ? "Source" : "Quelle" }
     var chipTitle: String { "Chip" }
     var lastValidValueTitle: String { self == .english ? "Last valid value" : "Letzter gültiger Wert" }
     var lastValidTimeTitle: String { self == .english ? "Last valid time" : "Zeitpunkt des letzten gültigen Werts" }
+    var averageTemperatureTitle: String { self == .english ? "Average" : "Durchschnitt" }
+    var hotspotTemperatureTitle: String { "Hotspot" }
+    var validSensorCountTitle: String { self == .english ? "Valid sensors" : "Gültige Sensoren" }
     var copiedReadingsTitle: String { self == .english ? "Copy Current Readings" : "Aktuelle Messwerte kopieren" }
     var exportCSVTitle: String { self == .english ? "Export CSV…" : "CSV exportieren…" }
     var copyDiagnosticReportTitle: String { self == .english ? "Copy Diagnostic Report" : "Diagnosebericht kopieren" }
     var exportMenuTitle: String { self == .english ? "Export" : "Export" }
+    var csvSaveErrorTitle: String { self == .english ? "CSV could not be saved" : "CSV konnte nicht gespeichert werden" }
+    var csvSaveErrorMessage: String { self == .english ? "Check the destination and try saving again." : "Prüfe den Speicherort und versuche es erneut." }
+    var retryTitle: String { self == .english ? "Try Again…" : "Erneut versuchen…" }
+    var chartTimeTitle: String { self == .english ? "Time" : "Uhrzeit" }
+    var chartSegmentTitle: String { self == .english ? "Segment" : "Abschnitt" }
+    var chartSelectedTimeTitle: String { self == .english ? "Selected time" : "Gewählte Uhrzeit" }
+    var chartPointNavigationHint: String { self == .english ? "Use the left and right arrow keys to select a minute. Escape clears the selection." : "Mit den Pfeiltasten links und rechts eine Minute auswählen. Escape hebt die Auswahl auf." }
+    var chartPreviousPointTitle: String { self == .english ? "Previous minute" : "Vorherige Minute" }
+    var chartNextPointTitle: String { self == .english ? "Next minute" : "Nächste Minute" }
     var collectingHistoryTitle: String { self == .english ? "Collecting local history…" : "Lokaler Verlauf wird gesammelt …" }
     var historyHint: String { self == .english ? "Tap the card again to close" : "Karte erneut anklicken zum Schließen" }
+    var sensorHistoryAccessibilityHint: String {
+        self == .english
+            ? "Activates or closes the temperature history"
+            : "Öffnet oder schließt den Temperaturverlauf"
+    }
+    var sensorHistoryShownAccessibilityValue: String { self == .english ? "History shown" : "Verlauf angezeigt" }
+    var sensorHistoryHiddenAccessibilityValue: String { self == .english ? "History hidden" : "Verlauf ausgeblendet" }
     var windowSizeMenuTitle: String { self == .english ? "Window Size" : "Fenstergröße" }
     var standardWindowSizeTitle: String { self == .english ? "Standard" : "Standard" }
     var compactWindowSizeTitle: String { self == .english ? "Compact (about 40% smaller)" : "Kompakt (ca. 40 % kleiner)" }
+    var miniDisplayTitle: String { self == .english ? "Mini Display" : "Mini-Anzeige" }
+    var alwaysOnTopTitle: String { self == .english ? "Always on Top" : "Immer im Vordergrund" }
     var languageMenuTitle: String { self == .english ? "Language" : "Sprache" }
     var startAtLoginMenuTitle: String { self == .english ? "Start at Login" : "Bei Anmeldung starten" }
     var startAtLoginEnabledTitle: String { self == .english ? "Enabled" : "Aktiv" }
@@ -91,6 +134,10 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     var averageCPUSensors: String { self == .english ? "Average CPU sensors" : "Mittelwert CPU-Sensoren" }
     var averageGPUSensors: String { self == .english ? "Average GPU sensors" : "Mittelwert GPU-Sensoren" }
     var notAvailable: String { self == .english ? "Not available" : "Nicht verfügbar" }
+
+    func sensorCountDescription(_ count: Int) -> String {
+        self == .english ? "\(count) sensors" : "\(count) Sensoren"
+    }
 
     func cpuCoreDescription(total: Int?, performance: Int?, efficiency: Int?) -> String {
         guard let total else { return notAvailable }
