@@ -74,7 +74,7 @@ def base(c, number, section, title, subtitle, page):
     c.drawString(42, H - 120, subtitle)
     c.setFillColor(MUTED)
     c.setFont("Helvetica", 8)
-    c.drawString(42, 25, "ThermalAtlas · local, read-only temperature monitoring")
+    c.drawString(42, 25, "ThermalAtlas 1.2.0 · Final · local, read-only temperature monitoring")
     c.drawRightString(W - 42, 25, str(page))
 
 
@@ -317,7 +317,7 @@ def build(language, output):
 
     # 15 Keyboard access and status details
     base(c, 14, "Bedienung" if de else "Access", "Tastatur & Bedienung" if de else "Keyboard & controls",
-         "Neu in Beta 1.2.0-beta.7." if de else "New in Beta 1.2.0-beta.7.", 15)
+         "Seit Beta 1.2.0-beta.7." if de else "Introduced in Beta 1.2.0-beta.7.", 15)
     panel(c, 55, 555, W - 110, 115, CYAN,
           "Diagrammpunkte wählen" if de else "Select chart points",
           "Klicke oder ziehe im Temperatur- oder Lüfterdiagramm, um einen Messpunkt auszuwählen. Pfeiltasten links/rechts sowie Vorherige Minute / Nächste Minute wechseln zwischen Punkten; Escape hebt die Auswahl auf. Zeitlabels richten sich nach der App-Sprache. Einzelne Messpunkte bleiben sichtbar, auch echte 0 RPM." if de else "Click or drag in a temperature or fan chart to select a reading. Use the left/right arrow keys or Previous minute / Next minute buttons to move between points; Escape clears the selection. Time labels follow the app language. Isolated readings remain visible, including genuine 0 RPM.")

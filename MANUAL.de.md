@@ -1,6 +1,6 @@
 # ThermalAtlas - Benutzerhandbuch
 
-Version: 1.2.0-beta.7
+Version: 1.2.0 (Final)
 
 <p align="center">
   <img src="Resources/IconSource/ThermalAtlas-LiquidGlass.png" width="150" alt="ThermalAtlas App-Icon">
@@ -436,7 +436,7 @@ ThermalAtlas ist architektonisch kompakt aufgebaut: eine Menüleisten-App, ein S
 - Apple Silicon
 - Für eigene Builds: Xcode Command Line Tools mit Swift und `actool`
 
-ThermalAtlas v1.0.0 ist die erste stabile Veröffentlichung. Künftige stabile Versionen und Vorabversionen werden über [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) veröffentlicht.
+ThermalAtlas v1.2.0 ist die aktuelle stabile Veröffentlichung. Künftige stabile Versionen und Vorabversionen werden über [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) veröffentlicht.
 
 ---
 
