@@ -14,7 +14,7 @@
 📘 **[User Manual (PDF)](Documentation/ThermalAtlas-User-Manual-EN.pdf)** – interface, buttons, sensors, themes, installation and privacy explained in detail.
 
 > [!IMPORTANT]
-> **ThermalAtlas v1.1.0 is the current stable release.** The `main` branch contains the final source. Beta 1.2.0-beta.7 adds keyboard chart navigation, clearer System Context guidance and a retry path for failed CSV saves on the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
+> **ThermalAtlas v1.2.0 is the current stable release.** The `main` branch contains the final source. Beta 1.2.0-beta.7 adds keyboard chart navigation, clearer System Context guidance and a retry path for failed CSV saves on the [`beta` branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
 
 ## Overview
 
@@ -26,24 +26,18 @@ No admin/root access is required. ThermalAtlas uses a read-only approach and onl
 
 ## Features
 
-- Monitors available CPU, GPU, internal-SSD, and physical external-SSD temperatures without estimating missing readings.
-- Keeps CPU/GPU averages on the cards, menu bar, and history; Sensor Details shows the measured Hotspot and valid sensor count. CPU/GPU alerts use the Hotspot.
-- Shows SMART status and remaining SSD health whenever macOS supplies those values.
-- Separates fast, read-only CPU load, fan speeds and used-memory context from temperature monitoring.
-- Keeps local temperature history, provides optional temperature alerts, and exports a snapshot or CSV only on request.
-- Offers Standard, Compact and a movable Mini Display, selectable sensor groups, and menu-bar modes.
-- Shows the selected point’s time and minute-average temperature when you click or drag in the temperature chart. Arrow keys and Previous/Next buttons move through points; Escape clears the selection. Axis time labels follow the selected app language, and isolated readings remain visible.
-- Opens local System Information with the macOS Thermal State from the header thermometer; offers Always on Top and optional Start at Login registration.
-- Checks GitHub for newer Final and Beta releases manually or, if enabled, daily, weekly or monthly. Download and installation remain your choice.
-- Includes four native themes and a local English/German interface choice.
-- Supports VoiceOver for native temperature cards and the Mini Display, keyboard activation of Mini Display controls, Reduce Motion and Reduce Transparency, plus Default, Dark and Mono icon appearances on supported macOS versions.
-- Explains the System Context values separately from temperatures. A failed CSV save shows the macOS error and lets you reopen the save dialog to try again.
-- Uses defensive Apple-silicon sensor access and independent drive refresh cycles, so slow drive queries do not delay CPU/GPU temperatures.
-- Works locally without accounts, telemetry, analytics, third-party dependencies, or hardware control.
+- Shows available CPU, GPU, internal-SSD and physical external-SSD temperatures, with unavailable readings clearly marked.
+- Shows SMART status and remaining SSD health when macOS provides them.
+- Shows CPU load, fan speeds, memory use, power source/battery and Low Power Mode in a separate System Context.
+- Offers local temperature and fan histories for 1, 3, 6, 12 or 24 hours, with Min/Max/average and point selection.
+- Provides optional temperature alerts with separate thresholds for CPU, GPU, internal SSD and external SSDs.
+- Offers Standard, Compact and a movable Mini Display, selectable sensor groups and menu-bar display modes.
+- Opens local System Information with Mac model, chip, core counts, memory, storage, macOS version and Thermal State.
+- Checks GitHub for newer Final and Beta releases manually or daily, weekly or monthly. Automatic checks are off by default.
+- Includes Adaptive, Liquid Glass, Aurora and Ember themes, with an English or German interface.
+- Copies current readings or a diagnostic report and exports temperature history plus the current snapshot as CSV on request.
 
-- Click a fan RPM value for its local history. Temperature and fan charts offer 1/3/6/12/24 hours, Min/Max/average of minute averages, and point selection. Sensor Details show reading age; retained GPU values show it on the card.
-
-See the complete, grouped [feature overview](FEATURES.md).
+See the complete [feature overview](FEATURES.md) for sensor details, keyboard and VoiceOver support, window controls, privacy and all other features.
 
 ## Screenshots and themes
 
@@ -114,7 +108,7 @@ CPU and GPU recognition is hardware-confirmed on M4 Max, M5, and M5 Pro. The oth
 
 ## Project status
 
-ThermalAtlas v1.1.0 is the current stable release. Future stable releases and prereleases are published through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
+ThermalAtlas v1.2.0 is the current stable release. Future stable releases and prereleases are published through [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases).
 
 ## Community
 

@@ -14,7 +14,7 @@
 📘 **[Benutzerhandbuch (PDF)](Documentation/ThermalAtlas-Handbuch-DE.pdf)** – Oberfläche, Buttons, Sensoren, Themes, Installation und Datenschutz ausführlich erklärt.
 
 > [!IMPORTANT]
-> **ThermalAtlas v1.1.0 ist die aktuelle stabile Veröffentlichung.** Der Branch `main` enthält den finalen Quellstand. Beta 1.2.0-beta.7 ergänzt Tastaturbedienung für Diagramme, verständlichere Hinweise zum Systemkontext und einen erneuten Speicherversuch für fehlgeschlagene CSV-Exporte im [`beta`-Branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
+> **ThermalAtlas v1.2.0 ist die aktuelle stabile Veröffentlichung.** Der Branch `main` enthält den finalen Quellstand. Beta 1.2.0-beta.7 ergänzt Tastaturbedienung für Diagramme, verständlichere Hinweise zum Systemkontext und einen erneuten Speicherversuch für fehlgeschlagene CSV-Exporte im [`beta`-Branch](https://github.com/Schrotty74/ThermalAtlas/tree/beta).
 
 ## Überblick
 
@@ -26,24 +26,18 @@ Weder Administrator- noch Root-Rechte sind nötig. ThermalAtlas verfolgt einen r
 
 ## Funktionen
 
-- Überwacht verfügbare Temperaturen von CPU, GPU, interner SSD und physischen externen SSDs, ohne fehlende Werte zu schätzen.
-- Zeigt weiterhin CPU-/GPU-Durchschnittswerte auf Karten, in der Menüleiste und im Verlauf. In den Sensor-Details stehen Hotspot und Anzahl gültiger Sensoren; CPU-/GPU-Warnungen verwenden den Hotspot.
-- Zeigt SMART-Status und verbleibende SSD-Gesundheit, sobald macOS diese Werte bereitstellt.
-- Trennt schnellen, rein lesenden Systemkontext für CPU-Last, Lüfterdrehzahlen und belegten Arbeitsspeicher von der Temperaturüberwachung.
-- Führt lokale Temperaturverläufe, bietet optionale Temperaturwarnungen und exportiert Snapshot oder CSV nur auf Wunsch.
+- Zeigt verfügbare Temperaturen von CPU, GPU, interner SSD und physischen externen SSDs; fehlende Messwerte sind klar gekennzeichnet.
+- Zeigt SMART-Status und verbleibende SSD-Gesundheit, wenn macOS diese Werte bereitstellt.
+- Zeigt CPU-Last, Lüfterdrehzahlen, RAM-Nutzung, Stromquelle/Akku und Energiesparmodus im separaten Systemkontext.
+- Bietet lokale Temperatur- und Lüfterverläufe für 1, 3, 6, 12 oder 24 Stunden mit Min/Max/Ø und Punktwahl.
+- Bietet optionale Temperaturwarnungen mit getrennten Schwellen für CPU, GPU, interne SSD und externe SSDs.
 - Bietet Standard, Kompakt und eine verschiebbare Mini-Anzeige sowie wählbare Sensorgruppen und Menüleistenmodi.
-- Zeigt beim Anklicken oder Ziehen im Temperaturgraphen Uhrzeit und Minutenmittelwert des gewählten Punktes. Pfeiltasten und Buttons Vorherige/Nächste Minute wechseln zwischen Punkten; Escape hebt die Auswahl auf. Zeitlabels folgen der App-Sprache, einzelne Messpunkte bleiben sichtbar.
-- Öffnet über das Thermometer im Kopf lokale Systeminformationen mit dem thermischen macOS-Zustand und bietet **Immer im Vordergrund** sowie optional **Bei Anmeldung starten**.
-- Prüft GitHub manuell oder optional täglich, wöchentlich oder monatlich auf neuere Final- und Beta-Versionen. Download und Installation wählst du selbst.
-- Enthält vier native Themes und eine lokale Sprachwahl zwischen Englisch und Deutsch.
-- Unterstützt VoiceOver für native Temperaturkarten und Mini-Anzeige, deren Tastaturbedienung mit Return und Leertaste, Bewegung reduzieren und Transparenz reduzieren sowie die Icon-Erscheinungen Standard, Dunkel und Monochrom auf unterstützten macOS-Versionen.
-- Erklärt den Systemkontext getrennt von den Temperaturen. Bei einem fehlgeschlagenen CSV-Speichervorgang zeigt die App den macOS-Fehler und bietet „Erneut versuchen…“ an, um den Speicherdialog erneut zu öffnen.
-- Nutzt defensiven Apple-Silicon-Sensorzugriff und getrennte Laufwerkszyklen, damit langsame Laufwerksabfragen CPU-/GPU-Temperaturen nicht verzögern.
-- Funktioniert lokal ohne Konten, Telemetrie, Analysedienste, Drittanbieter-Abhängigkeiten oder Hardwaresteuerung.
+- Öffnet lokale Systeminformationen mit Mac-Modell, Chip, Kernzahlen, RAM, Speicher, macOS-Version und thermischem Zustand.
+- Prüft GitHub manuell oder täglich, wöchentlich oder monatlich auf neuere Final- und Beta-Versionen. Automatische Prüfungen sind zunächst aus.
+- Enthält die Themes Adaptiv, Liquid Glass, Aurora und Ember sowie eine englische oder deutsche Oberfläche.
+- Kopiert auf Wunsch aktuelle Messwerte oder einen Diagnosebericht und exportiert Temperaturverlauf plus aktuellen Snapshot als CSV.
 
-- Ein Klick auf einen Lüfterwert öffnet dessen lokalen Verlauf. Temperatur- und Lüfterdiagramme bieten 1/3/6/12/24 Stunden, Min/Max/Ø der Minutenmittelwerte und Punktwahl. Sensor-Details zeigen das Messwertalter; überbrückte GPU-Werte auch direkt auf der Karte.
-
-Die vollständige, gegliederte [Funktionsübersicht](FEATURES.de.md) enthält alle Details.
+Die vollständige [Funktionsübersicht](FEATURES.de.md) erklärt Sensor-Details, Tastatur- und VoiceOver-Bedienung, Fensteroptionen, Datenschutz und alle weiteren Funktionen.
 
 ## Screenshots und Themes
 
@@ -114,7 +108,7 @@ Die CPU- und GPU-Erkennung ist auf M4 Max, M5 und M5 Pro auf echter Hardware bes
 
 ## Projektstatus
 
-ThermalAtlas v1.1.0 ist die aktuelle stabile Veröffentlichung. Künftige stabile Versionen und Vorabversionen werden über die [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) veröffentlicht.
+ThermalAtlas v1.2.0 ist die aktuelle stabile Veröffentlichung. Künftige stabile Versionen und Vorabversionen werden über die [GitHub Releases](https://github.com/Schrotty74/ThermalAtlas/releases) veröffentlicht.
 
 ## Community
 

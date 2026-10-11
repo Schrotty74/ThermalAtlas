@@ -19,6 +19,7 @@ This page lists the features in Beta 1.2.0-beta.7. For installation and everyday
 - Ignores virtual disk images and hides an ejected external drive even when it remains connected by cable.
 - Refreshes drive topology at launch, after macOS mount/unmount events, and periodically in the background.
 - Reads temperatures of known SSDs every minute for history and alerts.
+- Refreshes CPU/GPU temperatures separately from drive queries, so slow drive queries do not delay CPU/GPU readings.
 - Shows the SMART status reported by macOS and remaining health derived from NVMe `PERCENTAGE_USED` when available; it does not estimate unavailable values.
 - Refreshes SMART status and health at launch, after a topology change, and at most once per day.
 

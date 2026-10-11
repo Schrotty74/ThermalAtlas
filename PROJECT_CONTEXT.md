@@ -196,3 +196,9 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 
 - `FEATURES.md` und `FEATURES.de.md` wurden am 6. Oktober 2026 mit dem veröffentlichten Beta.7-Stand abgeglichen. Bereits beschriebene Neuerungen bleiben erhalten; ergänzt sind Tastaturaktivierung der Karten, VoiceOver-Messwerte und Warnstatus der Menüleiste/Mini-Anzeige, vollständige Diagrammlokalisierung, Schließen des CSV-Fehlerdialogs und die am Verlaufsinhalt ausgerichtete Fensterhöhe.
 - Der pauschale offene Hinweis zur Mini-Anzeige über Vollbildspielen wurde entsprechend der bestätigten Funktion entfernt. Eine Zusage für alle Spiele wird nicht ergänzt. Die Feature-Listen nennen ausdrücklich Beta.7. Offene Bedienprüfungen in `NEXT_STEPS.md`, App-Quellen, Release-Tag und Downloads bleiben unverändert.
+
+## Beta-Startseite mit zehn Kernfunktionen vom 11. Oktober 2026
+
+- Die bereits sprachlich überarbeiteten Feature-Abschnitte der Final-README wurden gezielt in beide Beta-READMEs übernommen: genau zehn Kernfunktionen mit Link auf die vollständige branchspezifische Funktionsübersicht. Die englischen Texte verwenden `humanizer`, die deutschen `ki-spuren-entfernen`.
+- Beide Beta-Features-Dateien enthalten zusätzlich den Hinweis auf getrennte CPU-/GPU- und Laufwerksabfragen. Alle anderen Details der bisherigen README-Liste bleiben dort bereits beschrieben. Die Beta-Kennung bleibt 1.2.0-beta.7; der stabile Versionshinweis in den READMEs nennt jetzt die veröffentlichte Final 1.2.0.
+- Der vorherige Dokumentations-Commit `6d01eed` hat gemäß Final-Regel nur beide Handbücher, PDFs und ihren Generator aus Final 1.2.0 synchronisiert. App-Quellen, Beta-Version, Tag und Downloads wurden dabei nicht geändert und bleiben auch bei diesem README-Nachtrag unverändert. Die offenen Bedienprüfungen in `NEXT_STEPS.md` bleiben bestehen.
