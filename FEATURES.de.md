@@ -19,6 +19,7 @@ Diese Seite beschreibt die Funktionen der finalen Veröffentlichung ThermalAtlas
 - Ignoriert virtuelle Disk-Images und blendet ein ausgeworfenes externes Laufwerk aus, auch wenn es weiter verkabelt bleibt.
 - Aktualisiert die Laufwerkstopologie beim Start, nach macOS-Mount-/Unmount-Ereignissen und zusätzlich im Hintergrund.
 - Liest Temperaturen bekannter SSDs jede Minute für Verlauf und Warnungen.
+- Aktualisiert CPU-/GPU-Temperaturen getrennt von Laufwerksabfragen, damit langsame Laufwerksabfragen die CPU-/GPU-Anzeige nicht verzögern.
 - Zeigt den von macOS gemeldeten SMART-Status und die aus NVMe-`PERCENTAGE_USED` abgeleitete verbleibende Gesundheit, falls vorhanden; fehlende Werte werden nicht geschätzt.
 - Aktualisiert SMART-Status und Gesundheit beim Start, nach einer Topologieänderung und höchstens einmal täglich.
 

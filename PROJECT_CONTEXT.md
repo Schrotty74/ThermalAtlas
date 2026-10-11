@@ -229,3 +229,9 @@ ThermalAtlas ist eine native macOS-Menüleisten-App für Apple-Silicon-Macs. Sie
 - Die neueren Final-Handbücher wurden gemäß `AGENTS.md` als reiner Dokumentations-Commit `6d01eed` nach `beta` übernommen und gepusht: nur beide Markdown-Handbücher, beide PDFs und ihr Generator. Verwendete Bildressourcen waren bereits identisch. Beta-Quellen, Version/Build, Release-Tag und Downloads bleiben unverändert bei Beta.7.
 - Schrotty74-Profil und Portfolio wurden nach Veröffentlichung geprüft und nennen weiterhin Final 1.1.0 sowie Beta.7; deren Final-Statusabgleich bleibt offen. Andere Repositories wurden nicht verändert.
 - Der lokale Hauptcheckout mit Dev-Änderungen und seinen eigenen Handbüchern wurde weder zurückgesetzt noch committet oder gepusht. Der Final-Stand liegt im getrennten Final-Checkout; dieser Kontextnachtrag ändert den Release-Tag nicht.
+
+## Gekürzte Final-Startseite vom 11. Oktober 2026
+
+- Die englische und deutsche README-Funktionsliste wurde mit Final 1.2.0 abgeglichen und von 15 auf genau zehn Kernpunkte gekürzt. Die vollständigen Funktionsübersichten enthalten weiterhin die Bedienungs-, Sensor-, Fenster- und Datenschutzdetails; der Link darunter benennt diese Vertiefungen ausdrücklich.
+- Die getrennten CPU-/GPU- und Laufwerksabfragen wurden als bislang fehlender Detailpunkt in beide Features-Dateien aufgenommen. Die übrigen bisherigen README-Funktionsangaben waren dort bereits beschrieben. Der Quellenabgleich bestätigte den getrennten Aktualisierungsablauf.
+- Die neuen englischen Texte wurden mit `humanizer`, die deutschen mit `ki-spuren-entfernen` überarbeitet. Es handelt sich ausschließlich um Dokumentation auf `main`; App-Quellen, Handbücher, Version, Release-Tag und Downloads bleiben unverändert. Die offenen Aufgaben in `NEXT_STEPS.md` bleiben bestehen.
